@@ -6,13 +6,11 @@ Use it when the user is the product owner or lead architect and the main assista
 
 ## Install
 
-Copy this folder into your skill directory:
+Install with [`skills.sh`](https://www.skills.sh):
 
 ```bash
-cp -R project-manager-skill /path/to/skills/project-manager-role
+npx skills add srav001/project-manager-skill
 ```
-
-Or use the contents directly from this repository as a skill folder.
 
 ## What It Enforces
 
