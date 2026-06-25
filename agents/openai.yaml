@@ -1,0 +1,4 @@
+interface:
+  display_name: "Project Manager Role"
+  short_description: "Run work through PM-led agent loops"
+  default_prompt: "Use $project-manager-role to run this coding project through a PM-led discussion, delegation, review, and QA workflow."
