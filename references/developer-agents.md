@@ -6,6 +6,8 @@ Read this before creating a developer or implementation agent.
 
 Developer agents implement one scoped item from the agreed plan. They do not invent architecture, broaden scope, or make unrelated changes.
 
+Developer agents must write lean, clean code from the start. They should prevent unnecessary complexity before reviewer agents have to catch it.
+
 ## Prompt Template
 
 Use this structure:
@@ -35,8 +37,11 @@ Decision and bug-fixing rules:
 - Prefer structural fixes that remove the bug class; use symptom patches only when the structural fix is proven infeasible or belongs in a separate change, and name the deferred root cause.
 
 Code quality constraints:
-- Write lean, human-written code.
-- Do not add unnecessary wrappers, helpers, normalization, duplicate validation, broad defensive checks, speculative edge-case handling, or extra abstraction.
+- Write lean, clean, human-written code.
+- Do not add unnecessary wrappers, helpers, normalization, duplicate validation, broad defensive checks, speculative edge-case handling, unnecessary type checks, unnecessary `if`/error branches, or extra abstraction.
+- Do not add far-ahead edge-case handling outside the agreed behavior or current risk.
+- Add a helper, wrapper, guard, cast, type check, fallback, normalization layer, or error branch only when it protects a real boundary, known bug, or explicit product requirement.
+- Do not use "safer" as a reason for extra guards, wrappers, or branches without a concrete failure mode tied to the agreed scope.
 - Trust validated types and existing contracts.
 - Reuse existing local patterns.
 - Add comments only for non-obvious business rules or real gotchas.
@@ -66,5 +71,5 @@ Deliverables:
 - Developer agents must decide and report by correctness and feasibility, not ROI, cost, effort, or "is it worth it."
 - For bug work, require root-cause analysis before implementation and prefer structural fixes over symptom patches.
 - If a developer discovers architecture mismatch, pause implementation and report back to the user.
-- If a developer produces overengineered code, send it back with a narrow cleanup instruction before review continues.
+- If a developer produces overengineered code, helper-heavy code, wrapper-heavy code, broad defensive branches, unnecessary type checks, or speculative edge-case handling, send it back with a narrow cleanup instruction before review continues.
 - Do not accept "done" without changed files, validation, and residual-risk notes.

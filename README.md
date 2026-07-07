@@ -45,7 +45,7 @@ Implementation/source edits are blocked until `plan.md` records passing classifi
 
 ## Code Quality Standard
 
-Developer and reviewer prompts require lean, human-written code:
+Developer and reviewer prompts require lean, clean, human-written code:
 
 - no unnecessary wrappers
 - no unnecessary helpers
@@ -60,6 +60,7 @@ Developer and reviewer prompts require lean, human-written code:
 - reuse local patterns
 
 Reviewer agents must treat unnecessary complexity as a review failure, not optional polish.
+Developer agents must avoid that complexity before review, not rely on reviewers to clean it up.
 
 ## Structure
 
