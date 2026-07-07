@@ -121,6 +121,10 @@ For non-trivial work, include the gate ledger below. A gate can be `Pending`, `P
 - Required: yes | no
 - Owner: reviewer agent | main agent direct override | not required
 - Review findings:
+- Lean-code review complete: yes | no
+- Unnecessary helpers/wrappers/type checks/branches found:
+- Far-ahead edge handling or speculative validation found:
+- Cleanup required before pass:
 - Required changes closed:
 - Residual risk:
 - Evidence:

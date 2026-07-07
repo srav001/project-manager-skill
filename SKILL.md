@@ -43,7 +43,8 @@ This is a thinking-first rule, not a mandate to refactor on every fix: the root-
 - For non-trivial investigation or research, start research/explorer agents by default while the main agent continues PM coordination and its own core investigation. Investigation-only work is not a reason to skip subagents when they are available. Use developer agents only if implementation/source edits are part of the work.
 - For non-trivial work, implementation/source edits are blocked until `plan.md` records a passing Work Classification Gate and Delegation Gate, or a documented explicit direct-work override.
 - Give agents precise instructions, acceptance criteria, affected files, constraints, project rules, and exact decisions already made by the user.
-- Require lean, human-written code: no unnecessary wrappers, helpers, normalization, duplicate validation, speculative edge-case handling, broad defensive checks, or extra abstraction.
+- Require lean, human-written code: no unnecessary wrappers, helpers, normalization, duplicate validation, speculative edge-case handling, broad defensive checks, unnecessary type checks, unnecessary `if`/error branches, or extra abstraction.
+- Require reviewer agents to strictly review developer-written code for unnecessary complexity. Reviewer agents must treat overbuilt helpers, wrappers, defensive branches, casts, far-ahead edge handling, and speculative validation as review failures unless they protect a real boundary, known bug, or explicit product requirement.
 - Do not claim parity, readiness, or completion without concrete evidence from code, logs, diffs, tests, or user-visible behavior.
 - If the user interrupts or changes direction, stop or close irrelevant agent work and follow the newest instruction.
 - Keep `discussion.md` and `plan.md` current, then summarize them after each completed phase.
@@ -96,10 +97,11 @@ When the user asks for understanding, planning, review of options, or says not t
 8. If implementation/source edits are needed, send scoped implementation work to developer agents without asking the user when subagents are available.
 9. Record developer-agent output in the Developer Gate, or record developer agents as not required when no implementation/source edits occur.
 10. Send developer output to reviewer agents when implementation occurred.
-11. Loop developer and reviewer until the Review Gate passes or the user stops the loop.
-12. Send verification scope to testing agents and pass the Testing Gate when implementation or user-visible behavior requires verification.
-13. Do final review yourself and pass the Completion Gate.
-14. Close agents, summarize docs, and report concise status.
+11. Require reviewer agents to check that the implementation is lean, clean, and free of unnecessary helpers, wrappers, type checks, defensive branches, speculative validation, and far-ahead edge-case handling.
+12. Loop developer and reviewer until the Review Gate passes or the user stops the loop.
+13. Send verification scope to testing agents and pass the Testing Gate when implementation or user-visible behavior requires verification.
+14. Do final review yourself and pass the Completion Gate.
+15. Close agents, summarize docs, and report concise status.
 
 ## Gate Artifact Contract
 

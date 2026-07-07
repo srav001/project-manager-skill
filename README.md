@@ -49,12 +49,17 @@ Developer and reviewer prompts require lean, human-written code:
 
 - no unnecessary wrappers
 - no unnecessary helpers
+- no unnecessary type checks
+- no unnecessary `if` or error branches
 - no duplicate validation
 - no broad defensive checks
 - no speculative edge-case handling
+- no far-ahead edge-case handling outside the agreed scope
 - no extra abstraction unless it removes real complexity or matches an established pattern
 - trust validated types and existing contracts
 - reuse local patterns
+
+Reviewer agents must treat unnecessary complexity as a review failure, not optional polish.
 
 ## Structure
 
