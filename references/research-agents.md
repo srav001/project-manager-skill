@@ -4,7 +4,9 @@ Read this before creating a research or explorer agent.
 
 ## Purpose
 
-Research agents gather facts before architecture decisions or debugging. They should inspect source, logs, docs, external references, or runtime state and return grounded findings.
+Research agents gather facts before architecture decisions, debugging, or non-trivial investigation. They should inspect source, logs, docs, external references, simulations, alternate hypotheses, codepaths, or runtime state and return grounded findings.
+
+For non-trivial investigation-only work, use research/explorer agents by default when subagents are available. The main agent still coordinates, challenges conclusions, and performs its own core investigation, but supporting evidence gathering should be delegated. Developer agents are required only when implementation/source edits are part of the work.
 
 ## Prompt Template
 
@@ -19,6 +21,7 @@ Sources to inspect:
 - [logs]
 - [docs]
 - [external sources, if allowed]
+- [hypotheses or simulations to test]
 - [runtime state or commands]
 
 Rules:
@@ -40,3 +43,4 @@ Report:
 - Keep research prompts narrow enough to finish.
 - Do not pass your expected answer unless the agent is verifying a specific hypothesis.
 - Ask for raw evidence, not just conclusions.
+- Use parallel research agents for genuinely separate questions, such as alternate hypotheses, affected codepaths, production logs, docs, or simulations.
