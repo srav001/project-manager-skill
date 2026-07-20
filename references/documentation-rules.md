@@ -1,6 +1,7 @@
 # Documentation Rules
 
-## discussion.md
+<discussion_md>
+## `discussion.md`
 
 Use `discussion.md` as the durable memory for decisions and findings.
 
@@ -42,8 +43,10 @@ For non-trivial work, include a short gate context section before implementation
 - Decisions that must be preserved:
 - Open questions or risks:
 ```
+</discussion_md>
 
-## plan.md
+<plan_md>
+## `plan.md`
 
 Use `plan.md` as the execution plan.
 
@@ -154,7 +157,9 @@ For non-trivial work, include the gate ledger below. A gate can be `Pending`, `P
 ```
 
 If a gate fails, update the same gate with the failure evidence, repair the issue, and rerun the gate. Do not replace failed gate evidence with a vague success summary.
+</plan_md>
 
+<compaction_recovery>
 ## Compaction Recovery
 
 After context compaction or restart:
@@ -164,7 +169,9 @@ After context compaction or restart:
 3. Re-read `discussion.md`.
 4. Re-read `plan.md`.
 5. Resume from the latest active phase, not from memory.
+</compaction_recovery>
 
+<reporting>
 ## Reporting
 
 Report in short bullets:
@@ -175,3 +182,4 @@ Report in short bullets:
 - where the risk is
 
 Do not over-explain unless the user asks.
+</reporting>

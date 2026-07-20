@@ -15,7 +15,11 @@ npx skills add srav001/project-manager-skill
 ## What It Enforces
 
 - Main assistant acts as PM plus senior developer partner.
+- The PM grills the user before planning: interviews the design, is cynical about assumptions, pushes back, says why a suggestion is weak, and offers better alternatives — asking one question at a time.
+- The PM researches the codebase (via explorer/research agents) before grilling, suggesting, or asking. Anything the code can answer is answered from the code, not asked of the user, and pushback/alternatives are backed by concrete code evidence.
 - User remains product owner / lead architect.
+- Review agents are adversarial and context-isolated: one reviewer by default (more only if the user asks), each assuming the code is wrong and hunting for bugs, regressions, and unnecessary complexity.
+- The skill does not force a PM-compliance summary at the end of answers; the compliance check is an internal self-check.
 - Larger work automatically goes through developer, reviewer, and testing agents when subagents are available.
 - Non-trivial investigation/research automatically uses research or explorer agents when subagents are available.
 - Research agents gather facts before uncertain architecture decisions, debugging conclusions, simulations, or alternate-hypothesis calls.
@@ -49,7 +53,7 @@ Developer and reviewer prompts require lean, clean, human-written code:
 
 - no unnecessary wrappers
 - no unnecessary helpers
-- no unnecessary type checks
+- no unnecessary type checks — no check that duplicates a guarantee already in place (the static type, or an existing schema validator like Zod, or a typed language). Validate a boundary only when nothing upstream already covers it; don't stack a manual check behind a schema that already parsed the value.
 - no unnecessary `if` or error branches
 - no duplicate validation
 - no broad defensive checks
