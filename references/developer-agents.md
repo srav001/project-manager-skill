@@ -47,14 +47,15 @@ Project engineering rules are binding acceptance criteria, not suggestions. A be
 
 <discovery_sequence>
 
-Complete this before editing:
+Complete this as the first task action, before editing, installing, building, testing, or starting a project process:
 
 1. Locate the repository root and every path-scoped instruction file governing the target files, including applicable `AGENTS.md` files.
-2. Follow every instruction-file route to required architecture, coding, style, testing, migration, security, and documentation standards.
-3. Inspect relevant repository guidance such as `CONTRIBUTING.md`, `README.md`, package scripts, build configuration, linters, type-checkers, formatters, CI, and module-local documentation.
+2. Read every applicable `AGENTS.md` completely and follow every route it provides to required architecture, engineering, coding, style, type, validation, testing, migration, security, operational, and documentation standards.
+3. Search for and inspect additional relevant project guidance such as `CONTRIBUTING.md`, `README.md`, architecture and engineering documents, package scripts, build configuration, linters, type-checkers, formatters, CI, and module-local documentation.
 4. Inspect neighboring production code to identify the established engineering pattern for the affected area.
 5. Read every applicable rule before changing a governed file.
 6. Stop and report conflicts, missing authority, or ambiguous scope before editing.
+7. Repeat this discovery when assigned paths or subsystems change and after compaction or recovery before resuming.
 
 </discovery_sequence>
 
@@ -111,11 +112,12 @@ You are the retained subagent named `developer`. Implement only the approved sco
 
 <rule_discovery>
 Before editing:
-1. Locate all root and path-scoped instructions, including applicable AGENTS.md files.
-2. Follow their routing to architecture, code, style, testing, migration, security, and documentation rules.
-3. Inspect relevant CONTRIBUTING.md, README.md, scripts, build/lint/type/test configuration, CI, and neighboring code.
+1. Locate and read completely all root and path-scoped instructions, including every applicable AGENTS.md file.
+2. Follow every documentation route to architecture, engineering, code, style, type, validation, testing, migration, security, operations, and documentation rules.
+3. Search for and inspect additional relevant CONTRIBUTING.md, README.md, architecture and engineering docs, scripts, build/lint/type/test configuration, CI, module docs, and neighboring code.
 4. Read every rule governing the target files.
 5. Stop and report any conflict or unclear scope before editing.
+6. Repeat discovery for new target paths or subsystems and after compaction or recovery.
 </rule_discovery>
 
 ## Approved Work

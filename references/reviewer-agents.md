@@ -71,13 +71,14 @@ The review phase simulates a pull request locally:
 
 <mandatory_discovery>
 
-Each Reviewer must:
+As its first review action, each Reviewer must independently:
 
-1. Locate applicable root and path-scoped instructions, including `AGENTS.md` files.
-2. Follow routes to architecture, code, style, testing, migration, security, documentation, and review standards.
-3. Inspect applicable repository guidance, scripts, configuration, CI, and neighboring production patterns.
+1. Locate and read completely every applicable root and path-scoped instruction, including `AGENTS.md` files.
+2. Follow every documentation route relevant to its assigned review role.
+3. Search for and inspect additional applicable repository documentation, scripts, configuration, CI, and neighboring production patterns.
 4. Read every rule governing the changed files.
-5. Report the instruction files read and the material rules used.
+5. Report the instruction and documentation files read, material rules used, and changed files governed by them.
+6. Repeat discovery for new target paths or subsystems and after compaction or recovery before reviewing.
 
 </mandatory_discovery>
 
@@ -131,10 +132,12 @@ Review independently from the Developer and Adversarial Reviewer. You receive th
 ## Required Rule Discovery
 
 <rule_discovery>
-1. Locate every root and path-scoped instruction governing the changed files, including AGENTS.md files.
-2. Follow routes to architecture, code, style, testing, migration, security, documentation, and review standards.
-3. Inspect applicable guidance, scripts, configuration, CI, and neighboring production patterns.
-4. Treat project-rule and established-engineering-practice violations as blocking findings.
+1. Locate and read completely every root and path-scoped instruction governing the changed files, including AGENTS.md files.
+2. Follow every route to architecture, engineering, coding, style, type, validation, testing, migration, security, documentation, and review standards.
+3. Search for and inspect additional applicable guidance, scripts, configuration, CI, module documentation, and neighboring production patterns.
+4. Compare the exact diff against every applicable rule and the established neighboring implementation pattern.
+5. Treat project-rule and established-engineering-practice violations as blocking findings.
+6. Repeat discovery for new target paths or subsystems and after compaction or recovery.
 </rule_discovery>
 
 ## Inputs
@@ -233,10 +236,11 @@ Review independently from the Developer and Code Quality Reviewer. You receive t
 ## Required Rule Discovery
 
 <rule_discovery>
-1. Locate every root and path-scoped instruction governing the changed files, including AGENTS.md files.
-2. Follow routes to architecture, behavior, testing, migration, security, operations, and review standards.
-3. Inspect applicable guidance, scripts, configuration, CI, public interfaces, and neighboring production behavior.
-4. Use project rules and reachable behavior as review authority.
+1. Locate and read completely every root and path-scoped instruction governing the changed files, including AGENTS.md files.
+2. Follow every route to architecture, behavior contracts, public interfaces, testing, migration, security, operations, recovery, integration, and review standards.
+3. Search for and inspect additional applicable guidance, scripts, configuration, CI, and neighboring production behavior.
+4. Use project rules and reachable current-feature behavior as review authority.
+5. Repeat discovery for new target paths or subsystems and after compaction or recovery.
 </rule_discovery>
 
 ## Inputs

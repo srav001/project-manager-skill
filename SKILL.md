@@ -104,6 +104,7 @@ Before changing phases:
 <non_negotiable_invariants>
 
 - The Project Manager alone assigns and coordinates subagent work; subagents must not spawn other subagents.
+- Before any subagent acts, require it to discover and read every applicable repository `AGENTS.md`, follow its documentation routes, read the role-specific project documentation named by the active reference, and report the governing rules it used.
 - Do not implement non-trivial work directly unless the user explicitly overrides delegation or tooling proves delegation unavailable.
 - Do not modify production or source code before the user approves the brief plan and the required discussion, classification, delegation, and planning gates pass.
 - Do not edit, install, build, test, or start feature processes in the source checkout; use the isolated feature worktree until the final transfer gate.

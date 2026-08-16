@@ -8,6 +8,7 @@
 - [Allocate Temporary Ports](#allocate-temporary-ports)
 - [Run the Production-Like Preview](#run-the-production-like-preview)
 - [Agent Workspace Boundaries](#agent-workspace-boundaries)
+- [Subagent Repository-Rule Startup](#subagent-repository-rule-startup)
 - [Recovery](#recovery)
 
 ## Workspace Contract
@@ -169,6 +170,35 @@ Every subagent prompt must include:
 Explorer reads feature-worktree code. Developer edits only there. Both Reviewers inspect only the submitted feature-worktree revision and feature diff. Tester runs only the assigned feature-worktree preview and ports. No subagent may create another worktree or change the port map; those remain Project Manager responsibilities.
 
 </agent_workspace_contract>
+
+## Subagent Repository-Rule Startup
+
+<shared_rule_discovery_contract>
+
+Before its first task action, every Explorer, Developer, Reviewer, and Tester must:
+
+1. Resolve the assigned feature-worktree repository root and target paths.
+2. Locate and read completely every root and path-scoped `AGENTS.md` governing those targets.
+3. Follow every documentation route in those instructions and read the documents relevant to its role and assignment.
+4. Search for additional role-relevant project documentation, scripts, configuration, CI, and neighboring conventions rather than assuming the prompt contains every rule.
+5. Treat discovered project rules as binding. Stop and report conflicting instructions, missing required documents, or unclear authority before acting.
+6. Report the files read, the material constraints applied, and the targets governed by them.
+
+Repeat discovery when the assigned paths or subsystem change, when a new phase introduces different governed files, and after compaction or recovery before resuming work. Reading instructions once for an earlier scope is not sufficient evidence for a later scope.
+
+</shared_rule_discovery_contract>
+
+<role_specific_documentation>
+
+| Role | Required project evidence in addition to applicable `AGENTS.md` |
+|---|---|
+| Explorer | Architecture, subsystem, data-flow, interface, contract, and research documentation relevant to the question |
+| Developer | Architecture, engineering, coding, style, type, validation, security, migration, documentation, testing, build, and CI rules governing the assigned files |
+| Code Quality Reviewer | The same governing engineering and code rules independently discovered, plus neighboring production patterns used for exact diff comparison |
+| Adversarial Reviewer | Behavior contracts, public interfaces, testing, security, migration, operations, recovery, and integration documentation relevant to reachable current-feature paths |
+| Tester | Testing and QA guidance, test configuration, CI, fixtures, runbooks, simulations, Computer Use guidance, and preview/build/start/serve documentation |
+
+</role_specific_documentation>
 
 ## Recovery
 

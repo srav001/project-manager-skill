@@ -264,6 +264,7 @@ Use only these statuses:
 - Agents started or queued: [identities]
 - Direct-work override or exception: [exact text and controls, or none]
 - Prompt acceptance criteria complete: [yes/no]
+- Role-specific repository-rule startup contract included: [applicable AGENTS.md discovery, routed and independently discovered docs, binding constraints, evidence, and rediscovery triggers]
 - Evidence: [evidence]
 </delegation_gate>
 
