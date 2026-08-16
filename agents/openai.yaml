@@ -1,4 +1,4 @@
 interface:
   display_name: "Project Manager Role"
-  short_description: "Run work through gated PM-led subagents"
-  default_prompt: "Use $project-manager-role to run this coding project through PM-led discussion, automatic research/developer/reviewer/testing subagent delegation, QA, and hard gates. Treat do/fix/test/ensure-good wording as normal subagent workflow, not direct-work permission."
+  short_description: "ADHD-friendly project management"
+  default_prompt: "Use $project-manager-role as my ADHD-friendly Project Manager to investigate and pressure-test this feature, form the plan progressively, wait for my approval of the brief, then assign, review, and verify the work through persistent role agents that strictly follow the project rules."

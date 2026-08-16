@@ -1,185 +1,288 @@
-# Documentation Rules
+# Control Documents
 
-<discussion_md>
-## `discussion.md`
+## Contents
 
-Use `discussion.md` as the durable memory for decisions and findings.
+- [Artifact Responsibilities](#artifact-responsibilities)
+- [`discussion.md` Contract](#discussionmd-contract)
+- [`plan.md` Contract](#planmd-contract)
+- [Maintenance and Recovery](#maintenance-and-recovery)
+- [User-Facing Reporting](#user-facing-reporting)
 
-Track:
+## Artifact Responsibilities
 
-- user goals
-- architecture decisions
-- exact user-decided values or constraints
-- rejected alternatives
-- important bugs or regressions found
-- direct-work exceptions and why they were allowed
-- test results and production observations
-- unresolved questions
-- operating-model changes
+<artifact_table>
 
-After a phase is complete, summarize `discussion.md` aggressively. Keep durable findings, not transcript detail.
+| Artifact | Purpose | Keep detailed |
+|---|---|---|
+| `discussion.md` | Durable product, architecture, constraint, risk, and exception decisions | Until decisions are resolved, then compress to durable conclusions |
+| `plan.md` | Progressively formed phases, owners, retained agent threads, gates, evidence, and next actions | For active and future work; compress completed steps into evidence-backed summaries |
 
-For non-trivial work, include a short gate context section before implementation starts or before relying on non-trivial investigation findings:
+</artifact_table>
+
+<persistence_boundary>
+
+- Create or update `discussion.md` immediately for non-trivial feature work when workspace persistence is allowed.
+- Create `plan.md` when evidence and decisions begin to form a real implementation approach; expand it progressively instead of inventing a complete plan upfront.
+- Require both artifacts before non-trivial implementation when workspace persistence is allowed.
+- Treat them as control state, not transcript storage.
+- Preserve exact user decisions, failed-gate evidence, accepted exceptions, and residual risk.
+
+</persistence_boundary>
+
+## `discussion.md` Contract
+
+<required_content>
+
+- [ ] User goal and exact constraints
+- [ ] Repository evidence that shaped the discussion
+- [ ] Architecture decisions and rejected alternatives
+- [ ] Exact user-decided values and behaviors
+- [ ] Work classification and affected systems
+- [ ] Required agent roles and delegation state
+- [ ] Architectural root cause for bug work
+- [ ] Direct-work override or delegation exception, when applicable
+- [ ] Unresolved questions, risks, and accepted residual risk
+
+</required_content>
+
+<discussion_template>
 
 ```md
-## Gate Context
+# Discussion
 
-- Work classification: trivial | non-trivial
-- Work type: investigation/research | implementation | review | testing | mixed
-- Affected systems:
-- Subagents required: yes | no
-- Research/investigation agents required: yes | no
-- Developer agents required: yes | no
-- Reviewer agents required: yes | no
-- Testing agents required: yes | no
-- Subagents available: yes | no | blocked by policy/tooling | failed creation | authorization required
-- User authorization required for subagents: yes | no
-- User authorized subagents: yes | no | not required
-- Subagents started without extra confirmation: yes | no | blocked | failed
-- Generic execution/QA instruction received: exact user text | none
-- Generic execution/QA instruction treated as normal subagent workflow: yes | no | not applicable
-- Direct-work override: none | exact user text
-- Reason direct work is allowed, if any:
-- Decisions that must be preserved:
-- Open questions or risks:
+## Goal
+
+<user_goal>
+[Goal and exact constraints]
+</user_goal>
+
+## Evidence
+
+<repository_findings>
+- [Finding with path, behavior, log, or source]
+</repository_findings>
+
+## Decisions
+
+<accepted_decisions>
+1. [Decision]
+</accepted_decisions>
+
+<rejected_alternatives>
+- [Alternative]: [reason grounded in correctness or feasibility]
+</rejected_alternatives>
+
+## Classification
+
+<work_classification>
+- Classification: `trivial | non-trivial`
+- Work type: `research | implementation | review | testing | mixed`
+- Affected systems: [systems]
+- Root-cause analysis required: `yes | no`
+</work_classification>
+
+## Delegation
+
+<delegation_state>
+- Required roles: [roles]
+- Subagents available: `yes | no | blocked | authorization required`
+- Generic execution wording received: [exact text or none]
+- Direct-work override: [exact text or none]
+- Exception and substitute controls: [details or none]
+</delegation_state>
+
+## Open Items
+
+<risks_and_questions>
+- [Open question or residual risk]
+</risks_and_questions>
 ```
-</discussion_md>
 
-<plan_md>
-## `plan.md`
+</discussion_template>
 
-Use `plan.md` as the execution plan.
+## `plan.md` Contract
 
-Track:
+<gate_statuses>
 
-- phases
-- work items
-- owner type: research, developer, reviewer, tester, main agent
-- status
-- exact decisions each work item must preserve
-- acceptance criteria
-- validation gates
+Use only these statuses:
 
-After a phase is complete, collapse completed substeps into a short done summary. Keep only active and future work detailed.
+| Status | Meaning |
+|---|---|
+| `Pending` | Required work has not completed |
+| `Pass` | Required evidence satisfies the gate, or the phase is proven not required |
+| `Fail` | Evidence shows required correction or rework |
+| `Blocked` | A demonstrated external, policy, authorization, or capability condition prevents progress |
 
-For non-trivial work, include the gate ledger below. A gate can be `Pending`, `Pass`, `Fail`, or `Blocked`. Do not start implementation/source edits until the Work Classification Gate and Delegation Gate pass, unless `discussion.md` records an explicit direct-work override. Do not rely on non-trivial investigation findings until the Research/Investigation Gate passes.
+</gate_statuses>
+
+<gate_order>
+
+| Gate | Must pass before |
+|---|---|
+| Work Classification | A non-trivial plan is finalized |
+| Research / Investigation | A research-dependent brief is approved |
+| Plan Approval | Production or source-code changes start |
+| Delegation | Non-trivial implementation starts |
+| Developer | Review begins when implementation occurred |
+| Review | Testing or signoff begins when implementation occurred |
+| Testing | Completion is claimed when verification is required |
+| Completion | Readiness or completion is reported |
+
+</gate_order>
+
+<plan_template>
 
 ```md
+# Plan
+
+## Active Phase
+
+<phase_state>
+- Phase: [phase]
+- Active reference: [reference]
+- Next action: [action]
+- Goal decision: `not applicable | awaiting user approval | approved | declined`
+</phase_state>
+
+## Retained Agents
+
+<agent_lifecycle>
+| Role | Thread identity | State | Reuse, replace, or close decision | Reason |
+|---|---|---|---|---|
+| Developer | [id or not started] | [state] | [decision] | [reason] |
+| Reviewer | [id or not started] | [state] | [decision] | [reason] |
+| Tester | [id or not started] | [state] | [decision] | [reason] |
+</agent_lifecycle>
+
+## Phases
+
+<execution_phases>
+1. [Phase, owner, scope, acceptance criteria, status]
+2. [Phase, owner, scope, acceptance criteria, status]
+</execution_phases>
+
 ## Gate Ledger
 
 ### Work Classification Gate
 
-- Status: Pending | Pass | Fail | Blocked
-- Classification: trivial | non-trivial
-- Work type: investigation/research | implementation | review | testing | mixed
-- Affected systems:
-- Required references/docs read:
-- Root-cause analysis required: yes | no
-- Architecture discussion complete: yes | no
-- Evidence:
+<classification_gate>
+- Status: `Pending | Pass | Fail | Blocked`
+- Classification and work type: [value]
+- Affected systems: [systems]
+- Required project references read: [references]
+- Architecture and root-cause analysis required: [yes/no and evidence]
+- Evidence: [evidence]
+</classification_gate>
+
+### Plan Approval Gate
+
+<plan_approval_gate>
+- Status: `Pending | Pass | Fail | Blocked`
+- Brief outcome and scope: [summary]
+- Implementation approach and major phases: [summary]
+- Acceptance criteria: [criteria]
+- Material current-feature risks: [risks]
+- User approval: [exact approval or pending]
+- Material changes since approval: [changes and renewed approval, or none]
+- Exceptional goal decision: [not applicable, exact approval, declined, or pending]
+</plan_approval_gate>
 
 ### Delegation Gate
 
-- Status: Pending | Pass | Fail | Blocked
-- Research/investigation agent required: yes | no
-- Developer agent required: yes | no
-- Reviewer agent required: yes | no
-- Testing agent required: yes | no
-- Subagents available: yes | no | blocked by policy/tooling | failed creation | authorization required
-- User authorization required for subagents: yes | no
-- Subagents started or queued without extra confirmation: yes | no | blocked | failed
-- Generic execution/QA wording treated as normal subagent workflow: yes | no | not applicable
-- Research/developer/reviewer/testing prompts dispatched: yes | no | not yet | not required
-- Blocking reason if agents were not started:
-- Direct-work override recorded in `discussion.md`: yes | no
-- Agent prompts prepared with acceptance criteria: yes | no
-- Evidence:
+<delegation_gate>
+- Status: `Pending | Pass | Fail | Blocked`
+- Required roles: [roles]
+- Availability or authorization state: [state]
+- Agents started or queued: [identities]
+- Direct-work override or exception: [exact text and controls, or none]
+- Prompt acceptance criteria complete: [yes/no]
+- Evidence: [evidence]
+</delegation_gate>
 
-### Research/Investigation Gate
+### Research / Investigation Gate
 
-- Status: Pending | Pass | Fail | Blocked
-- Required: yes | no
-- Owner: research/explorer agent | main agent direct override | not required
-- Questions or hypotheses investigated:
-- Sources inspected:
-- Evidence gathered:
-- Findings accepted by main agent:
-- Uncertainty or follow-up questions:
-- Evidence:
+<research_gate>
+- Status and requirement: `Pending | Pass | Fail | Blocked`; [required or not required]
+- Agents: [Explorer tracks and identities; temporary simulation agents and closure state]
+- Questions and track synthesis: [questions, `DO`, and `DO NOT`]
+- Evidence and remaining uncertainty: [codebase, sources, simulations, uncertainty]
+</research_gate>
 
 ### Developer Gate
 
-- Status: Pending | Pass | Fail | Blocked
-- Required: yes | no
-- Owner: developer agent | main agent direct override | not required
-- Files changed:
-- Acceptance criteria satisfied:
-- Validation run:
-- Unresolved implementation risks:
-- Evidence:
+<developer_gate>
+- Status, requirement, and Developer: [status; required or not required; retained id]
+- Project instructions and engineering practices: [files and rules]
+- Changed files and acceptance evidence: [files and evidence]
+- Project-native validation, deviations, and unresolved risk: [commands, results, details]
+</developer_gate>
 
 ### Review Gate
 
-- Status: Pending | Pass | Fail | Blocked
-- Required: yes | no
-- Owner: reviewer agent | main agent direct override | not required
-- Review findings:
-- Lean-code review complete: yes | no
-- Unnecessary helpers/wrappers/type checks/branches found:
-- Far-ahead edge handling or speculative validation found:
-- Cleanup required before pass:
-- Required changes closed:
-- Residual risk:
-- Evidence:
+<review_gate>
+- Status, requirement, and Reviewer: [status; required or not required; retained id]
+- Independent project-rule discovery: [files and rules]
+- Findings, severity, and engineering-practice evidence: [findings and evidence]
+- Prior findings, verdict, and residual risk: [closure evidence, verdict, risk]
+</review_gate>
 
 ### Testing Gate
 
-- Status: Pending | Pass | Fail | Blocked
-- Required: yes | no
-- Owner: testing agent | main agent direct override | not required
-- Commands/checks run:
-- User-visible or integration flow verified:
-- Failures found:
-- Residual risk:
-- Evidence:
+<testing_gate>
+- Status, requirement, and Tester: [status; required or not required; retained id]
+- Project testing model and evidence: [model and evidence]
+- Checks, simulations, user flows, and resolved failures: [evidence]
+- Artifact hygiene, verdict, and residual risk: [git evidence, verdict, risk]
+</testing_gate>
 
 ### Completion Gate
 
-- Status: Pending | Pass | Fail | Blocked
-- Final diff/artifact review complete:
-- Research/investigation verdict accepted:
-- Reviewer verdict accepted:
-- Tester verdict accepted:
-- Stale agents closed:
-- Docs updated:
-- No hidden direct-work gap:
-- Evidence:
+<completion_gate>
+- Status: `Pending | Pass | Fail | Blocked`
+- Final diff, required gates, and project-rule evidence: [evidence]
+- Hygiene and retained-agent closure: [temporary or unrelated changes absent; closure state]
+- Documentation state and remaining risk: [state and risk]
+</completion_gate>
 ```
 
-If a gate fails, update the same gate with the failure evidence, repair the issue, and rerun the gate. Do not replace failed gate evidence with a vague success summary.
-</plan_md>
+</plan_template>
 
-<compaction_recovery>
-## Compaction Recovery
+<failed_gate_rule>
 
-After context compaction or restart:
+When a gate fails:
 
-1. Re-read project instructions.
-2. Re-read this skill.
-3. Re-read `discussion.md`.
-4. Re-read `plan.md`.
-5. Resume from the latest active phase, not from memory.
-</compaction_recovery>
+1. Preserve the failure and its evidence.
+2. Return the correction to the retained role agent.
+3. Re-run the failed gate.
+4. Add passing evidence without deleting the earlier failure history.
 
-<reporting>
-## Reporting
+</failed_gate_rule>
 
-Report in short bullets:
+## Maintenance and Recovery
 
-- what changed
-- what was verified
-- what remains
-- where the risk is
+<maintenance_checklist>
 
-Do not over-explain unless the user asks.
-</reporting>
+- [ ] Update the active phase, next action, and retained agent states after every handoff.
+- [ ] Record exact findings and evidence instead of “done” or “looks good.”
+- [ ] Compress completed phase detail without deleting decisions, failures, or risk.
+- [ ] Remove transcript-like commentary that no longer controls execution.
+- [ ] After compaction, re-read the thin `SKILL.md`, both control documents, and only the active phase reference.
+
+</maintenance_checklist>
+
+## User-Facing Reporting
+
+<reporting_contract>
+
+Apply the mandatory ADHD User Communication rules in `references/operating-model.md`. This clause defines report content only.
+
+Report:
+
+- what changed;
+- what was verified;
+- what remains;
+- what risk remains.
+
+Do not print the internal gate ledger or compliance checklist unless the user asks.
+
+</reporting_contract>
