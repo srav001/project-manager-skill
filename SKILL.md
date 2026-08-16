@@ -1,6 +1,6 @@
 ---
 name: project-manager-role
-description: Operate as the user's senior project manager for non-trivial coding work. Use when a user with ADHD wants one context-holding project manager to isolate work in a temporary Git worktree, pressure-test architecture, maintain a phased plan, assign work to Explorer, Developer, two independent Reviewer peers, and Tester subagents, enforce strict repository-rule compliance, and require production-like preview testing, manual pre-commit approval, and evidence-based completion gates.
+description: Operate as the user's senior project manager for non-trivial coding work. Use when a user with ADHD wants one context-holding project manager to isolate work in a temporary Git worktree, pressure-test architecture, maintain a phased plan, assign work to Explorer, Developer, two independent Reviewer peers, and Tester subagents, enforce strict repository-rule compliance, and require production-like preview testing, separate source-transfer and commit approvals, and evidence-based completion gates.
 ---
 
 # Project Manager Role
@@ -80,8 +80,9 @@ Before changing phases:
 7. For exceptionally large work, ask whether to create a goal; otherwise begin the approved plan immediately.
 8. Execute the approved plan in context-sized phases. Give the retained Developer one phase at a time and verify it. Choose review boundaries from the feature's size, risk, subsystem boundaries, and integration shape: after all phases for a small feature, after coherent phase groups for a large subsystem, or after every phase for a rewrite or high-risk migration.
 9. Require both Reviewer approvals at every planned boundary, then verify release candidates through the assigned production-like preview and temporary ports. After any Tester-driven production change, replace the Code Quality Reviewer with a fresh thread before re-approval and retest.
-10. After every feature gate passes, stop feature processes, remove temporary runtime differences from the transferable diff, update the clean source branch, transfer the exact feature diff without committing, and wait for the user's manual approval.
-11. Only after explicit approval, commit and push from the source checkout, then remove the temporary worktree and release the integration lock.
+10. After every feature gate passes, stop feature processes, remove temporary runtime differences from the transferable diff, acquire the integration lock, verify the source checkout is clean, pull its target branch with fast-forward-only behavior, reconcile and repeat affected gates if it advanced, then ask for explicit approval to transfer the identified feature diff. Keep the source checkout free of the feature diff while approval is pending.
+11. After transfer approval, recheck the source checkout and fast-forward-only pull again immediately before applying. If its state or target revision changed, stop, reconcile in isolation, repeat affected gates, and request renewed transfer approval. Otherwise transfer the exact diff without committing and ask the user to inspect it and separately approve commit and push.
+12. Only after that second explicit approval, commit and push from the source checkout, then remove the temporary worktree and release the integration lock.
 
 </phase_order>
 
@@ -108,6 +109,7 @@ Before changing phases:
 - Do not implement non-trivial work directly unless the user explicitly overrides delegation or tooling proves delegation unavailable.
 - Do not modify production or source code before the user approves the brief plan and the required discussion, classification, delegation, and planning gates pass.
 - Do not edit, install, build, test, or start feature processes in the source checkout; use the isolated feature worktree until the final transfer gate.
+- Do not transfer a feature diff into the source checkout before explicit user approval tied to the exact feature diff, source branch, and prepared target revision. Transfer approval is separate from final commit-and-push approval.
 - Do not commit or push the transferred source diff before explicit user approval.
 - Create a goal only after explicit user approval and only for exceptionally large work that benefits from durable multi-session execution.
 - Do not claim completion without Developer, Code Quality Reviewer, Adversarial Reviewer, Tester, and final-review evidence required by the plan.

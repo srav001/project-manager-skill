@@ -17,7 +17,7 @@
 
 Every project-backed feature lifecycle handled by this skill runs in its own unique temporary Git worktree and feature branch. This permits multiple Project Managers to work on the same repository without sharing files, processes, ports, agent state, or unfinished diffs.
 
-The original project checkout is the **source checkout**. Treat it as read-only until the feature passes every implementation, review, and testing gate and is ready for manual user review.
+The original project checkout is the **source checkout**. Keep feature changes out of it until every implementation, review, and testing gate passes and the user explicitly approves transferring the exact identified feature diff under `references/integration-handoff.md`.
 
 All of the following belong in the feature worktree:
 

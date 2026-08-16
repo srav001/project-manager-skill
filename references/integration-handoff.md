@@ -4,7 +4,8 @@
 
 - [Handoff Readiness](#handoff-readiness)
 - [Integration Lock](#integration-lock)
-- [Transfer for Manual Review](#transfer-for-manual-review)
+- [Prepare Source and Request Transfer Approval](#prepare-source-and-request-transfer-approval)
+- [Approved Transfer for Manual Review](#approved-transfer-for-manual-review)
 - [Manual Approval](#manual-approval)
 - [Commit and Push](#commit-and-push)
 - [Cleanup](#cleanup)
@@ -40,9 +41,9 @@ Serialize final handoffs across Project Managers with one repository-level integ
 
 </integration_lock>
 
-## Transfer for Manual Review
+## Prepare Source and Request Transfer Approval
 
-<source_transfer>
+<transfer_preparation>
 
 With the integration lock held:
 
@@ -50,12 +51,36 @@ With the integration lock held:
 2. Pull the target branch with fast-forward-only behavior. Do not force, rebase the source checkout, or create an implicit merge commit.
 3. If the target advanced since the feature worktree's base, reconcile the feature against the new target in the isolated worktree or a separate isolated integration worktree, then repeat affected review and testing gates. Keep the source checkout clean during reconciliation.
 4. Validate the complete feature patch against the updated source checkout before applying it. If it does not apply cleanly, leave the source unchanged and return to isolated reconciliation.
-5. Apply the exact feature diff to the source working tree without committing.
-6. Prove the resulting source diff matches the approved feature diff and contains no environment link, secret, temporary port change, log, cache, build artifact, or unrelated file.
-7. Run any non-mutating handoff checks required to prove the transfer is intact.
-8. Tell the user the uncommitted source diff is ready for manual code inspection. Do not commit or push yet.
+5. Record the exact feature-diff identity, source branch, prepared target revision, clean source status, fast-forward result, and patch-application check.
+6. Tell the user what exact diff will be transferred and ask for explicit approval to place it into that source checkout without committing. Do not apply any part of the feature diff while approval is pending.
 
 If the source checkout changes at any point, stop. Never overwrite or combine concurrent work silently.
+
+</transfer_preparation>
+
+<transfer_approval_scope>
+
+Transfer approval applies only to the exact feature-diff identity, source checkout, source branch, and prepared target revision shown to the user. A changed feature diff, branch, checkout, or target revision requires a new approval.
+
+This is not approval to commit or push.
+
+</transfer_approval_scope>
+
+## Approved Transfer for Manual Review
+
+<source_transfer>
+
+After explicit transfer approval and with the integration lock still held:
+
+1. Immediately before applying, require the source checkout to be clean and pull the target branch again with fast-forward-only behavior. Always perform this second freshness check; it also covers a long wait, another task's completion, an intervening turn, compaction, restart, or uncertain remote state.
+2. If the source checkout is dirty, another integration lock owns the handoff, or the target revision changed, do not apply the feature diff. If the target advanced, reconcile in isolation, repeat affected review and testing gates, prepare the new target, and request renewed transfer approval.
+3. Revalidate the approved complete feature patch against the freshly updated source checkout.
+4. Apply the exact approved feature diff to the source working tree without committing.
+5. Prove the resulting source diff matches the approved feature diff and contains no environment link, secret, temporary port change, log, cache, build artifact, or unrelated file.
+6. Run any non-mutating handoff checks required to prove the transfer is intact.
+7. Tell the user the uncommitted source diff is ready for manual code inspection. Ask separately for explicit commit-and-push approval only after that inspection.
+
+Never overwrite, replace, or combine another task's transferred or user-edited work.
 
 </source_transfer>
 
@@ -63,8 +88,8 @@ If the source checkout changes at any point, stop. Never overwrite or combine co
 
 <manual_approval_gate>
 
-- Wait for explicit user approval of the transferred source diff.
-- Treat requested manual-review changes as a new correction. First verify whether the source diff still exactly matches the Project Manager's transfer. If unchanged, remove only that transferred diff with a validated reversible operation so the source becomes clean; then make corrections in the isolated worktree, rerun required review and testing gates, and transfer the new exact diff again.
+- Wait for explicit user approval to commit and push the transferred source diff. Earlier approval to transfer it does not satisfy this gate.
+- Treat requested manual-review changes as a new correction. First verify whether the source diff still exactly matches the Project Manager's transfer. If unchanged, remove only that transferred diff with a validated reversible operation so the source becomes clean; then make corrections in the isolated worktree, rerun required review and testing gates, prepare the updated source target, obtain renewed transfer approval, and transfer the new exact diff only after that approval.
 - If the user or another process edited the transferred source diff, do not overwrite, reverse, or absorb those edits. Report the difference and ask how the user wants the edits incorporated into the isolated feature branch.
 - Keep the integration lock while the transferred diff awaits review or correction.
 
@@ -75,7 +100,7 @@ If the source checkout changes at any point, stop. Never overwrite or combine co
 <publication_gate>
 
 - Immediately before commit, verify the source branch, expected diff, integration lock, remote state, and required repository validation.
-- If the remote target advanced, safely remove only the unchanged transferred diff, update and reconcile in isolation, rerun affected gates, transfer again, and obtain approval of the updated source diff. If the transferred diff changed during manual review, stop and ask before altering it.
+- If the remote target advanced, safely remove only the unchanged transferred diff, update and reconcile in isolation, rerun affected gates, prepare the updated source target, obtain renewed transfer approval, transfer again, and obtain separate commit-and-push approval of the updated source diff. If the transferred diff changed during manual review, stop and ask before altering it.
 - After explicit approval, create the final commit in the source checkout and push normally.
 - Verify the remote contains the intended commit and that no unapproved file entered the commit.
 - Never force-push unless the user separately and explicitly requests it.
@@ -111,7 +136,7 @@ When integration has started, recover these fields from `plan.md` and verify the
 - integration-lock owner and acquisition time;
 - stopped or still-running feature processes;
 - source-transfer state and whether the source diff still exactly matches the transfer;
-- manual-approval, commit, push, and cleanup state.
+- transfer-preparation target, exact transfer approval, second freshness pull, manual commit-and-push approval, commit, push, and cleanup state.
 
 Do not clear a lock, reverse a source diff, retry a transfer, commit, push, or remove a worktree from remembered state alone.
 

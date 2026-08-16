@@ -140,8 +140,10 @@ Use only these statuses:
 | Developer | The local pull-request review phase begins when implementation occurred |
 | Dual Review | The approved release candidate reaches Tester or signoff begins |
 | Testing | Feature Completion is claimed when verification is required |
-| Feature Completion | Source-checkout integration begins |
-| Integration Handoff | The user is asked to approve the transferred diff |
+| Feature Completion | Source-checkout integration preparation begins |
+| Integration Readiness | The user is asked to approve transferring the exact feature diff into the clean source checkout |
+| Transfer Approval | The feature diff is applied to the source checkout |
+| Integration Handoff | The user is asked to inspect the transferred diff and approve commit and push |
 | Manual Approval | Final commit or push begins |
 | Publish | Feature worktree and integration-lock cleanup begins |
 
@@ -170,7 +172,7 @@ Use only these statuses:
 - Temporary port map: [service, normal port, temporary port, override mechanism, URL, owner]
 - Preview topology: [qualifying command, component coverage, process sessions, health evidence, parity gap]
 - Integration lock: [path, owner, state, acquired time]
-- Source handoff: [not started | reconciling | transferred for review | approved | committed | pushed]
+- Source handoff: [not started | preparing transfer | awaiting transfer approval | transfer approved | transferred for review | commit approved | committed | pushed]
 </workspace_state>
 
 ## Active Phase
@@ -317,16 +319,36 @@ Use only these statuses:
 - Documentation state and remaining risk: [state and risk]
 </completion_gate>
 
-### Integration Handoff Gate
+### Integration Readiness Gate
 
-<integration_gate>
+<integration_readiness_gate>
 - Status: `Pending | Pass | Fail | Blocked`
 - Feature-worktree readiness: [final revision, diff identity, all gates, stopped processes, reverted port-only state]
 - Integration lock: [owner and state]
 - Source target: [path, branch, clean proof, fast-forward pull result]
 - Updated-base reconciliation: [not required, or isolated reconciliation plus repeated review/testing evidence]
-- Uncommitted transfer: [apply-check evidence, resulting source diff identity, artifact and secret exclusions]
-- User review state: [ready for manual code inspection; not committed or pushed]
+- Proposed transfer: [exact feature-diff identity, prepared target revision, apply-check evidence, and artifact exclusions]
+- Transfer request: [exact request shown to user; source remains clean and feature diff unapplied]
+</integration_readiness_gate>
+
+### Transfer Approval Gate
+
+<transfer_approval_gate>
+- Status: `Pending | Pass | Fail | Blocked`
+- Exact proposed transfer: [feature-diff identity, source checkout, source branch, and prepared target revision]
+- Explicit user transfer approval: [exact approval or pending]
+- Approval freshness: [still applies to every identified input, or invalidated and renewed]
+</transfer_approval_gate>
+
+### Integration Handoff Gate
+
+<integration_gate>
+- Status: `Pending | Pass | Fail | Blocked`
+- Pre-transfer freshness: [clean proof and second fast-forward-only pull immediately before application]
+- Concurrent-work protection: [integration-lock verification and proof no other transferred or user-edited source diff exists]
+- Updated-target handling: [unchanged, or transfer stopped for reconciliation, repeated gates, and renewed approval]
+- Uncommitted transfer: [approved diff identity, resulting source diff identity, artifact and secret exclusions]
+- User review state: [ready for manual code inspection and separate commit-and-push approval; not committed or pushed]
 </integration_gate>
 
 ### Manual Approval Gate
@@ -335,6 +357,7 @@ Use only these statuses:
 - Status: `Pending | Pass | Fail | Blocked`
 - Transferred diff shown to user: [revision and evidence]
 - User-requested corrections: [none, or correction/re-review/retest/transfer evidence]
+- Prior transfer approval: [exact approval proving placement only; not publication authority]
 - Explicit commit-and-push approval: [exact approval or pending]
 - Pre-commit branch, diff, validation, lock, and remote checks: [evidence]
 </manual_approval_gate>
