@@ -21,9 +21,9 @@
 
 <persistence_boundary>
 
-- At a new-feature lifecycle boundary, delete stale repository-root `discussion.md` and `plan.md` before using either file; never carry decisions, plans, gates, or agent state from an earlier feature.
+- At a new-feature lifecycle boundary, create the isolated feature worktree first, then delete stale `discussion.md` and `plan.md` only at that worktree root; never change source-checkout control files or carry state from an earlier feature.
 - Preserve both files during continuation and recovery, including compaction, app restart, tool failure, and retained-agent follow-up.
-- Create a fresh `discussion.md` immediately for non-trivial feature work when workspace persistence is allowed.
+- Create a fresh `discussion.md` at the feature-worktree root immediately for non-trivial feature work when workspace persistence is allowed.
 - Create `plan.md` when evidence and decisions begin to form a real implementation approach; expand it progressively instead of inventing a complete plan upfront.
 - Require both artifacts before non-trivial implementation when workspace persistence is allowed.
 - Treat them as control state, not transcript storage.
@@ -44,6 +44,7 @@
 - [ ] Architectural root cause for bug work
 - [ ] Direct-work override or delegation exception, when applicable
 - [ ] Unresolved questions, risks, and accepted residual risk
+- [ ] Source checkout, feature worktree, branch, environment-link, port, preview, integration, and publication constraints
 
 </required_content>
 
@@ -58,6 +59,8 @@
 - Feature: [current user objective]
 - Lifecycle started: [timestamp or task marker]
 - Lifecycle classification: `new feature`
+- Feature worktree and branch: [absolute path and branch]
+- Source checkout and branch: [absolute path and read-only base branch]
 </feature_identity>
 
 ## Goal
@@ -129,14 +132,18 @@ Use only these statuses:
 
 | Gate | Must pass before |
 |---|---|
+| Workspace Isolation | Feature project files change, dependencies install, runtime processes start, or subagents receive repository work |
 | Work Classification | A non-trivial plan is finalized |
 | Research / Investigation | A research-dependent brief is approved |
 | Plan Approval | Production or source-code changes start |
 | Delegation | Non-trivial implementation starts |
 | Developer | The local pull-request review phase begins when implementation occurred |
 | Dual Review | The approved release candidate reaches Tester or signoff begins |
-| Testing | Completion is claimed when verification is required |
-| Completion | Readiness or completion is reported |
+| Testing | Feature Completion is claimed when verification is required |
+| Feature Completion | Source-checkout integration begins |
+| Integration Handoff | The user is asked to approve the transferred diff |
+| Manual Approval | Final commit or push begins |
+| Publish | Feature worktree and integration-lock cleanup begins |
 
 </gate_order>
 
@@ -152,6 +159,19 @@ Use only these statuses:
 - Lifecycle started: [same timestamp or task marker]
 - Lifecycle classification: `new feature | continuation | recovery`
 </feature_identity>
+
+## Isolated Workspace
+
+<workspace_state>
+- Source checkout, branch, upstream, and original base: [absolute path, branch, upstream, SHA]
+- Source checkout initial status: [clean, or exact unresolved state and decision]
+- Feature worktree, branch, temporary parent, and current base: [absolute paths, branch, SHAs]
+- Environment links: [relative paths and verified ignored state; never values]
+- Temporary port map: [service, normal port, temporary port, override mechanism, URL, owner]
+- Preview topology: [qualifying command, component coverage, process sessions, health evidence, parity gap]
+- Integration lock: [path, owner, state, acquired time]
+- Source handoff: [not started | reconciling | transferred for review | approved | committed | pushed]
+</workspace_state>
 
 ## Active Phase
 
@@ -199,6 +219,17 @@ Use only these statuses:
 </phase_checkpoint>
 
 ## Gate Ledger
+
+### Workspace Isolation Gate
+
+<workspace_gate>
+- Status: `Pending | Pass | Fail | Blocked`
+- Source checkout and committed base: [path, branch, upstream, SHA, status]
+- Feature worktree: [path, branch, temporary parent, Git verification]
+- Environment links: [paths, target validation, ignored proof, source untouched]
+- Port and preview discovery: [required listeners, temporary map, qualifying preview or fallback]
+- Agent workspace contract ready: [yes/no and evidence]
+</workspace_gate>
 
 ### Work Classification Gate
 
@@ -253,6 +284,7 @@ Use only these statuses:
 - Project instructions and engineering practices: [files and rules]
 - Changed files and acceptance evidence: [files and evidence]
 - Project-native validation, deviations, and unresolved risk: [commands, results, details]
+- Worktree confinement: [working directories, port-only state, environment-link exclusion, source-checkout proof]
 </developer_gate>
 
 ### Dual Review Gate
@@ -270,19 +302,52 @@ Use only these statuses:
 
 <testing_gate>
 - Status, requirement, and Tester: [status; required or not required; retained id]
-- Project testing model and evidence: [model and evidence]
+- Project testing model, production-like preview, ports, and process ownership: [model, commands, mapping, URLs, PIDs, cwd, health evidence, parity gap]
 - Checks, simulations, user flows, and resolved failures: [evidence]
 - Artifact hygiene, verdict, and residual risk: [git evidence, verdict, risk]
 </testing_gate>
 
-### Completion Gate
+### Feature Completion Gate
 
 <completion_gate>
 - Status: `Pending | Pass | Fail | Blocked`
 - Final diff, required gates, and project-rule evidence: [evidence]
-- Hygiene and retained-agent closure: [temporary or unrelated changes absent; fresh Code Quality Reviewer replacements after Tester-driven changes; closure state]
+- Hygiene and retained-agent readiness: [temporary or unrelated changes absent; fresh Code Quality Reviewer replacements after Tester-driven changes; retained for possible manual-review correction]
 - Documentation state and remaining risk: [state and risk]
 </completion_gate>
+
+### Integration Handoff Gate
+
+<integration_gate>
+- Status: `Pending | Pass | Fail | Blocked`
+- Feature-worktree readiness: [final revision, diff identity, all gates, stopped processes, reverted port-only state]
+- Integration lock: [owner and state]
+- Source target: [path, branch, clean proof, fast-forward pull result]
+- Updated-base reconciliation: [not required, or isolated reconciliation plus repeated review/testing evidence]
+- Uncommitted transfer: [apply-check evidence, resulting source diff identity, artifact and secret exclusions]
+- User review state: [ready for manual code inspection; not committed or pushed]
+</integration_gate>
+
+### Manual Approval Gate
+
+<manual_approval_gate>
+- Status: `Pending | Pass | Fail | Blocked`
+- Transferred diff shown to user: [revision and evidence]
+- User-requested corrections: [none, or correction/re-review/retest/transfer evidence]
+- Explicit commit-and-push approval: [exact approval or pending]
+- Pre-commit branch, diff, validation, lock, and remote checks: [evidence]
+</manual_approval_gate>
+
+### Publish Gate
+
+<publish_gate>
+- Status: `Pending | Pass | Fail | Blocked`
+- Final source commit and push: [commit, branch, remote, result]
+- Source checkout state: [clean proof]
+- Feature process and runtime cleanup: [processes, overrides, environment links]
+- Worktree, feature branch, temporary parent, and integration-lock cleanup: [evidence]
+- Retained-agent closure: [ids and closure reasons]
+</publish_gate>
 ```
 
 </plan_template>
@@ -304,10 +369,11 @@ When a gate fails:
 
 - [ ] Update the active phase, next action, and retained agent states after every handoff.
 - [ ] Confirm `discussion.md` and `plan.md` carry the same current-feature identity; never merge state from different features.
+- [ ] Keep source checkout, feature worktree, branches, base revisions, environment-link paths, port map, preview sessions, integration lock, and handoff state current.
 - [ ] Record exact findings and evidence instead of “done” or “looks good.”
 - [ ] Compress completed phase detail without deleting decisions, failures, or risk.
 - [ ] Remove transcript-like commentary that no longer controls execution.
-- [ ] After compaction, re-read the thin `SKILL.md`, both control documents, and only the active phase reference.
+- [ ] After compaction, re-read the thin `SKILL.md`, `references/worktree-isolation.md`, both control documents, and only the active phase reference; verify every recorded path, branch, port, and process. If integration began, also read `references/integration-handoff.md` and verify its lock and handoff state.
 
 </maintenance_checklist>
 

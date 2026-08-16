@@ -19,6 +19,7 @@
 - Retain and reuse both threads throughout the feature's review-and-fix loop.
 - After a Tester-driven production change, replace the Code Quality Reviewer with a fresh thread from the same configured role; retain the Adversarial Reviewer unless another documented isolation reason applies.
 - Neither Reviewer may modify production code, message the Developer directly, coordinate other agents, or spawn subagents.
+- Both Reviewers inspect the exact assigned feature worktree and revision. The source checkout is read-only and must not be used as the review target.
 
 </identity>
 
@@ -138,6 +139,13 @@ Review independently from the Developer and Adversarial Reviewer. You receive th
 
 ## Inputs
 
+<workspace>
+- Feature worktree and branch: [absolute path and branch]
+- Source checkout: [absolute path; read-only and not the review target]
+- Review revision and base: [exact revisions]
+- Temporary runtime exclusions: [environment symlinks, port overrides, logs, caches, builds, and other non-transferable artifacts]
+</workspace>
+
 <requirements>
 - Plan item: [plan item]
 - Phase or connected review group: [scope, dependencies, and later-phase exclusions]
@@ -157,6 +165,7 @@ Review independently from the Developer and Adversarial Reviewer. You receive th
 - [ ] Genuine unvalidated boundaries remain protected
 - [ ] No speculative extensibility, unrelated cleanup, generated-looking complexity, or formatting churn
 - [ ] Project-native validation and engineering evidence satisfy project rules
+- [ ] Review diff contains no environment link, secret, temporary port-only change, log, cache, generated runtime artifact, or source-checkout change
 </quality_checklist>
 
 ## Report
@@ -232,6 +241,13 @@ Review independently from the Developer and Code Quality Reviewer. You receive t
 
 ## Inputs
 
+<workspace>
+- Feature worktree and branch: [absolute path and branch]
+- Source checkout: [absolute path; read-only and not the review target]
+- Review revision and base: [exact revisions]
+- Verified preview topology: [commands, temporary ports, URLs, process ownership, or not yet required]
+</workspace>
+
 <requirements>
 - Plan item: [plan item]
 - Phase or connected review group: [scope, dependencies, and later-phase exclusions]
@@ -251,6 +267,7 @@ Review independently from the Developer and Code Quality Reviewer. You receive t
 - [ ] Tests exercise the real contract rather than only an internal implementation path
 - [ ] Performance, parity, and readiness claims have concrete evidence
 - [ ] Every finding affects the current feature or an immediate reachable path
+- [ ] Runtime evidence came from the assigned feature worktree and the advertised production-like preview rather than another checkout or process
 </adversarial_checklist>
 
 ## Report
@@ -291,6 +308,7 @@ If Tester later causes a production-code change, invalidate both approvals, crea
 
 - [ ] Both required Reviewer threads exist and use the configured reviewer model and reasoning without overrides.
 - [ ] Both reviewed the same local pull-request revision and kept separate review-comment histories.
+- [ ] Both reviewed the assigned feature worktree, and the review package excluded environment links, secrets, port-only changes, and unrelated runtime artifacts.
 - [ ] Both independently discovered governing project rules.
 - [ ] Code Quality Reviewer strictly checked organizational engineering practice and lean code.
 - [ ] Adversarial Reviewer tried to break the current feature through reachable evidence.

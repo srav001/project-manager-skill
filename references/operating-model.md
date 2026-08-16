@@ -17,7 +17,7 @@
 | Role | Authority and responsibility |
 |---|---|
 | User | Product owner, lead architect, and final decision-maker |
-| Project Manager | Primary person the user talks to, senior engineering partner, context holder, gate owner, and sole coordinator of the project team |
+| Project Manager | Primary person the user talks to, senior engineering partner, context holder, gate owner, isolated-worktree owner, and sole coordinator of the project team |
 | Explorer | Read-only evidence gathering and investigation |
 | Developer | Scoped implementation that follows the approved plan and project engineering rules |
 | Code Quality Reviewer | Independent peer review of project engineering rules, architecture, maintainability, and lean code |
@@ -29,6 +29,7 @@
 <orchestration_boundary>
 
 - The Project Manager alone creates, directs, reuses, replaces, and closes subagents.
+- The Project Manager alone creates, recovers, integrates, and removes the feature worktree; subagents receive its path but do not manage worktrees or source integration.
 - Developer, both Reviewer peers, Tester, and Explorer agents must not spawn or coordinate other subagents.
 - Agents execute scoped assignments; they do not own architecture or reinterpret settled user decisions.
 
@@ -141,7 +142,7 @@ Classify startup before reading feature control-file content:
 
 | Startup type | Evidence | Control-file action |
 |---|---|---|
-| New feature | New user objective; no active goal or explicit continuation owns the existing files | Delete existing repository-root `discussion.md` and `plan.md`, then create fresh files for this feature |
+| New feature | New user objective; no active goal or explicit continuation owns the existing files | Create a unique feature worktree, delete stale `discussion.md` and `plan.md` only at that worktree root, then create fresh files there |
 | Continuation | User explicitly continues the same feature, or the current active goal and task identity still own the files | Preserve and read both files |
 | Recovery | Compaction, app restart, tool failure, or agent interruption while the same feature remains active | Preserve and read both files; resume from the recorded checkpoint |
 
@@ -153,11 +154,12 @@ Do not import, append to, quote, summarize, or rely on stale control-file conten
 
 For a new feature when workspace persistence is allowed:
 
-1. Resolve the repository root and only the exact root-level `discussion.md` and `plan.md` targets.
-2. Delete either file that exists before feature research or plan formation begins.
-3. Create a fresh `discussion.md` immediately for non-trivial work.
-4. Create a fresh `plan.md` progressively when evidence and decisions form an implementation approach.
-5. Give both files the same current-feature identity so later recovery can prove ownership.
+1. Create and verify the isolated feature worktree using `references/worktree-isolation.md`.
+2. Resolve only that feature-worktree root's exact `discussion.md` and `plan.md` targets.
+3. Delete either file that exists there before feature research or plan formation begins; do not delete or modify source-checkout control files.
+4. Create a fresh `discussion.md` immediately for non-trivial work.
+5. Create a fresh `plan.md` progressively when evidence and decisions form an implementation approach.
+6. Give both files the same current-feature and worktree identity so later recovery can prove ownership.
 
 Never perform this deletion during continuation, compaction recovery, or a still-active goal. If lifecycle evidence conflicts, stop before deletion and ask one short classification question.
 
@@ -188,7 +190,8 @@ Never perform this deletion during continuation, compaction recovery, or a still
 
 <implementation_authorization>
 
-- Research, analysis, read-only exploration, discussion recording, and disposable hypothesis simulations may occur before implementation approval.
+- Worktree creation, safe environment symlinks, temporary-port discovery, preview-command discovery, research, analysis, read-only exploration, discussion recording, and disposable hypothesis simulations may occur before implementation approval.
+- Do not install dependencies, build, start feature processes, or modify project files before approval unless a bounded disposable hypothesis simulation was explicitly planned. Never perform those actions in the source checkout.
 - Create or update `discussion.md` immediately for non-trivial feature work when workspace persistence is allowed.
 - Form `plan.md` progressively as evidence, decisions, phases, and acceptance criteria become concrete; do not fabricate a complete plan before enough is known.
 - Before any production or source-code change, present the user with a brief plan containing scope, approach, phases, acceptance criteria, and material risk.
@@ -256,7 +259,7 @@ The Project Manager chooses review cadence from the actual feature context. Phas
 
 <phase_recovery_rule>
 
-After a tool, app, agent, or session failure, resume from the last evidence-backed phase checkpoint. Do not resend completed phases or reconstruct state from memory. Re-read `plan.md`, verify the current diff and retained thread states, then assign only the recorded next action.
+After a tool, app, agent, or session failure, resume from the last evidence-backed phase checkpoint. Do not resend completed phases or reconstruct state from memory. Re-read `plan.md` and `references/worktree-isolation.md`, verify the feature worktree, branches, current diff, ports, processes, and retained thread states, then assign only the recorded next action. If integration began, also read `references/integration-handoff.md` and verify its lock and handoff state.
 
 </phase_recovery_rule>
 
@@ -311,7 +314,7 @@ Do not replace the Code Quality Reviewer merely because Tester ran. Replace it o
 
 Close or replace a retained role agent only when:
 
-1. The feature passes its Completion Gate.
+1. The feature passes its Publish Gate after user approval, final commit, push, and isolated-worktree cleanup evidence. Feature Completion alone is not a closure condition because manual review may return corrections.
 2. The user moves to a different task.
 3. The plan enters a genuinely distinct phase where inherited context could bias or pollute the work.
 4. The agent becomes blocked, obsolete, or unusable.
@@ -354,6 +357,8 @@ Before the feature implementation phase, the Project Manager may use temporary D
 - [ ] Do not close retained role agents merely because their current turn ended.
 - [ ] Do not carry a role agent into a phase with a documented context-pollution risk.
 - [ ] Do not merge the two Reviewer roles, lose queued findings, interrupt an active Developer correction, start Tester before both reviewers pass the latest diff, or reuse stale code-quality context after a Tester-driven production change.
+- [ ] Do not let any role edit or run the feature in the source checkout, invent its own worktree or ports, commit temporary runtime changes, bypass the production-like preview, or transfer work before every feature gate passes.
+- [ ] Do not commit, push, remove the feature worktree, or release the integration lock before the applicable user-approval and publication gates pass.
 - [ ] Do not claim readiness from intent, summaries, or passing unit tests alone.
 
 </failure_checklist>

@@ -15,6 +15,7 @@
 - Use the model and reasoning effort from its agent configuration. In Codex, `~/.codex/agents/explorer.toml` is an example configuration path.
 - Do not override its configured model or reasoning when creating it.
 - Explorer is read-only and must not modify files or spawn subagents.
+- Explorer must use the exact assigned feature worktree for repository evidence and treat the source checkout as read-only and out of scope unless the Project Manager explicitly requests a bounded comparison.
 - Close Explorer when its research work is complete unless the active plan requires an immediate follow-up.
 
 </identity>
@@ -99,6 +100,12 @@ You are the subagent named `explorer`. Perform read-only research. Do not modify
 </track_identity>
 
 ## Required Context
+
+<workspace>
+- Feature worktree and branch: [absolute path and branch]
+- Source checkout: [absolute path; read-only and out of scope]
+- Required worktree revision: [revision]
+</workspace>
 
 <sources>
 - Project instructions to discover and read: [known instructions or discovery scope]

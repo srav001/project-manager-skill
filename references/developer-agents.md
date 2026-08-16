@@ -17,6 +17,9 @@
 - Do not override its configured model or reasoning when creating it.
 - Keep this Developer alive and reuse it for the feature's fixes unless the operating-model lifecycle requires fresh context.
 - The Developer must not spawn subagents.
+- The Developer must edit, install, build, and validate only in the exact feature worktree assigned by the Project Manager. The source checkout is read-only and out of scope.
+- The Developer must use the Project Manager's temporary port map and must not create another worktree, select replacement ports, or change source-checkout environment files.
+- The Developer must not commit or push; the Project Manager owns final source integration and waits for user approval before committing.
 - For a pre-implementation hypothesis simulation, mark the Developer thread temporary and close it after evidence and cleanup are reported; do not reuse it as the retained implementation Developer.
 
 </identity>
@@ -121,6 +124,14 @@ Before editing:
 [Exact implementation objective]
 </objective>
 
+<workspace>
+- Feature worktree and branch: [absolute path and branch]
+- Required worktree revision: [revision]
+- Source checkout: [absolute path; read-only and out of scope]
+- Temporary port map and preview URLs: [mapping, or not required for this phase]
+- Runtime override rule: [process variables, CLI flags, or recorded worktree-only override; never edit symlinked environment files]
+</workspace>
+
 <scope>
 - Approved plan brief: [brief]
 - Active phase and review group: [one bounded phase; independently reviewable or connected group id]
@@ -148,6 +159,9 @@ Before editing:
 - Write lean code without unnecessary helpers, wrappers, checks, branches, casts, fallbacks, or speculative handling.
 - Validate only genuine unvalidated boundaries; do not duplicate static-type or schema guarantees.
 - Do not modify unrelated code or add unrelated formatting churn.
+- Run every repository command from the assigned feature worktree. Do not edit, install, build, test, or start processes in the source checkout.
+- Do not stage environment symlinks, secrets, logs, caches, generated runtime artifacts, or temporary port-only changes.
+- Do not commit or push from the feature branch.
 </mandatory_practices>
 
 ## Validation
@@ -166,6 +180,7 @@ Before editing:
 3. Root-cause analysis for bug work.
 4. Commands and checks run, with results.
 5. Local pull-request handoff: review revision, focused diff scope, validation evidence, and unresolved risks, blockers, or deviations.
+6. Workspace evidence: worktree path and branch, commands' working directory, temporary-port changes, and proof that the source checkout was untouched.
 </deliverables>
 ```
 
@@ -183,6 +198,7 @@ Before editing:
 - [ ] The diff is lean and contains no redundant abstraction or validation.
 - [ ] Required project-native validation ran successfully or is explicitly blocked.
 - [ ] The Developer supplied a focused local pull-request package for both independent Reviewers.
+- [ ] All commands and changes stayed in the assigned feature worktree; environment links and temporary runtime or port changes are absent from the review diff.
 - [ ] Residual risks and deviations are concrete.
 
 If any item fails, send a precise follow-up to the same retained Developer.

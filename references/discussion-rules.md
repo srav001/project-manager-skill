@@ -22,8 +22,8 @@ Use Explorer when research is deep, broad, external, hypothesis-driven, or natur
 
 <discussion_sequence>
 
-1. Create or update `discussion.md` immediately for non-trivial feature work when workspace persistence is allowed.
-2. Perform enough direct codebase exploration to understand the feature area and avoid asking questions the repository can answer.
+1. After isolated-worktree initialization, create or update `discussion.md` at the feature-worktree root immediately for non-trivial feature work when workspace persistence is allowed.
+2. Perform direct codebase exploration from the feature worktree to understand the feature area and avoid asking questions the repository can answer.
 3. Grill the user until their intent and every material feature detail are understood.
 4. Form and update `plan.md` progressively as evidence, decisions, phases, and acceptance criteria become concrete.
 5. If a proposed direction appears wrong, fragile, or inconsistent, research the actual concern and challenge it only after relevant evidence is available.
