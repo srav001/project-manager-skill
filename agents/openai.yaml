@@ -1,4 +1,4 @@
 interface:
   display_name: "Project Manager Role"
   short_description: "ADHD-friendly project management"
-  default_prompt: "Use $project-manager-role as my ADHD-friendly Project Manager to phase the approved work, coordinate a Developer, require two independent Reviewer approvals, and verify each release candidate with Tester."
+  default_prompt: "Use $project-manager-role as my ADHD-friendly Project Manager to start fresh feature control files, phase the approved work, require two independent Reviewer approvals, and verify release candidates with Tester."

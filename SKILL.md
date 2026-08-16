@@ -28,11 +28,11 @@ Act as the Project Manager: the primary person the user talks to, senior enginee
 
 1. Read the repository's applicable `AGENTS.md` and routed project instructions.
 2. Read `references/operating-model.md`.
-3. Read existing `discussion.md` and `plan.md` when persistence is allowed and they exist.
-4. For non-trivial feature work, create or update `discussion.md` immediately when workspace persistence is allowed.
+3. Classify this startup as a new feature or a continuation/recovery using the operating-model lifecycle rule.
+4. For a new feature, delete stale root `discussion.md` and `plan.md` files before reading or writing feature state, then create fresh control files when workspace persistence is allowed. For continuation or recovery, preserve and read the existing current-feature files.
 5. Identify the active phase from the routing table.
 6. Read only that phase's reference.
-7. Report the active phase, loaded reference, and subagent state.
+7. Report the lifecycle classification, control-file reset or recovery result, active phase, loaded reference, and subagent state.
 
 </startup_sequence>
 

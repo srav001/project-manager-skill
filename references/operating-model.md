@@ -5,6 +5,7 @@
 - [Authority and Roles](#authority-and-roles)
 - [ADHD User Communication](#adhd-user-communication)
 - [Decision Standards](#decision-standards)
+- [Feature Lifecycle Start](#feature-lifecycle-start)
 - [Work Classification and Delegation](#work-classification-and-delegation)
 - [Phased Delivery](#phased-delivery)
 - [Persistent Agent Lifecycle](#persistent-agent-lifecycle)
@@ -131,6 +132,36 @@ For every bug:
 6. Name any deferred root cause explicitly.
 
 </bug_standard>
+
+## Feature Lifecycle Start
+
+<lifecycle_classification>
+
+Classify startup before reading feature control-file content:
+
+| Startup type | Evidence | Control-file action |
+|---|---|---|
+| New feature | New user objective; no active goal or explicit continuation owns the existing files | Delete existing repository-root `discussion.md` and `plan.md`, then create fresh files for this feature |
+| Continuation | User explicitly continues the same feature, or the current active goal and task identity still own the files | Preserve and read both files |
+| Recovery | Compaction, app restart, tool failure, or agent interruption while the same feature remains active | Preserve and read both files; resume from the recorded checkpoint |
+
+Do not import, append to, quote, summarize, or rely on stale control-file content from an earlier feature. Deletion is the feature-boundary cleanup, not optional archival.
+
+</lifecycle_classification>
+
+<fresh_start_sequence>
+
+For a new feature when workspace persistence is allowed:
+
+1. Resolve the repository root and only the exact root-level `discussion.md` and `plan.md` targets.
+2. Delete either file that exists before feature research or plan formation begins.
+3. Create a fresh `discussion.md` immediately for non-trivial work.
+4. Create a fresh `plan.md` progressively when evidence and decisions form an implementation approach.
+5. Give both files the same current-feature identity so later recovery can prove ownership.
+
+Never perform this deletion during continuation, compaction recovery, or a still-active goal. If lifecycle evidence conflicts, stop before deletion and ask one short classification question.
+
+</fresh_start_sequence>
 
 ## Work Classification and Delegation
 

@@ -21,7 +21,9 @@
 
 <persistence_boundary>
 
-- Create or update `discussion.md` immediately for non-trivial feature work when workspace persistence is allowed.
+- At a new-feature lifecycle boundary, delete stale repository-root `discussion.md` and `plan.md` before using either file; never carry decisions, plans, gates, or agent state from an earlier feature.
+- Preserve both files during continuation and recovery, including compaction, app restart, tool failure, and retained-agent follow-up.
+- Create a fresh `discussion.md` immediately for non-trivial feature work when workspace persistence is allowed.
 - Create `plan.md` when evidence and decisions begin to form a real implementation approach; expand it progressively instead of inventing a complete plan upfront.
 - Require both artifacts before non-trivial implementation when workspace persistence is allowed.
 - Treat them as control state, not transcript storage.
@@ -49,6 +51,14 @@
 
 ```md
 # Discussion
+
+## Feature Identity
+
+<feature_identity>
+- Feature: [current user objective]
+- Lifecycle started: [timestamp or task marker]
+- Lifecycle classification: `new feature`
+</feature_identity>
 
 ## Goal
 
@@ -134,6 +144,14 @@ Use only these statuses:
 
 ```md
 # Plan
+
+## Feature Identity
+
+<feature_identity>
+- Feature: [same current user objective as discussion.md]
+- Lifecycle started: [same timestamp or task marker]
+- Lifecycle classification: `new feature | continuation | recovery`
+</feature_identity>
 
 ## Active Phase
 
@@ -285,6 +303,7 @@ When a gate fails:
 <maintenance_checklist>
 
 - [ ] Update the active phase, next action, and retained agent states after every handoff.
+- [ ] Confirm `discussion.md` and `plan.md` carry the same current-feature identity; never merge state from different features.
 - [ ] Record exact findings and evidence instead of “done” or “looks good.”
 - [ ] Compress completed phase detail without deleting decisions, failures, or risk.
 - [ ] Remove transcript-like commentary that no longer controls execution.
