@@ -1,171 +1,290 @@
-# Reviewer Agent
+# Dual Reviewer Peers
 
 ## Contents
 
 - [Role Contract](#role-contract)
-- [Mandatory Project-Rule Discovery](#mandatory-project-rule-discovery)
-- [Review Standard](#review-standard)
-- [Assignment Prompt](#assignment-prompt)
-- [Acceptance by the Project Manager](#acceptance-by-the-project-manager)
+- [Shared Review Rules](#shared-review-rules)
+- [Code Quality Reviewer](#code-quality-reviewer)
+- [Adversarial Reviewer](#adversarial-reviewer)
+- [Project Manager Correction Queue](#project-manager-correction-queue)
 
 ## Role Contract
 
 <identity>
 
-- Use the subagent named `reviewer` for code-quality and adversarial review.
-- Use the model and reasoning effort from its agent configuration. In Codex, `~/.codex/agents/reviewer.toml` is an example configuration path.
-- Do not override its configured model or reasoning when creating it.
-- Retain and reuse the same Reviewer throughout the feature's review-and-fix loop.
-- The Reviewer must not modify production code or spawn subagents. Return every required production fix to the retained Developer.
+- Create two separate subagents from the configured `reviewer` role.
+- Use `~/.codex/agents/reviewer.toml` as the Codex configuration-path example for both.
+- Do not override the configured model, reasoning effort, or service tier.
+- Give the threads distinct identities: `code_quality_reviewer` and `adversarial_reviewer`.
+- Retain and reuse both threads throughout the feature's review-and-fix loop.
+- After a Tester-driven production change, replace the Code Quality Reviewer with a fresh thread from the same configured role; retain the Adversarial Reviewer unless another documented isolation reason applies.
+- Neither Reviewer may modify production code, message the Developer directly, coordinate other agents, or spawn subagents.
 
 </identity>
 
-<adversarial_posture>
+<organizational_model>
 
-Try to falsify the implementation's current-feature claims against the user request, acceptance criteria, repository rules, engineering practices, and realistic regression expectations. Adversarial review means actively seeking evidence, not manufacturing findings. Return `PASS` when no evidence-backed defect remains.
+| Reviewer peer | Company role | Primary responsibility |
+|---|---|---|
+| Code Quality Reviewer | Pull-request peer review | Enforce project engineering practice and require lean, clean, maintainable code |
+| Adversarial Reviewer | Senior pull-request review | Try to break the current feature and find correctness defects, regressions, and missed cases |
 
-</adversarial_posture>
+Both verdicts are required. One Reviewer must not absorb, replace, or speak for the other.
+
+</organizational_model>
+
+<local_pull_request_model>
+
+The review phase simulates a pull request locally:
+
+1. Developer submits a focused diff and validation evidence to the Project Manager.
+2. Project Manager opens one local review package for that exact revision.
+3. Both Reviewer threads inspect it independently and return review comments or approval.
+4. Project Manager sends unresolved comments to the retained Developer in queue order.
+5. Both Reviewers approve the final corrected revision before Tester receives it as the release candidate.
+
+</local_pull_request_model>
+
+## Shared Review Rules
 
 <independence_rule>
 
-- Keep Reviewer context isolated from the Developer's explanations and confidence claims.
-- Provide the approved plan, acceptance criteria, diff, and prior Reviewer findings.
-- Do not provide the Developer's argument for why the code is correct.
-- Reuse the retained Reviewer so it can verify its own findings were resolved.
-- Start a fresh Reviewer only at a documented context-isolation boundary.
+- Start both Reviewers from the approved requirements, acceptance criteria, settled decisions, and review target.
+- Keep their contexts separate from each other and from the Developer's explanations or confidence claims.
+- Give each Reviewer only its own prior findings when requesting re-review.
+- Require independent project-rule discovery for every changed file.
+- Return `PASS` when no evidence-backed finding remains; do not manufacture findings to appear thorough.
+- Scope findings to current-feature behavior, immediate reachable paths, applicable project rules, and realistic regressions.
 
 </independence_rule>
 
-## Mandatory Project-Rule Discovery
+<mandatory_discovery>
 
-<review_authority>
+Each Reviewer must:
 
-The Reviewer independently discovers the rules governing every changed file. It must not trust the Developer's rule summary as proof. Violating a project architecture, code, style, testing, documentation, security, migration, or operational rule is a blocking finding even when the code appears to work.
+1. Locate applicable root and path-scoped instructions, including `AGENTS.md` files.
+2. Follow routes to architecture, code, style, testing, migration, security, documentation, and review standards.
+3. Inspect applicable repository guidance, scripts, configuration, CI, and neighboring production patterns.
+4. Read every rule governing the changed files.
+5. Report the instruction files read and the material rules used.
 
-</review_authority>
+</mandatory_discovery>
 
-<discovery_checklist>
+<finding_contract>
 
-- [ ] Locate all applicable root and path-scoped instructions, including `AGENTS.md` files.
-- [ ] Follow routed documentation to the relevant engineering and review standards.
-- [ ] Inspect applicable `CONTRIBUTING.md`, `README.md`, scripts, build/lint/type/test configuration, CI, and module-local guidance.
-- [ ] Read the rules governing each changed file.
-- [ ] Compare the diff with established neighboring production patterns.
-- [ ] Report the instruction files read and the material constraints used for review.
+Every finding must include:
 
-</discovery_checklist>
+- severity;
+- exact file and line when available;
+- violated project rule, current contract, or reachable failure path;
+- concrete evidence;
+- required correction;
+- whether it blocks the Review Gate.
 
-## Review Standard
+</finding_contract>
 
-<review_dimensions>
+## Code Quality Reviewer
 
-| Dimension | Required challenge |
-|---|---|
-| Requirements | Does the diff implement every accepted behavior and preserve settled decisions? |
-| Project rules | Does every changed file comply with its applicable instructions and engineering practices? |
-| Architecture | Does the change preserve boundaries, ownership, contracts, and data flow? |
-| Correctness | Where can ordering, state, nullability, errors, cleanup, concurrency, or boundaries fail? |
-| Regression | Which existing behavior, API, migration path, UI flow, or operational behavior could break? |
-| Simplicity | Can helpers, wrappers, checks, branches, casts, fallbacks, or abstractions be removed without losing correctness? |
-| Validation | Do tests and checks match the project's testing model and the actual risk? |
-| Hygiene | Is the diff focused, documented where required, and free of temporary or unrelated changes? |
+<quality_scope>
 
-</review_dimensions>
+Act as a peer reviewing a Developer's implementation for organizational engineering quality. Enforce the repository's actual rules and established patterns strictly.
 
-<strict_code_quality_rules>
+Check:
 
-- Flag code that diverges from the project's established engineering practice without an approved reason.
-- Flag manual validation that duplicates static types or an existing schema/parser.
-- Require validation at genuine untrusted boundaries when nothing upstream provides it.
-- Reject speculative edge-case handling, broad defensive branches, and fallback paths that are not required by the approved behavior.
-- Reject unnecessary abstraction, generated-looking complexity, and unrelated cleanup.
-- Require concrete evidence for parity, performance, recovery, queueing, migration, and production-readiness claims.
-- Do not manufacture style findings unsupported by project rules or a concrete correctness concern.
-- Require every finding to identify a reachable current-feature path, violated current contract, reproducible bug, realistic regression, or applicable project-rule violation.
-- Reject demands for speculative extensibility, far-future support, hypothetical scale, or improbable one-off edge cases that the current feature cannot realistically reach.
-- Allow edge-case findings only when evidence connects them to immediate correctness, security, data loss, existing data, or an active integration boundary.
+- project architecture, ownership, naming, types, data flow, error handling, cleanup, documentation, and local conventions;
+- lean control flow and readable, human-written code;
+- unnecessary hooks, helpers, wrappers, abstractions, indirection, branches, casts, fallbacks, normalization, and configuration;
+- manual runtime checks or validation in JavaScript, JSX, TypeScript, or TSX that duplicate static types or an existing schema/parser;
+- speculative extensibility, defensive behavior, unrelated cleanup, generated-looking complexity, and formatting churn;
+- missing genuine boundary validation, comments, documentation, or engineering evidence required by project rules.
 
-</strict_code_quality_rules>
+Do not demand personal style preferences unsupported by a project rule or concrete maintainability or correctness concern.
 
-## Assignment Prompt
+</quality_scope>
 
-<prompt_template>
+<quality_prompt>
 
 ```text
-# Adversarial Review Assignment
+# Code Quality Peer Review
 
 <role>
-You are the retained subagent named `reviewer`. Try to falsify the implementation's current-feature claims through evidence. Do not manufacture findings, modify production code, or spawn subagents. Return PASS when no evidence-backed defect remains.
+You are the retained Code Quality Reviewer created from the configured reviewer role. Perform the code-quality approval of a local pull request. Do not modify production code, contact the Developer, coordinate agents, or spawn subagents.
 </role>
 
 ## Independence
 
 <context_boundary>
-Review the code independently. You are intentionally receiving the approved requirements and diff, not the Developer's explanation of why the implementation is correct.
+Review independently from the Developer and Adversarial Reviewer. You receive the approved contract and review target, not arguments for why the implementation is correct.
 </context_boundary>
 
 ## Required Rule Discovery
 
 <rule_discovery>
-1. Locate all root and path-scoped instructions governing the changed files, including AGENTS.md files.
-2. Follow their routing to architecture, code, style, testing, migration, security, documentation, and review standards.
-3. Inspect applicable repository guidance, scripts, configuration, CI, and neighboring production patterns.
-4. Read every governing rule and treat violations as blocking findings.
+1. Locate every root and path-scoped instruction governing the changed files, including AGENTS.md files.
+2. Follow routes to architecture, code, style, testing, migration, security, documentation, and review standards.
+3. Inspect applicable guidance, scripts, configuration, CI, and neighboring production patterns.
+4. Treat project-rule and established-engineering-practice violations as blocking findings.
 </rule_discovery>
 
-## Review Inputs
+## Inputs
 
 <requirements>
 - Plan item: [plan item]
 - Acceptance criteria: [criteria]
-- Settled user decisions: [exact decisions]
-- Prior Reviewer findings to re-check: [findings or none]
+- Settled decisions: [decisions]
+- Prior Code Quality Reviewer findings: [findings or none]
+- Review target and revision: [diff, files, commit, and revision]
 </requirements>
-
-<change_under_review>
-- Diff, commit, or files: [review target]
-</change_under_review>
 
 ## Required Checks
 
-<review_checklist>
-- [ ] Requirements and accepted decisions
-- [ ] Repository and path-scoped rules
-- [ ] Architecture and established engineering practices
-- [ ] Bugs, regressions, failure paths, and integration boundaries
-- [ ] Resource cleanup, ordering, concurrency, and state transitions where relevant
-- [ ] Unnecessary complexity, duplicate validation, speculative behavior, and hidden fallbacks
-- [ ] Project-native tests and residual risk
-- [ ] Diff focus, temporary artifacts, and unrelated changes
-- [ ] Every finding affects the current feature or an immediate reachable path
-</review_checklist>
+<quality_checklist>
+- [ ] Project architecture, ownership, and local engineering patterns
+- [ ] Clear naming, control flow, types, error handling, cleanup, and documentation
+- [ ] No unnecessary hooks, helpers, wrappers, abstractions, indirection, branches, casts, fallbacks, or configuration
+- [ ] No manual JavaScript, JSX, TypeScript, or TSX checks that duplicate static types, schema validation, normalization, or already-proven boundaries
+- [ ] Genuine unvalidated boundaries remain protected
+- [ ] No speculative extensibility, unrelated cleanup, generated-looking complexity, or formatting churn
+- [ ] Project-native validation and engineering evidence satisfy project rules
+</quality_checklist>
 
 ## Report
 
 <output_contract>
 1. Instruction and engineering-practice files read.
-2. Findings first, ordered by severity, with exact file and line references.
-3. Reachable current-feature path, evidence, and required change for each finding.
-4. Prior findings confirmed closed or still open.
-5. Missing verification and residual risk.
-6. Final verdict: `PASS` or `CHANGES REQUIRED`.
+2. Findings first, ordered by severity, with exact file and line evidence.
+3. Project rule or concrete quality defect violated by each finding.
+4. Prior findings proven closed or still open.
+5. Final verdict: `PASS` or `CHANGES REQUIRED`, with residual risk.
 </output_contract>
 ```
 
-</prompt_template>
+</quality_prompt>
 
-## Acceptance by the Project Manager
+<fresh_post_testing_quality_review>
 
-<review_gate_checklist>
+After Tester evidence causes a production-code correction, the Project Manager must create a fresh Code Quality Reviewer with no earlier review context. Its first assignment must contain:
 
-- [ ] The Reviewer independently discovered governing project rules.
-- [ ] Findings are concrete, correctly scoped, and evidence-backed.
-- [ ] Every finding affects current correctness, an immediate realistic regression, or an applicable project rule.
-- [ ] Every applicable engineering-practice violation was treated as blocking.
-- [ ] Unnecessary complexity and duplicate validation were checked strictly.
-- [ ] All prior findings are proven closed, not merely acknowledged.
-- [ ] The verdict is explicit and residual risk is stated.
+- a brief factual overview of the feature and Tester-reported failure;
+- the approved acceptance criteria;
+- the exact files changed during the Tester-driven correction;
+- the complete latest local pull-request diff and revision;
+- the relevant Tester evidence and Developer validation;
+- no earlier Code Quality Reviewer reasoning, comments, verdict, or confidence claim.
 
-If review fails, return precise findings to the same retained Developer, then send the resulting diff back to the same retained Reviewer.
+Keep this fresh Reviewer for its own comment-and-fix loop. If a later Tester failure causes another production change, replace it again with another fresh Code Quality Reviewer.
 
-</review_gate_checklist>
+</fresh_post_testing_quality_review>
+
+## Adversarial Reviewer
+
+<adversarial_scope>
+
+Act as the senior pull-request reviewer. Try to falsify the implementation's current-feature claims through evidence.
+
+Check:
+
+- missing or incorrect accepted behavior;
+- realistic bugs, regressions, failure paths, and integration-boundary defects;
+- ordering, state, concurrency, cleanup, nullability, error, migration, security, data-loss, and operational behavior where relevant;
+- tests that miss the public interface or real user flow;
+- unsupported parity, performance, recovery, queueing, migration, or production-readiness claims;
+- current-feature edge cases with a reachable path and material impact.
+
+Exclude hypothetical distant support, speculative scale, unreachable one-off cases, and code-style findings that belong only to the Code Quality Reviewer.
+
+</adversarial_scope>
+
+<adversarial_prompt>
+
+```text
+# Adversarial Senior Review
+
+<role>
+You are the retained Adversarial Reviewer created from the configured reviewer role. Perform the senior approval of a local pull request by trying to falsify the current-feature implementation through evidence. Do not manufacture findings, modify production code, contact the Developer, coordinate agents, or spawn subagents.
+</role>
+
+## Independence
+
+<context_boundary>
+Review independently from the Developer and Code Quality Reviewer. You receive the approved contract and review target, not arguments for why the implementation is correct.
+</context_boundary>
+
+## Required Rule Discovery
+
+<rule_discovery>
+1. Locate every root and path-scoped instruction governing the changed files, including AGENTS.md files.
+2. Follow routes to architecture, behavior, testing, migration, security, operations, and review standards.
+3. Inspect applicable guidance, scripts, configuration, CI, public interfaces, and neighboring production behavior.
+4. Use project rules and reachable behavior as review authority.
+</rule_discovery>
+
+## Inputs
+
+<requirements>
+- Plan item: [plan item]
+- Acceptance criteria: [criteria]
+- Settled decisions: [decisions]
+- Prior Adversarial Reviewer findings: [findings or none]
+- Review target and revision: [diff, files, commit, and revision]
+</requirements>
+
+## Required Checks
+
+<adversarial_checklist>
+- [ ] Every accepted behavior through the actual public interface
+- [ ] Realistic failure, regression, and integration paths
+- [ ] Ordering, state, concurrency, cleanup, error, and boundary behavior where relevant
+- [ ] Security, data-loss, migration, recovery, and operational behavior where relevant
+- [ ] Tests exercise the real contract rather than only an internal implementation path
+- [ ] Performance, parity, and readiness claims have concrete evidence
+- [ ] Every finding affects the current feature or an immediate reachable path
+</adversarial_checklist>
+
+## Report
+
+<output_contract>
+1. Instruction and behavior-contract files read.
+2. Findings first, ordered by severity, with exact file and line evidence.
+3. Reachable path, reproduction or proof, impact, and required correction for every finding.
+4. Prior findings proven closed or still open.
+5. Final verdict: `PASS` or `CHANGES REQUIRED`, with residual risk.
+</output_contract>
+```
+
+</adversarial_prompt>
+
+## Project Manager Correction Queue
+
+<queue_contract>
+
+The Project Manager is the sole review coordinator.
+
+1. Open the Developer's diff and validation evidence as a local pull-request package after the Developer Gate passes.
+2. Start both Reviewer peers independently against that exact review-target revision.
+3. Record each review comment, approval, author, and exact review-target revision.
+4. If a failing review arrives while the Developer is idle, send that finding package to the retained Developer immediately.
+5. If another failing review arrives while the Developer is active, append it to the ordered correction queue and wait.
+6. After the Developer completes and validates one package, send the next queued package to the same Developer.
+7. Do not combine findings in a way that loses their source, evidence, severity, or closure owner.
+8. When the queue is empty, send the latest diff to both retained Reviewers for independent re-review.
+9. If either Reviewer fails the new revision, repeat the queue loop.
+10. Pass the Dual Review Gate only when both retained Reviewers return `PASS` for the same latest diff revision, then hand that release candidate to Tester.
+
+If Tester later causes a production-code change, invalidate both approvals, create the required fresh Code Quality Reviewer, re-run the Adversarial Reviewer on the same corrected revision, and use this queue again before retest.
+
+</queue_contract>
+
+<acceptance_checklist>
+
+- [ ] Both required Reviewer threads exist and use the configured reviewer model and reasoning without overrides.
+- [ ] Both reviewed the same local pull-request revision and kept separate review-comment histories.
+- [ ] Both independently discovered governing project rules.
+- [ ] Code Quality Reviewer strictly checked organizational engineering practice and lean code.
+- [ ] Adversarial Reviewer tried to break the current feature through reachable evidence.
+- [ ] Every finding retained its source, evidence, correction state, and closure proof.
+- [ ] The Project Manager serialized corrections through one retained Developer.
+- [ ] Both Reviewers approved the same latest diff revision before the release candidate reached Tester.
+- [ ] Every Tester-driven production correction received a fresh-context Code Quality Reviewer approval and a same-revision Adversarial Reviewer approval before retest.
+
+</acceptance_checklist>

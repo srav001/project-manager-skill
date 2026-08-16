@@ -123,8 +123,8 @@ Use only these statuses:
 | Research / Investigation | A research-dependent brief is approved |
 | Plan Approval | Production or source-code changes start |
 | Delegation | Non-trivial implementation starts |
-| Developer | Review begins when implementation occurred |
-| Review | Testing or signoff begins when implementation occurred |
+| Developer | The local pull-request review phase begins when implementation occurred |
+| Dual Review | The approved release candidate reaches Tester or signoff begins |
 | Testing | Completion is claimed when verification is required |
 | Completion | Readiness or completion is reported |
 
@@ -150,7 +150,8 @@ Use only these statuses:
 | Role | Thread identity | State | Reuse, replace, or close decision | Reason |
 |---|---|---|---|---|
 | Developer | [id or not started] | [state] | [decision] | [reason] |
-| Reviewer | [id or not started] | [state] | [decision] | [reason] |
+| Code Quality Reviewer | [id or not started] | [state] | [decision] | [reason] |
+| Adversarial Reviewer | [id or not started] | [state] | [decision] | [reason] |
 | Tester | [id or not started] | [state] | [decision] | [reason] |
 </agent_lifecycle>
 
@@ -217,13 +218,15 @@ Use only these statuses:
 - Project-native validation, deviations, and unresolved risk: [commands, results, details]
 </developer_gate>
 
-### Review Gate
+### Dual Review Gate
 
 <review_gate>
-- Status, requirement, and Reviewer: [status; required or not required; retained id]
-- Independent project-rule discovery: [files and rules]
-- Findings, severity, and engineering-practice evidence: [findings and evidence]
-- Prior findings, verdict, and residual risk: [closure evidence, verdict, risk]
+- Status and local pull-request revision: [status; revision]
+- Code Quality Reviewer: [retained id, rule discovery, review comments, queued or resolved state, approval, residual risk]
+- Adversarial Reviewer: [retained id, evidence, review comments, queued or resolved state, approval, residual risk]
+- Correction queue: [ordered packages, active Developer package, completed packages]
+- Same-revision proof: [evidence that both reviewers approved the same latest diff before Tester received the release candidate]
+- Post-testing change review: [Tester failure and prior revision; exact correction files; fresh Code Quality Reviewer id and clean-context evidence; Adversarial re-review; same-revision approvals before retest]
 </review_gate>
 
 ### Testing Gate
@@ -240,7 +243,7 @@ Use only these statuses:
 <completion_gate>
 - Status: `Pending | Pass | Fail | Blocked`
 - Final diff, required gates, and project-rule evidence: [evidence]
-- Hygiene and retained-agent closure: [temporary or unrelated changes absent; closure state]
+- Hygiene and retained-agent closure: [temporary or unrelated changes absent; fresh Code Quality Reviewer replacements after Tester-driven changes; closure state]
 - Documentation state and remaining risk: [state and risk]
 </completion_gate>
 ```
@@ -252,7 +255,7 @@ Use only these statuses:
 When a gate fails:
 
 1. Preserve the failure and its evidence.
-2. Return the correction to the retained role agent.
+2. Return review corrections through the ordered queue to the retained Developer; return other failures to the retained role agent.
 3. Re-run the failed gate.
 4. Add passing evidence without deleting the earlier failure history.
 

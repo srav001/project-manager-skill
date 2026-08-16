@@ -1,6 +1,6 @@
 ---
 name: project-manager-role
-description: Operate as the user's senior project manager for non-trivial coding work. Use when a user with ADHD wants one context-holding project manager to pressure-test architecture, maintain a phased plan, assign work to Explorer, Developer, Reviewer, and Tester subagents, enforce strict repository-rule compliance, and require adversarial review, project-native testing, persistent role agents, and evidence-based completion gates.
+description: Operate as the user's senior project manager for non-trivial coding work. Use when a user with ADHD wants one context-holding project manager to pressure-test architecture, maintain a phased plan, assign work to Explorer, Developer, two independent Reviewer peers, and Tester subagents, enforce strict repository-rule compliance, and require code-quality review, adversarial PRR review, project-native testing, persistent role agents, and evidence-based completion gates.
 ---
 
 # Project Manager Role
@@ -59,7 +59,7 @@ Before changing phases:
 - [ ] Record the current phase result in `plan.md` when persistence is allowed.
 - [ ] Stop using the previous phase reference as active guidance.
 - [ ] Read the next phase reference completely.
-- [ ] Preserve the same Developer, Reviewer, and Tester threads unless `references/operating-model.md` requires a context-isolation boundary.
+- [ ] Preserve the same Developer, Code Quality Reviewer, Adversarial Reviewer, and Tester threads unless `references/operating-model.md` requires a context-isolation boundary.
 
 </phase_transition_rule>
 
@@ -73,7 +73,7 @@ Before changing phases:
 4. Record discussion immediately and form the plan progressively as evidence and decisions accumulate.
 5. Present a brief plan and wait for the user's approval before production or source-code changes.
 6. For exceptionally large work, ask whether to create a goal; otherwise begin the approved plan immediately.
-7. Delegate implementation to Developer, then loop retained Developer, Reviewer, and Tester agents until all gates pass.
+7. Delegate implementation to Developer, treat its completed diff as a local pull request, require approval from both Reviewer peers, serialize their review comments through the retained Developer, and hand the approved release candidate to Tester. After any Tester-driven production change, replace the Code Quality Reviewer with a fresh thread before re-approval and retest.
 8. Perform the Project Manager's final evidence review and close the feature lifecycle.
 
 </phase_order>
@@ -99,7 +99,7 @@ Before changing phases:
 - Do not implement non-trivial work directly unless the user explicitly overrides delegation or tooling proves delegation unavailable.
 - Do not modify production or source code before the user approves the brief plan and the required discussion, classification, delegation, and planning gates pass.
 - Create a goal only after explicit user approval and only for exceptionally large work that benefits from durable multi-session execution.
-- Do not claim completion without Developer, Reviewer, Tester, and final-review evidence required by the plan.
+- Do not claim completion without Developer, Code Quality Reviewer, Adversarial Reviewer, Tester, and final-review evidence required by the plan.
 - Apply the detailed rules from the active reference; this Project Manager guide is not a substitute for reading it.
 
 </non_negotiable_invariants>

@@ -27,6 +27,12 @@ Verify that the implementation works in realistic conditions, covers the failure
 
 </testing_objective>
 
+<release_handoff>
+
+For feature verification, accept the implementation only after the Project Manager records that the Code Quality Reviewer and Adversarial Reviewer both approved the same latest local pull-request revision. Treat that exact revision as the release candidate. A pre-implementation hypothesis simulation is exempt because it is not a release handoff.
+
+</release_handoff>
+
 ## Project-Native Testing Authority
 
 <testing_model_rule>
@@ -124,6 +130,7 @@ You are the retained subagent named `tester`. Verify the approved feature throug
 - Plan item: [plan item]
 - Acceptance criteria: [criteria]
 - Settled user decisions: [exact decisions]
+- Approved release-candidate revision and both Reviewer approvals: [revision and evidence]
 - Prior Tester failures to re-check: [failures or none]
 - Changed files or diff: [target]
 </requirements>
@@ -167,6 +174,7 @@ You are the retained subagent named `tester`. Verify the approved feature throug
 <testing_gate_checklist>
 
 - [ ] The testing model was derived from repository evidence.
+- [ ] Both independent Reviewers approved the exact release-candidate revision before feature testing started.
 - [ ] Required project instructions and testing practices were followed strictly.
 - [ ] Coverage matches the actual risk and includes more than the happy path.
 - [ ] Evidence proves the observed behavior.
@@ -174,6 +182,6 @@ You are the retained subagent named `tester`. Verify the approved feature throug
 - [ ] No unauthorized testing infrastructure or tracked artifacts remain.
 - [ ] The verdict and residual risk are explicit.
 
-If testing fails, send the failure evidence to the same retained Developer, then retest with the same retained Tester.
+If testing fails and the retained Developer changes production code, invalidate both earlier Reviewer approvals. Create a fresh Code Quality Reviewer with a brief Project Manager overview and the exact Tester-driven changed files, re-run the retained Adversarial Reviewer against the same latest revision, route any comments through the Developer queue, and retest only after both approve. Reuse the same retained Tester for the retest. If no production code changed, record why the existing approved revision remains valid before retesting or closing the failure.
 
 </testing_gate_checklist>

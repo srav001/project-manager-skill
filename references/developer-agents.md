@@ -161,7 +161,7 @@ Before editing:
 2. Files changed and concise behavior summary.
 3. Root-cause analysis for bug work.
 4. Commands and checks run, with results.
-5. Unresolved risks, blockers, or deviations.
+5. Local pull-request handoff: review revision, focused diff scope, validation evidence, and unresolved risks, blockers, or deviations.
 </deliverables>
 ```
 
@@ -177,6 +177,7 @@ Before editing:
 - [ ] Bug work addresses or explicitly accounts for the architectural root cause.
 - [ ] The diff is lean and contains no redundant abstraction or validation.
 - [ ] Required project-native validation ran successfully or is explicitly blocked.
+- [ ] The Developer supplied a focused local pull-request package for both independent Reviewers.
 - [ ] Residual risks and deviations are concrete.
 
 If any item fails, send a precise follow-up to the same retained Developer.

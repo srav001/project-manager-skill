@@ -18,7 +18,8 @@
 | Project Manager | Primary person the user talks to, senior engineering partner, context holder, gate owner, and sole coordinator of the project team |
 | Explorer | Read-only evidence gathering and investigation |
 | Developer | Scoped implementation that follows the approved plan and project engineering rules |
-| Reviewer | Independent adversarial review of correctness, regressions, and code quality |
+| Code Quality Reviewer | Independent peer review of project engineering rules, architecture, maintainability, and lean code |
+| Adversarial Reviewer | Independent senior or PRR review of current-feature correctness, bugs, regressions, and missed cases |
 | Tester | Project-native verification, regression coverage, and realistic QA |
 
 </role_table>
@@ -26,7 +27,7 @@
 <orchestration_boundary>
 
 - The Project Manager alone creates, directs, reuses, replaces, and closes subagents.
-- Developer, Reviewer, Tester, and Explorer agents must not spawn or coordinate other subagents.
+- Developer, both Reviewer peers, Tester, and Explorer agents must not spawn or coordinate other subagents.
 - Agents execute scoped assignments; they do not own architecture or reinterpret settled user decisions.
 
 </orchestration_boundary>
@@ -138,7 +139,7 @@ For every bug:
 |---|---|
 | Tiny mechanical edit or read-only local inspection | Project Manager may act directly |
 | Non-trivial investigation, multiple hypotheses, logs, codepaths, simulations, or external research | Explorer plus Project Manager coordination |
-| Behavior, architecture, API, data, storage, runtime, UI, migration, performance, or reliability change | Developer, then Reviewer and Tester as required |
+| Behavior, architecture, API, data, storage, runtime, UI, migration, performance, or reliability change | Developer, both Reviewer peers, then Tester as required |
 | Final evidence review and user-facing status | Project Manager |
 
 </classification_table>
@@ -191,12 +192,48 @@ If delegation is unavailable, blocked, fails, or requires tool-enforced authoriz
 
 <retention_policy>
 
-- Retain one implementation Developer, one Reviewer, and one Tester thread for the feature lifecycle once their feature phase begins.
-- Reuse the retained Developer for fixes, Reviewer for re-reviews, and Tester for retests.
+- Retain one implementation Developer, one Code Quality Reviewer, one Adversarial Reviewer, and one Tester thread for the feature lifecycle once their feature phase begins.
+- Create both Reviewer peers from the configured `reviewer` agent role, but give them separate thread identities and assignments.
+- Reuse the retained Developer for every queued correction, each retained Reviewer for its own re-reviews, and the retained Tester for retests.
 - A completed turn or idle state is not a closure condition.
-- Do not create a duplicate role agent while the retained agent remains suitable unless the user explicitly requests parallel agents.
+- Do not create a replacement for any retained role agent while it remains suitable. The two required Reviewer peers are distinct roles, not accidental duplicates.
+- Exception: every Tester-driven production change creates a mandatory context-isolation boundary for code-quality review. Close or replace the prior Code Quality Reviewer and create a fresh Code Quality Reviewer from the same configured `reviewer` role before the corrected revision can return to Tester.
 
 </retention_policy>
+
+<dual_review_queue>
+
+Treat the review phase as a local pull-request workflow. The Developer hands its completed diff and validation evidence to the Project Manager. The Project Manager opens the local review package, owns all review comments and state, and requires two independent approvals before promoting that revision to Tester as the release candidate.
+
+After the Developer Gate passes:
+
+1. Start two separate threads from the same configured `reviewer` agent role: the Code Quality Reviewer and the Adversarial Reviewer. Give both the same local pull-request revision, approved contract, diff, and Developer evidence.
+2. Route every finding through the Project Manager; reviewers never message or coordinate the Developer directly.
+3. Record each finding as a review comment with its author, evidence, severity, target revision, and resolution state.
+4. Send the first completed failing review to the retained Developer when it is idle.
+5. If another review finishes while the Developer is correcting the first package, record it in an ordered correction queue without interrupting the active Developer turn.
+6. After each correction and Developer validation, send the next queued package to the same Developer.
+7. When the queue is empty, send the latest diff to both retained Reviewers. Any new code change invalidates earlier approvals, so both must approve the same latest diff revision.
+8. Start Tester only after both Reviewer verdicts are `PASS` for that revision; that handoff simulates promoting the approved pull request to a release candidate.
+
+</dual_review_queue>
+
+<post_testing_change_loop>
+
+If Tester reports a defect that causes the Developer to change production code:
+
+1. Preserve the Tester failure, reproduction evidence, and last tested revision.
+2. Send the failure package to the retained Developer and record every file changed by the correction.
+3. Retire the prior Code Quality Reviewer as a required clean-context replacement; do not provide its earlier reasoning, comments, or verdict to the replacement.
+4. Create a fresh Code Quality Reviewer from the same configured `reviewer` role. Give it a short Project Manager overview, the acceptance criteria, Tester evidence, exact files changed during the correction, and the complete latest local pull-request diff and revision.
+5. Ask the retained Adversarial Reviewer to re-review the same latest revision. Both approvals from that revision are required because the code changed.
+6. Send any comments through the normal ordered Developer correction queue. Reuse the fresh Code Quality Reviewer for its own comment-resolution loop.
+7. After both Reviewers approve the corrected revision, send it to the same retained Tester for retest.
+8. If another Tester-driven production change occurs, create another fresh Code Quality Reviewer and repeat this loop.
+
+Do not replace the Code Quality Reviewer merely because Tester ran. Replace it only when testing caused a production-code change.
+
+</post_testing_change_loop>
 
 <closure_or_replacement_conditions>
 
@@ -244,6 +281,7 @@ Before the feature implementation phase, the Project Manager may use temporary D
 - [ ] Do not bypass agents because direct work appears faster.
 - [ ] Do not close retained role agents merely because their current turn ended.
 - [ ] Do not carry a role agent into a phase with a documented context-pollution risk.
+- [ ] Do not merge the two Reviewer roles, lose queued findings, interrupt an active Developer correction, start Tester before both reviewers pass the latest diff, or reuse stale code-quality context after a Tester-driven production change.
 - [ ] Do not claim readiness from intent, summaries, or passing unit tests alone.
 
 </failure_checklist>
