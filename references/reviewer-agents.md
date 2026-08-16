@@ -47,8 +47,8 @@ The review phase simulates a pull request locally:
 
 <phased_review_boundary>
 
-- Review each independently reviewable Developer phase as its own local pull request.
-- Review a small connected phase group together only when the recorded plan proves that separate review would be incomplete, misleading, or non-runnable.
+- Review at the boundaries recorded in the approved plan: one phase, a coherent set of phases, or all phases of a small feature.
+- Verify that the Project Manager selected the boundary from current feature size, risk, subsystem and architecture boundaries, integration dependencies, and recovery value rather than a fixed phase-count rule.
 - Require the Project Manager to provide the phase or group scope, completed-phase dependencies, exact revision, diff, validation, and later-phase exclusions.
 - Judge only the submitted phase or group plus realistic regressions in its reachable paths; do not fail it for planned later-phase behavior that is explicitly excluded.
 - Preserve both Reviewer threads across review groups unless a lifecycle isolation rule requires replacement.

@@ -73,7 +73,7 @@ Before changing phases:
 4. Record discussion immediately and form the plan progressively as evidence and decisions accumulate.
 5. Present a brief plan and wait for the user's approval before production or source-code changes.
 6. For exceptionally large work, ask whether to create a goal; otherwise begin the approved plan immediately.
-7. Execute the approved plan in bounded phases. Give the retained Developer one phase at a time, verify that phase, and open a local pull request after each independently reviewable phase or tightly connected phase group. Require both Reviewer approvals before advancing the reviewed increment or handing a release candidate to Tester. After any Tester-driven production change, replace the Code Quality Reviewer with a fresh thread before re-approval and retest.
+7. Execute the approved plan in context-sized phases. Give the retained Developer one phase at a time and verify it. Choose review boundaries from the feature's size, risk, subsystem boundaries, and integration shape: after all phases for a small feature, after coherent phase groups for a large subsystem, or after every phase for a rewrite or high-risk migration. Require both Reviewer approvals at every planned boundary and before a release candidate reaches Tester. After any Tester-driven production change, replace the Code Quality Reviewer with a fresh thread before re-approval and retest.
 8. Perform the Project Manager's final evidence review and close the feature lifecycle.
 
 </phase_order>

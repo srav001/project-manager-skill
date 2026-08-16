@@ -158,14 +158,21 @@ Use only these statuses:
 ## Phases
 
 <execution_phases>
-1. [Bounded phase, owner, scope, allowed files/modules, dependencies, acceptance criteria, validation, review-group id, status]
-2. [Bounded phase, owner, scope, allowed files/modules, dependencies, acceptance criteria, validation, review-group id, status]
+1. [Context-sized phase, owner, scope, allowed files/modules, dependencies, acceptance criteria, validation, review-boundary id, status]
+2. [Context-sized phase, owner, scope, allowed files/modules, dependencies, acceptance criteria, validation, review-boundary id, status]
 </execution_phases>
+
+<review_cadence>
+- Feature shape and risk: [small feature | large subsystem or portal | rewrite or high-risk migration; evidence]
+- Planned review boundaries: [after all phases | coherent phase sets | every phase; exact grouping]
+- Boundary rationale: [architecture, integration, risk, and recovery evidence]
+- Cadence changes: [new evidence and updated boundary, or none]
+</review_cadence>
 
 ## Phase Checkpoint
 
 <phase_checkpoint>
-- Active bounded phase and review group: [phase; independently reviewable or connected group]
+- Active phase and review boundary: [phase; boundary id and included phase set]
 - Developer assignment boundary: [included work and explicit later-phase exclusions]
 - Actual diff and rule evidence: [revision, files, material rules]
 - Validation and acceptance evidence: [commands, results, criteria]

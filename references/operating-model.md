@@ -197,7 +197,7 @@ The Project Manager owns decomposition because it holds the complete feature con
 
 For non-trivial multi-part work:
 
-1. Divide the approved plan into bounded implementation phases with exact scope, allowed files or modules, inputs from earlier phases, acceptance criteria, validation, and explicit later-phase exclusions.
+1. Divide the approved plan into context-sized implementation phases with exact scope, allowed files or modules, inputs from earlier phases, acceptance criteria, validation, and explicit later-phase exclusions. Size each phase so the Developer can execute it reliably and the Project Manager can inspect it meaningfully; do not use a fixed file, token, or turn quota.
 2. Give the retained Developer only the active phase and the minimum prior context needed to implement it correctly.
 3. After the Developer reports, inspect the actual diff, rule evidence, commands, and acceptance evidence for that phase. File presence or change counts alone do not pass the Developer Gate.
 4. Send a correction to the same Developer when the phase is incomplete. Send the next phase only after the current phase passes.
@@ -207,12 +207,19 @@ For non-trivial multi-part work:
 
 <review_group_rule>
 
-- Open a local pull-request review after every independently reviewable phase.
-- Group only adjacent phases that are so tightly connected that reviewing one alone would be incomplete, misleading, or non-runnable.
-- Even inside a connected review group, assign and accept each Developer phase separately.
-- Record the group boundary before implementation; do not postpone review merely because more feature work remains.
-- Both Reviewer peers must approve the same group revision before the Project Manager advances beyond that review boundary.
-- Run project-native Tester verification at the phase or group boundary when its acceptance criteria can be verified independently; always run the required final integrated verification before completion.
+The Project Manager chooses review cadence from the actual feature context. Phase size and review-group size are separate decisions.
+
+| Feature shape | Typical local pull-request cadence |
+|---|---|
+| Small feature split into phases only to keep Developer assignments focused | Review once after all feature phases are complete |
+| Large portal, subsystem, or multi-surface feature | Review coherent sets of related phases |
+| Full rewrite, framework migration, or high-risk architectural change | Review after each phase before continuing |
+
+- Consider correctness risk, architecture boundaries, runnable integration points, blast radius, rollback or recovery value, and whether later work would bury defects.
+- Record the chosen review boundaries and reasoning in the approved plan before implementation. Change them only when new evidence changes the risk or dependency structure, and update the plan first.
+- Give and accept one Developer phase at a time even when several phases share a later review boundary.
+- At every planned boundary, both Reviewer peers must approve the same revision before work crosses that boundary.
+- Run project-native Tester verification at a boundary when its acceptance criteria can be verified independently; always run the required final integrated verification before completion.
 
 </review_group_rule>
 
