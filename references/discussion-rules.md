@@ -35,6 +35,9 @@ Use Explorer when research is deep, broad, external, hypothesis-driven, or natur
 
 - Do not create a speculative finished plan at the start.
 - Record confirmed scope, decisions, constraints, phase boundaries, owners, risks, and acceptance criteria as they emerge.
+- Split large implementation work into bounded phases that one Developer turn can implement and the Project Manager can verify against concrete evidence.
+- Mark which phases are independently reviewable and which adjacent phases are tightly coupled into one local pull-request review group.
+- Never make the Developer responsible for decomposing or remembering the entire large feature; the Project Manager owns the full plan and supplies only the active phase plus necessary context.
 - Keep unresolved items visible rather than guessing.
 - The brief submitted for approval must state the intended outcome, implementation approach, major phases, acceptance criteria, and material current-feature risks.
 - Explicit approval of the brief authorizes ordinary implementation to start immediately.

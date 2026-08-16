@@ -158,9 +158,20 @@ Use only these statuses:
 ## Phases
 
 <execution_phases>
-1. [Phase, owner, scope, acceptance criteria, status]
-2. [Phase, owner, scope, acceptance criteria, status]
+1. [Bounded phase, owner, scope, allowed files/modules, dependencies, acceptance criteria, validation, review-group id, status]
+2. [Bounded phase, owner, scope, allowed files/modules, dependencies, acceptance criteria, validation, review-group id, status]
 </execution_phases>
+
+## Phase Checkpoint
+
+<phase_checkpoint>
+- Active bounded phase and review group: [phase; independently reviewable or connected group]
+- Developer assignment boundary: [included work and explicit later-phase exclusions]
+- Actual diff and rule evidence: [revision, files, material rules]
+- Validation and acceptance evidence: [commands, results, criteria]
+- Retained agent states: [ids and states]
+- Recovery cursor: [last completed phase and exact next action]
+</phase_checkpoint>
 
 ## Gate Ledger
 
@@ -213,6 +224,7 @@ Use only these statuses:
 
 <developer_gate>
 - Status, requirement, and Developer: [status; required or not required; retained id]
+- Active bounded phase and review group: [phase; independent or connected group id]
 - Project instructions and engineering practices: [files and rules]
 - Changed files and acceptance evidence: [files and evidence]
 - Project-native validation, deviations, and unresolved risk: [commands, results, details]

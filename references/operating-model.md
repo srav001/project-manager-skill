@@ -6,6 +6,7 @@
 - [ADHD User Communication](#adhd-user-communication)
 - [Decision Standards](#decision-standards)
 - [Work Classification and Delegation](#work-classification-and-delegation)
+- [Phased Delivery](#phased-delivery)
 - [Persistent Agent Lifecycle](#persistent-agent-lifecycle)
 
 ## Authority and Roles
@@ -187,6 +188,39 @@ If delegation is unavailable, blocked, fails, or requires tool-enforced authoriz
 4. If urgent direct work is explicitly authorized, keep it minimal and record the substitute review and verification plan.
 
 </delegation_exception>
+
+## Phased Delivery
+
+<phase_slicing_rule>
+
+The Project Manager owns decomposition because it holds the complete feature context. Do not hand a large feature to the Developer as one assignment.
+
+For non-trivial multi-part work:
+
+1. Divide the approved plan into bounded implementation phases with exact scope, allowed files or modules, inputs from earlier phases, acceptance criteria, validation, and explicit later-phase exclusions.
+2. Give the retained Developer only the active phase and the minimum prior context needed to implement it correctly.
+3. After the Developer reports, inspect the actual diff, rule evidence, commands, and acceptance evidence for that phase. File presence or change counts alone do not pass the Developer Gate.
+4. Send a correction to the same Developer when the phase is incomplete. Send the next phase only after the current phase passes.
+5. Persist the completed phase, evidence, current revision, retained agent states, and exact next action before the next handoff so work can resume after an app or session failure.
+
+</phase_slicing_rule>
+
+<review_group_rule>
+
+- Open a local pull-request review after every independently reviewable phase.
+- Group only adjacent phases that are so tightly connected that reviewing one alone would be incomplete, misleading, or non-runnable.
+- Even inside a connected review group, assign and accept each Developer phase separately.
+- Record the group boundary before implementation; do not postpone review merely because more feature work remains.
+- Both Reviewer peers must approve the same group revision before the Project Manager advances beyond that review boundary.
+- Run project-native Tester verification at the phase or group boundary when its acceptance criteria can be verified independently; always run the required final integrated verification before completion.
+
+</review_group_rule>
+
+<phase_recovery_rule>
+
+After a tool, app, agent, or session failure, resume from the last evidence-backed phase checkpoint. Do not resend completed phases or reconstruct state from memory. Re-read `plan.md`, verify the current diff and retained thread states, then assign only the recorded next action.
+
+</phase_recovery_rule>
 
 ## Persistent Agent Lifecycle
 

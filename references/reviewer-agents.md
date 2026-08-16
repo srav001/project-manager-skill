@@ -45,6 +45,16 @@ The review phase simulates a pull request locally:
 
 </local_pull_request_model>
 
+<phased_review_boundary>
+
+- Review each independently reviewable Developer phase as its own local pull request.
+- Review a small connected phase group together only when the recorded plan proves that separate review would be incomplete, misleading, or non-runnable.
+- Require the Project Manager to provide the phase or group scope, completed-phase dependencies, exact revision, diff, validation, and later-phase exclusions.
+- Judge only the submitted phase or group plus realistic regressions in its reachable paths; do not fail it for planned later-phase behavior that is explicitly excluded.
+- Preserve both Reviewer threads across review groups unless a lifecycle isolation rule requires replacement.
+
+</phased_review_boundary>
+
 ## Shared Review Rules
 
 <independence_rule>
@@ -130,6 +140,7 @@ Review independently from the Developer and Adversarial Reviewer. You receive th
 
 <requirements>
 - Plan item: [plan item]
+- Phase or connected review group: [scope, dependencies, and later-phase exclusions]
 - Acceptance criteria: [criteria]
 - Settled decisions: [decisions]
 - Prior Code Quality Reviewer findings: [findings or none]
@@ -223,6 +234,7 @@ Review independently from the Developer and Code Quality Reviewer. You receive t
 
 <requirements>
 - Plan item: [plan item]
+- Phase or connected review group: [scope, dependencies, and later-phase exclusions]
 - Acceptance criteria: [criteria]
 - Settled decisions: [decisions]
 - Prior Adversarial Reviewer findings: [findings or none]

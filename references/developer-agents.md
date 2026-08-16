@@ -23,9 +23,10 @@
 
 <scope_boundary>
 
-The Developer implements one coherent, approved work package. It must not:
+The Developer implements one bounded, approved phase at a time. The Project Manager retains the full feature plan and sends the next phase only after accepting the current phase. The Developer must not:
 
 - change architecture without returning the decision to the Project Manager and user;
+- plan, implement, or preload later phases that were not assigned;
 - broaden scope or add speculative behavior;
 - modify unrelated files;
 - reinterpret settled values, constraints, or acceptance criteria;
@@ -122,7 +123,10 @@ Before editing:
 
 <scope>
 - Approved plan brief: [brief]
+- Active phase and review group: [one bounded phase; independently reviewable or connected group id]
+- Required context from completed phases: [contracts and facts only]
 - Allowed files or modules: [scope]
+- Later phases not assigned: [explicit boundary]
 - Explicit non-goals: [non-goals]
 - Settled user decisions: [exact values and behaviors]
 - Current plan item: [plan item]
@@ -174,6 +178,7 @@ Before editing:
 - [ ] Rule discovery is complete and evidenced.
 - [ ] Every changed file follows its scoped instructions and project engineering practices.
 - [ ] The implementation matches the approved plan without scope expansion.
+- [ ] Only the active bounded phase was implemented; later phases remain unmodified.
 - [ ] Bug work addresses or explicitly accounts for the architectural root cause.
 - [ ] The diff is lean and contains no redundant abstraction or validation.
 - [ ] Required project-native validation ran successfully or is explicitly blocked.
