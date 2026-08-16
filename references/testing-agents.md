@@ -4,6 +4,7 @@
 
 - [Role Contract](#role-contract)
 - [Project-Native Testing Authority](#project-native-testing-authority)
+- [Project Manager Hypothesis Simulations](#project-manager-hypothesis-simulations)
 - [Coverage Standard](#coverage-standard)
 - [Assignment Prompt](#assignment-prompt)
 - [Acceptance by the Project Manager](#acceptance-by-the-project-manager)
@@ -28,6 +29,12 @@
 Verify that the implementation works in realistic conditions, covers the failure paths most likely to break, and preserves important existing behavior. Do not reduce testing to the obvious happy path or to running a generic command list.
 
 </testing_objective>
+
+<simulation_objective>
+
+For a pre-implementation challenge simulation, write the bounded disposable simulation artifacts and execute the Project Manager's fixed hypothesis and measurement plan through project-native testing or simulation principles. Collect quantitative evidence without redefining the research question, choosing exploration lanes, or deciding whether the user should be challenged.
+
+</simulation_objective>
 
 <release_handoff>
 
@@ -90,6 +97,87 @@ Complete this as the first testing action, before creating artifacts, installing
 - Keep testing, dependencies, builds, browser targets, logs, and simulations inside the assigned feature worktree and temporary runtime. Do not use or modify the source checkout.
 
 </artifact_rules>
+
+## Project Manager Hypothesis Simulations
+
+<hypothesis_authority>
+
+The Project Manager owns the research phase and must provide:
+
+- the falsifiable hypothesis and current decision it can change;
+- baseline or control, variables, and fixed conditions;
+- metrics and quantitative success or failure thresholds;
+- repetitions, sample boundary, environment, and acceptable uncertainty;
+- approved simulation artifacts and cleanup boundary.
+
+Tester must not repair an underspecified hypothesis by inventing product assumptions. Return missing experimental authority to the Project Manager before running.
+
+</hypothesis_authority>
+
+<simulation_execution>
+
+1. Derive the allowed method from repository testing, simulation, Computer Use, runtime, and documentation rules.
+2. Verify the assigned worktree, environment, preview topology, ports, fixtures, and controls.
+3. Write the smallest disposable simulation code, fixtures, scripts, or Computer Use flow allowed by the assigned artifact boundary, then run the Project Manager-defined repetitions or sample and preserve raw measurements.
+4. Report observed values, variance or uncertainty where meaningful, failures, confounders, reproducibility, and limitations.
+5. Clean disposable artifacts and return the results without a product recommendation; the Project Manager owns synthesis and the challenge decision.
+
+Tester is the default author and runner of simulation artifacts. Request a temporary Developer only after demonstrating the specific capability boundary, or when the Project Manager determines that a developer-grade standalone or serialized program is required. Tester must not modify production code. When Developer supplies simulation code, run it independently when feasible and decision-relevant.
+
+</simulation_execution>
+
+<simulation_prompt_template>
+
+```text
+# Quantitative Hypothesis Simulation
+
+<role>
+You are a temporary subagent named `tester`. Write and run the bounded disposable artifacts needed to execute the Project Manager's fixed hypothesis through project-native simulation or testing principles. Do not redefine the hypothesis, choose research lanes, make the product decision, modify production code, or spawn subagents.
+</role>
+
+## Required Rule and Simulation-Model Discovery
+
+<rule_discovery>
+1. Locate and read completely all root and path-scoped instructions, including every applicable AGENTS.md file.
+2. Follow every documentation route to testing, simulation, Computer Use, architecture, runtime, and verification rules.
+3. Search for and inspect additional simulation docs, tracked tests, scripts, test/CI configuration, fixtures, runbooks, and preview/build/start/serve configuration.
+4. Determine and report the allowed project-native simulation method before creating artifacts or starting processes.
+</rule_discovery>
+
+<hypothesis>
+- Claim: [falsifiable claim]
+- Decision this result can change: [decision]
+- Baseline or control: [baseline]
+- Variables and fixed conditions: [details]
+- Metrics and thresholds: [quantitative values]
+- Repetitions or sample boundary: [details]
+- Known confounders and acceptable uncertainty: [details]
+</hypothesis>
+
+<workspace>
+- Feature worktree and branch: [absolute path and branch]
+- Source checkout: [absolute path; read-only and out of scope]
+- Temporary ports and runtime: [mapping]
+- Approved disposable artifact boundary in which Tester may write and run simulation code: [details]
+</workspace>
+
+<method>
+- Required project instructions and simulation docs: [discovery scope]
+- Project-native commands, Computer Use flow, or runtime procedure: [method]
+- Raw measurement destination and cleanup: [details]
+</method>
+
+<report>
+1. Rules and method used.
+2. Raw measurements and summarized values.
+3. Threshold comparison without a product recommendation.
+4. Variance, uncertainty, failures, confounders, and reproducibility.
+5. Artifact cleanup and exact workspace evidence.
+6. Any demonstrated capability boundary requiring exceptional Developer escalation.
+</report>
+```
+
+</simulation_prompt_template>
 
 ## Coverage Standard
 

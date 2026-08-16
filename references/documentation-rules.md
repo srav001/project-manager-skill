@@ -280,7 +280,9 @@ Use only these statuses:
 - Track independence: [for each additional track, distinct question, evidence or method, and independent decision effect; or not applicable]
 - Agents: [Explorer tracks and identities; temporary simulation agents and closure state]
 - Questions and track synthesis: [questions, `DO`, and `DO NOT`]
-- Evidence and remaining uncertainty: [codebase, sources, simulations, uncertainty]
+- Challenge hypotheses: [claim, baseline or control, variables, metrics, predeclared thresholds, repetitions or sample boundary, or not applicable]
+- Quantitative simulation evidence: [temporary Tester's disposable artifacts and raw measurements; exceptional Developer escalation, demonstrated capability boundary or program requirement, and independent Tester execution when applicable; threshold comparison, uncertainty, limitations, and cleanup; or not applicable]
+- Project Manager synthesis and remaining uncertainty: [direct findings, Explorer conclusions, Tester measurements, decision, uncertainty]
 </research_gate>
 
 ### Developer Gate

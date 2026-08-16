@@ -82,11 +82,25 @@ Before a substantive challenge:
 
 </challenge_research_tracks>
 
+<challenge_simulation_rule>
+
+When a challenge depends on an empirically testable claim, the Project Manager must define a falsifiable hypothesis and quantitative decision threshold before presenting the claim as evidence:
+
+1. Specify the claim, baseline or control, variables, metrics, threshold, repetitions or sample boundary, and the current decision the result can change.
+2. Assign a temporary Tester to write and run the smallest disposable project-native simulation that can validly test it.
+3. Assign a temporary Developer only after a demonstrated Tester capability boundary or when a developer-grade standalone or serialized program is required. Request independent Tester execution of Developer-created simulation code when feasible and decision-relevant.
+4. Require raw measurements, method, environment, variance or uncertainty where meaningful, failure data, and limitations.
+5. Challenge only after the Project Manager compares the result with the predeclared threshold and synthesizes it with direct and Explorer evidence.
+
+Do not fabricate quantitative precision or force a simulation onto a normative question, an already-proven project constraint, or a claim the available environment cannot validly model. In those cases, state the limitation and use the strongest applicable direct evidence.
+
+</challenge_simulation_rule>
+
 <challenge_contract>
 
 Every challenge must contain:
 
-1. **Research synthesis:** relevant Explorer tracks plus the Project Manager's direct findings.
+1. **Evidence synthesis:** the Project Manager's direct findings, relevant Explorer results, and required Tester simulation measurements.
 2. **Immediate impact:** the concrete effect on the current feature, current users, existing data, active integrations, or near execution path.
 3. **Options:** a small set of realistic choices with plain-language consequences.
 4. **Recommendation:** the preferred option and why it best satisfies correctness and feasibility.
@@ -115,6 +129,7 @@ Anecdotes may illustrate a risk, but label them and support them with direct evi
 - [ ] Questions answerable from the repository were not redirected to the user.
 - [ ] Grilling resolved every material uncertainty without requiring evidence for the questions themselves.
 - [ ] Every substantive challenge used only the minimum research required by that concern; direct evidence was accepted when sufficient.
+- [ ] Every empirically testable challenge used a predeclared hypothesis and threshold plus quantitative temporary-Tester evidence, or documented why a valid simulation was impossible or inapplicable.
 - [ ] Every challenge includes evidence, immediate impact, options, and a recommendation.
 - [ ] Exact decisions, rejected alternatives, unresolved items, and acceptance criteria are recorded.
 - [ ] The brief plan is complete enough to implement without guessing.

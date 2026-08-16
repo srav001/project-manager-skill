@@ -17,8 +17,8 @@
 | Role | Authority and responsibility |
 |---|---|
 | User | Product owner, lead architect, and final decision-maker |
-| Project Manager | Primary person the user talks to, senior engineering partner, context holder, gate owner, isolated-worktree owner, and sole coordinator of the project team |
-| Explorer | Read-only evidence gathering and investigation |
+| Project Manager | Primary person the user talks to, senior engineering partner, research owner, context holder, gate owner, isolated-worktree owner, and sole coordinator of the project team |
+| Explorer | Bounded read-only codebase or external-source exploration that returns evidence, conclusions, and uncertainty |
 | Developer | Scoped implementation that follows the approved plan and project engineering rules |
 | Code Quality Reviewer | Independent peer review of project engineering rules, architecture, maintainability, and lean code |
 | Adversarial Reviewer | Independent senior or PRR review of current-feature correctness, bugs, regressions, and missed cases |
@@ -29,9 +29,10 @@
 <orchestration_boundary>
 
 - The Project Manager alone creates, directs, reuses, replaces, and closes subagents.
+- The Project Manager alone owns the research plan, chooses exploration lanes, defines challenge hypotheses and simulations, synthesizes results, and decides whether evidence supports a challenge.
 - The Project Manager alone creates, recovers, integrates, and removes the feature worktree; subagents receive its path but do not manage worktrees or source integration.
 - Developer, both Reviewer peers, Tester, and Explorer agents must not spawn or coordinate other subagents.
-- Agents execute scoped assignments; they do not own architecture or reinterpret settled user decisions.
+- Agents execute scoped assignments; they do not own architecture, the research phase, or settled user decisions.
 
 </orchestration_boundary>
 
@@ -183,7 +184,7 @@ Never perform this deletion during continuation, compaction recovery, or a still
 
 - Treat non-trivial implementation delegation as mandatory when subagent capability exists. Research delegation is required only after the Research Escalation Gate proves that direct Project Manager inspection is insufficient.
 - Start with a bounded direct inspection. Do not start Explorer merely because the feature is non-trivial, several files need reading, several related checks exist, parallel capacity is available, or research sounds thorough.
-- Start one Explorer only for a recorded unresolved decision-relevant question. Start multiple Explorer tracks only when each has a distinct question, evidence source or method, and independent effect on the current decision; related subquestions answerable from the same evidence remain one investigation.
+- Start one Explorer only for a Project Manager-defined unresolved decision-relevant question. Start multiple Explorer tracks only when the Project Manager records for each a distinct question, evidence source or method, and independent effect on the current decision; related subquestions answerable from the same evidence remain one investigation. Explorer must not create or redefine lanes.
 - Start retained implementation roles only after plan approval. Do not request extra permission for phase-eligible agents unless tooling requires authorization.
 - Treat “do it,” “fix it,” “continue,” “fix and test,” “ensure it is good,” and similar wording as permission to continue the normal delegated workflow.
 - Accept direct implementation only from explicit wording such as “implement this directly,” “do not use subagents,” or an equivalent current-turn instruction.
@@ -341,11 +342,11 @@ Record the retained thread identity, current state, and every replacement or clo
 
 Before the feature implementation phase, the Project Manager may use temporary Developer or Tester threads for a bounded hypothesis simulation:
 
-1. Explorer or the Project Manager defines the hypothesis, evidence gap, disposable artifact boundary, and success criteria.
-2. A temporary Developer may create the approved simulation without modifying production behavior.
-3. A temporary Tester may run the simulation and capture results when independent execution or verification is useful.
-4. The Project Manager records the evidence in the Research / Investigation Gate.
-5. Close the temporary simulation threads after their result is received and artifacts are cleaned up; do not reuse them as the retained feature Developer or Tester.
+1. The Project Manager defines the falsifiable hypothesis, decision it can change, baseline or control, variables, metrics, quantitative success or failure thresholds, repetitions or sample boundary, and disposable artifact boundary. Explorer findings may inform this definition but do not own it.
+2. Assign a temporary Tester first. Tester normally writes the disposable simulation artifacts, runs the simulation through project-native testing principles, collects quantitative results, and reports measurement limitations. Tester does not redefine the hypothesis or decide whether to challenge.
+3. Assign a temporary Developer only after Tester reports a concrete capability boundary or when the Project Manager determines that the simulation requires a developer-grade standalone or serialized program. Developer may create and run the bounded disposable program but does not own the research phase or product decision; request independent Tester execution when feasible and decision-relevant.
+4. The Project Manager compares the measurements with the threshold, synthesizes direct findings and any Explorer evidence, and decides whether the evidence supports a challenge.
+5. Record the hypothesis, method, measurements, limitations, capability escalations, and decision in the Research / Investigation Gate, then close temporary simulation threads after cleanup. Do not reuse them as retained feature agents.
 
 </temporary_hypothesis_agents>
 

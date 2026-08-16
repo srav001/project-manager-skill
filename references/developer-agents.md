@@ -21,6 +21,7 @@
 - The Developer must use the Project Manager's temporary port map and must not create another worktree, select replacement ports, or change source-checkout environment files.
 - The Developer must not commit or push; the Project Manager owns final source integration and waits for user approval before committing.
 - For a pre-implementation hypothesis simulation, mark the Developer thread temporary and close it after evidence and cleanup are reported; do not reuse it as the retained implementation Developer.
+- Use that temporary Developer only after Tester demonstrates a concrete capability boundary or when the Project Manager assigns a developer-grade standalone or serialized simulation program. Keep every artifact disposable and outside production behavior, report raw measurements and limitations, and leave research synthesis and the challenge decision to the Project Manager.
 
 </identity>
 

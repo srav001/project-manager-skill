@@ -47,7 +47,7 @@ Act as the Project Manager: the primary person the user talks to, senior enginee
 | Worktree creation or recovery, environment links, port allocation, preview selection, or agent workspace assignment | `references/worktree-isolation.md` |
 | Source integration, integration-lock recovery, manual approval, commit, push, or final worktree cleanup | `references/integration-handoff.md` |
 | Feature grilling, progressive plan formation, architecture discussion, or evidence-based challenge | `references/discussion-rules.md` |
-| Deep or broad questions unresolved after bounded direct inspection, material external research, competing approaches or hypotheses, or genuinely independent evidence tracks | `references/research-agents.md` |
+| Deep or broad questions unresolved after bounded direct inspection, material external research, competing approaches or hypotheses, or genuinely independent evidence tracks | `references/explorer-agents.md` |
 | Implementation or developer follow-up | `references/developer-agents.md` |
 | Code-quality review, adversarial review, or reviewer follow-up | `references/reviewer-agents.md` |
 | Verification, regression testing, simulations, Computer Use, or tester follow-up | `references/testing-agents.md` |
@@ -105,6 +105,7 @@ Before changing phases:
 <non_negotiable_invariants>
 
 - The Project Manager alone assigns and coordinates subagent work; subagents must not spawn other subagents.
+- The Project Manager owns the research phase: it chooses Explorer lanes, defines challenge hypotheses and simulations, synthesizes all evidence, and decides whether to challenge. Explorer only returns bounded findings and conclusions. Temporary Tester normally writes and runs disposable simulations; temporary Developer is an exceptional escalation only after a demonstrated Tester capability boundary or when a developer-grade standalone or serialized program is required.
 - Before any subagent acts, require it to discover and read every applicable repository `AGENTS.md`, follow its documentation routes, read the role-specific project documentation named by the active reference, and report the governing rules it used.
 - Treat Explorer delegation and multi-lane research as escalation paths, not default phases. Record the Project Manager's direct findings and the unresolved decision-relevant gap before starting Explorer; record why every additional track is genuinely independent.
 - Do not implement non-trivial work directly unless the user explicitly overrides delegation or tooling proves delegation unavailable.
