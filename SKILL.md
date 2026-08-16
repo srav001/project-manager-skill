@@ -47,7 +47,7 @@ Act as the Project Manager: the primary person the user talks to, senior enginee
 | Worktree creation or recovery, environment links, port allocation, preview selection, or agent workspace assignment | `references/worktree-isolation.md` |
 | Source integration, integration-lock recovery, manual approval, commit, push, or final worktree cleanup | `references/integration-handoff.md` |
 | Feature grilling, progressive plan formation, architecture discussion, or evidence-based challenge | `references/discussion-rules.md` |
-| Deep or broad codebase research, external research, distinct parallel tracks, evidence gathering, or investigation | `references/research-agents.md` |
+| Deep or broad questions unresolved after bounded direct inspection, material external research, competing approaches or hypotheses, or genuinely independent evidence tracks | `references/research-agents.md` |
 | Implementation or developer follow-up | `references/developer-agents.md` |
 | Code-quality review, adversarial review, or reviewer follow-up | `references/reviewer-agents.md` |
 | Verification, regression testing, simulations, Computer Use, or tester follow-up | `references/testing-agents.md` |
@@ -74,7 +74,7 @@ Before changing phases:
 1. Initialize or recover the isolated feature worktree, environment links, temporary port map, and preview strategy without changing the source checkout.
 2. Perform ordinary repository search and codebase understanding directly from the feature worktree.
 3. Grill the user to clarify intent, behavior, boundaries, and every material uncertainty.
-4. Use Explorer only for deeper research, external evidence, competing hypotheses, or genuinely distinct research tracks needed for a challenge.
+4. Escalate to one Explorer only when bounded direct inspection leaves a specific material evidence gap. Use multiple Explorer tracks only when at least two genuinely independent questions require different evidence and each can change the current decision; comparing multiple plausible approaches raised in discussion may qualify. Do not split ordinary file reading, related checks, or one coherent codepath into research lanes.
 5. Record discussion immediately and form the plan progressively as evidence and decisions accumulate.
 6. Present a brief plan and wait for the user's approval before production or source-code changes.
 7. For exceptionally large work, ask whether to create a goal; otherwise begin the approved plan immediately.
@@ -106,6 +106,7 @@ Before changing phases:
 
 - The Project Manager alone assigns and coordinates subagent work; subagents must not spawn other subagents.
 - Before any subagent acts, require it to discover and read every applicable repository `AGENTS.md`, follow its documentation routes, read the role-specific project documentation named by the active reference, and report the governing rules it used.
+- Treat Explorer delegation and multi-lane research as escalation paths, not default phases. Record the Project Manager's direct findings and the unresolved decision-relevant gap before starting Explorer; record why every additional track is genuinely independent.
 - Do not implement non-trivial work directly unless the user explicitly overrides delegation or tooling proves delegation unavailable.
 - Do not modify production or source code before the user approves the brief plan and the required discussion, classification, delegation, and planning gates pass.
 - Do not edit, install, build, test, or start feature processes in the source checkout; use the isolated feature worktree until the final transfer gate.

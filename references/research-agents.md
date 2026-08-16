@@ -4,6 +4,7 @@
 
 - [Role Contract](#role-contract)
 - [Research Standard](#research-standard)
+- [Research Escalation Gate](#research-escalation-gate)
 - [Assignment Prompt](#assignment-prompt)
 - [Acceptance by the Project Manager](#acceptance-by-the-project-manager)
 
@@ -23,7 +24,7 @@
 
 <purpose>
 
-Handle deep, broad, external, hypothesis-driven, or distinct-track research that exceeds ordinary Project Manager codebase exploration. Explorer supports challenges and difficult investigations; it is not the default owner of routine file search or basic code understanding.
+Handle a specific deep, broad, external, hypothesis-driven, comparative, or independent question that remains material after bounded Project Manager inspection. Explorer supports difficult investigations; it is not a default phase, a general thoroughness signal, or the owner of routine repository reading.
 
 </purpose>
 
@@ -33,9 +34,9 @@ Handle deep, broad, external, hypothesis-driven, or distinct-track research that
 
 | Research shape | Owner |
 |---|---|
-| Routine file or symbol search, reading a small relevant codepath, project-instruction lookup, or nearby-pattern inspection | Project Manager |
-| Broad subsystem tracing, deep codepath analysis, external research, competing hypotheses, alternative approaches, or simulation planning | Explorer |
-| Multiple genuinely independent questions | One bounded Explorer track per question when concurrency allows |
+| A question answerable from a bounded set of files, project docs, configuration, logs, nearby patterns, or one coherent codepath | Project Manager, even when several reads or related checks are needed |
+| One deep unresolved question, broad subsystem trace, material external inquiry, competing hypothesis, approach comparison, or simulation plan | One Explorer after the escalation gate passes |
+| At least two questions requiring different evidence or methods and independently affecting the current decision | One bounded Explorer track per qualifying question when concurrency allows |
 
 </delegation_boundary>
 
@@ -52,7 +53,8 @@ Handle deep, broad, external, hypothesis-driven, or distinct-track research that
 <research_rules>
 
 - Keep each assignment narrow and answerable.
-- Treat the assigned track count as problem-driven, not quota-driven.
+- Use the fewest tracks that preserve genuinely independent questions; zero or one is the normal result.
+- Do not split one claim across lanes merely to parallelize file reads, logs, corroboration, or related checks.
 - Investigate alternate hypotheses when the cause is uncertain.
 - Capture exact paths, line references, commands, log excerpts, and links where useful.
 - Separate observed facts, inferences, and unresolved uncertainty.
@@ -61,6 +63,32 @@ Handle deep, broad, external, hypothesis-driven, or distinct-track research that
 - Research only concerns that can affect the current feature or its immediate execution paths.
 
 </research_rules>
+
+## Research Escalation Gate
+
+<escalation_gate>
+
+Before creating Explorer, the Project Manager must record:
+
+1. the current decision the research can change;
+2. the bounded direct inspection already completed, including relevant files, docs, configuration, logs, or codepaths;
+3. the exact evidence gap that remains unresolved;
+4. why another bounded direct read is insufficient;
+5. for every additional track, its distinct question, evidence source or method, and independent decision effect.
+
+If items 1 through 4 are absent, continue direct Project Manager inspection and do not create Explorer. If item 5 is absent for an additional lane, merge it into the existing investigation or omit it.
+
+</escalation_gate>
+
+<qualifying_examples>
+
+| Qualifies | Does not qualify |
+|---|---|
+| Two plausible architecture approaches need separate project and external evidence before selection | Three files must be read to understand one implementation |
+| Independent runtime and data-integrity hypotheses require different evidence | Several checks corroborate the same Git or codepath claim |
+| One deep subsystem trace remains unclear after a bounded direct pass | Parallel capacity is available or the feature is merely non-trivial |
+
+</qualifying_examples>
 
 <hypothesis_simulation_workflow>
 
@@ -99,6 +127,14 @@ You are the subagent named `explorer`. Perform read-only research. Do not modify
 - This distinct track: [track]
 - Why this track is independent: [reason]
 </track_identity>
+
+<escalation_basis>
+- Decision this result can change: [decision]
+- Direct inspection already completed: [files, docs, configuration, logs, or codepaths]
+- Exact unresolved evidence gap: [gap]
+- Why bounded direct inspection is insufficient: [reason]
+- Why this is independent from every other active track: [reason, or no other track]
+</escalation_basis>
 
 ## Required Context
 
@@ -149,6 +185,8 @@ You are the subagent named `explorer`. Perform read-only research. Do not modify
 
 - [ ] The answer is based on inspected evidence.
 - [ ] The assignment was a genuinely distinct track rather than delegated routine searching.
+- [ ] Bounded direct inspection and a decision-relevant unresolved gap were recorded before delegation.
+- [ ] Any concurrent tracks use different evidence or methods and can independently change the decision.
 - [ ] Facts and inferences are clearly separated.
 - [ ] Relevant project instructions and source paths were considered.
 - [ ] Material external claims use multiple credible sources.

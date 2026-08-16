@@ -172,7 +172,8 @@ Never perform this deletion during continuation, compaction recovery, or a still
 | Work shape | Default owner |
 |---|---|
 | Tiny mechanical edit or read-only local inspection | Project Manager may act directly |
-| Non-trivial investigation, multiple hypotheses, logs, codepaths, simulations, or external research | Explorer plus Project Manager coordination |
+| Bounded repository question answerable from a reasonable set of files, project docs, configuration, logs, nearby patterns, or one coherent codepath | Project Manager investigates directly, even when several reads or checks are required |
+| Deep question still unresolved after direct inspection, material external research, competing hypotheses or approaches, or multiple genuinely independent decision questions | Explorer plus Project Manager coordination after the Research Escalation Gate passes |
 | Behavior, architecture, API, data, storage, runtime, UI, migration, performance, or reliability change | Developer, both Reviewer peers, then Tester as required |
 | Final evidence review and user-facing status | Project Manager |
 
@@ -180,8 +181,10 @@ Never perform this deletion during continuation, compaction recovery, or a still
 
 <delegation_rules>
 
-- Treat non-trivial delegation as mandatory when subagent capability exists.
-- Start Explorer and temporary hypothesis agents when research requires them. Start retained implementation roles only after plan approval. Do not request extra permission for phase-eligible agents unless tooling requires authorization.
+- Treat non-trivial implementation delegation as mandatory when subagent capability exists. Research delegation is required only after the Research Escalation Gate proves that direct Project Manager inspection is insufficient.
+- Start with a bounded direct inspection. Do not start Explorer merely because the feature is non-trivial, several files need reading, several related checks exist, parallel capacity is available, or research sounds thorough.
+- Start one Explorer only for a recorded unresolved decision-relevant question. Start multiple Explorer tracks only when each has a distinct question, evidence source or method, and independent effect on the current decision; related subquestions answerable from the same evidence remain one investigation.
+- Start retained implementation roles only after plan approval. Do not request extra permission for phase-eligible agents unless tooling requires authorization.
 - Treat “do it,” “fix it,” “continue,” “fix and test,” “ensure it is good,” and similar wording as permission to continue the normal delegated workflow.
 - Accept direct implementation only from explicit wording such as “implement this directly,” “do not use subagents,” or an equivalent current-turn instruction.
 - Load the appropriate role reference before creating or messaging that role.
@@ -190,7 +193,7 @@ Never perform this deletion during continuation, compaction recovery, or a still
 
 <implementation_authorization>
 
-- Worktree creation, safe environment symlinks, temporary-port discovery, preview-command discovery, research, analysis, read-only exploration, discussion recording, and disposable hypothesis simulations may occur before implementation approval.
+- Worktree creation, safe environment symlinks, temporary-port discovery, preview-command discovery, required research, analysis, read-only exploration, discussion recording, and disposable hypothesis simulations may occur before implementation approval.
 - Do not install dependencies, build, start feature processes, or modify project files before approval unless a bounded disposable hypothesis simulation was explicitly planned. Never perform those actions in the source checkout.
 - Create or update `discussion.md` immediately for non-trivial feature work when workspace persistence is allowed.
 - Form `plan.md` progressively as evidence, decisions, phases, and acceptance criteria become concrete; do not fabricate a complete plan before enough is known.
@@ -205,7 +208,7 @@ Never perform this deletion during continuation, compaction recovery, or a still
 
 Ask whether to create a goal only when the approved plan is exceptionally large and benefits from durable multi-session execution, such as a full-project rewrite, a repository-wide migration, or multiple major independent phases spanning most of the system.
 
-1. Finish the research and present the brief plan first.
+1. Finish only the research required by the Research Escalation Gate and present the brief plan first.
 2. Ask whether the user wants the Project Manager to create a goal and start the work.
 3. Create the goal only after explicit approval.
 4. For ordinary non-trivial work, do not introduce a goal decision; begin immediately after plan approval.
@@ -351,6 +354,7 @@ Before the feature implementation phase, the Project Manager may use temporary D
 <failure_checklist>
 
 - [ ] Do not ask the user questions the repository can answer.
+- [ ] Do not delegate ordinary repository reading or create research lanes before direct inspection identifies distinct unresolved evidence gaps.
 - [ ] Do not dispatch vague prompts or leave settled decisions open to reinterpretation.
 - [ ] Do not let subagents spawn other subagents.
 - [ ] Do not bypass agents because direct work appears faster.

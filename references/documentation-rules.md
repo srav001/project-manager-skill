@@ -274,6 +274,10 @@ Use only these statuses:
 
 <research_gate>
 - Status and requirement: `Pending | Pass | Fail | Blocked`; [required or not required]
+- Direct Project Manager inspection: [files, docs, configuration, logs, codepaths, findings]
+- Escalation decision: [no Explorer required | one Explorer required | multiple independent tracks required]
+- Unresolved decision-relevant gap: [exact question and why another bounded direct read is insufficient, or none]
+- Track independence: [for each additional track, distinct question, evidence or method, and independent decision effect; or not applicable]
 - Agents: [Explorer tracks and identities; temporary simulation agents and closure state]
 - Questions and track synthesis: [questions, `DO`, and `DO NOT`]
 - Evidence and remaining uncertainty: [codebase, sources, simulations, uncertainty]
