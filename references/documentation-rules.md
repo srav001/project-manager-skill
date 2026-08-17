@@ -19,6 +19,7 @@ Keep durable product and architecture context:
 - numbered accepted decisions;
 - rejected alternatives and evidence-based reason;
 - architecture boundary contract and approved expansions;
+- reported optional capabilities, unsupported hypotheses, and scope decisions only when they materially affect the current feature;
 - root cause and broader bug class for bug work;
 - genuinely unresolved questions and accepted residual risk.
 
@@ -43,13 +44,14 @@ Use an append-only numbered decision log. When an open item is resolved, remove 
 1. [decision, evidence ids, approval]
 
 ## Rejected Alternatives
-- [alternative] — [correctness or feasibility reason]
+- [alternative] — [scope, authorization, correctness, or feasibility reason]
 
 ## Architecture Boundary
 - Feature-owned roots: [globs]
 - Allowed consumer seams: [globs and purpose]
 - Forbidden shared systems: [globs/systems]
 - Generated/schema/migration/lockfile policy: [rule]
+- Material execution/deployment assumptions: [approved values or N/A]
 - Material expansion authority: [approval or pending]
 
 ## Open Items
@@ -72,6 +74,16 @@ Keep state in compact tables. Update status cells in place. Preserve failures th
 | `Pass` | Gate evidence is complete |
 | `Fail` | Gate requires correction |
 
+### Finding states
+
+| State | Meaning |
+|---|---|
+| `Proposed` | A role reported the problem; Project Manager disposition is pending |
+| `Authorized` | The surface-level Finding Scope Screen accepted the role's `blocking in-scope defect` classification for correction intake |
+| `Excluded` | It is recorded with a non-implementation classification and reason |
+| `Corrected` | Developer supplied correction proof; Reviewer closure is pending |
+| `Closed` | Originating role verified closure on the recorded revision |
+
 ### Required state
 
 ```md
@@ -93,6 +105,8 @@ Keep state in compact tables. Update status cells in place. Preserve failures th
 |---|---|
 | Outcome and non-goals | [value] |
 | Acceptance criteria | [value] |
+| Excluded optional capabilities | [value or none] |
+| Material execution/deployment assumptions | [approved values or N/A] |
 | Feature-owned roots | [globs] |
 | Allowed consumer seams | [globs and purpose] |
 | Forbidden shared systems | [globs/systems] |
@@ -136,9 +150,9 @@ Keep state in compact tables. Update status cells in place. Preserve failures th
 | Publish | [commit] | [status] | [ref] | [condition] |
 
 ## Findings
-| ID | Source | Class | Severity/blocking | Target SHA | State | Correction/proof SHA |
-|---|---|---|---|---|---|---|
-| CQ-1 | Code Quality | [class] | [value] | [SHA] | Open | [pending] |
+| ID | Source | Defect class | Scope source and proof | Classification | Target SHA | State/disposition | Correction/proof SHA |
+|---|---|---|---|---|---|---|---|
+| CQ-1 | Code Quality | [class] | [criterion/contract/flow and evidence] | [classification] | [SHA] | [state and reason] | [pending or N/A] |
 
 ## Event Log
 - [timestamp/marker] — [one-line state change with evidence id]
@@ -163,10 +177,12 @@ Any identity mismatch is a hard stop. Mark dependent gates invalid until Git-ver
 ## Findings and correction rounds
 
 - Record one row per finding. Do not duplicate it in a correction-package narrative.
-- Preserve author, class, evidence, severity, blocking state, target SHA, and closure proof.
+- Preserve author, defect class, scope source, proof, evidence, classification, disposition reason, target SHA, and closure proof when implemented.
+- Send only `blocking in-scope defect` findings to a Developer. Record `unrelated existing defect`, `optional additional capability`, and `unsupported hypothesis` without implementing them.
+- Use `scope decision required` only when the unresolved premise materially prevents correct planning or verification of the approved request.
+- Keep excluded findings visible to their originating role during re-review. Reopen a settled exclusion only for materially new evidence or newly approved scope; record an active scope-mapping dispute as `scope decision required`.
 - Mark correction-round boundaries in the event log and checkpoint table.
-- When a class recurs across two rounds, mark the dependent queue blocked and record the Reviewer's structural assessment plus user decision.
-- Batch non-blocking findings without allowing them to disappear.
+- When a demonstrated authorized class recurs across two rounds, mark the dependent queue blocked and record the Reviewer's structural assessment plus user decision.
 - After dual PASS, record the authority that reopened review when it occurs.
 
 ## Maintenance and recovery

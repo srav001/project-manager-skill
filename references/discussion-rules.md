@@ -27,10 +27,11 @@ Use one Explorer for one qualifying gap. Use multiple tracks only when each need
 
 Grilling discovers requirements; it does not oppose the request and needs no evidence.
 
-- Ask about intent, user flow, inputs, outputs, state, boundaries, failure behavior, integrations, migration, compatibility, non-goals, and acceptance criteria.
+- Ask about intent, user flow, inputs, outputs, state, boundaries, non-goals, and acceptance criteria. Ask about failure behavior, integrations, migration, compatibility, or operating models only when the current request materially affects them.
 - Ask a small coherent batch of related questions.
 - Continue until implementation would not require guessing.
 - Stay on current reachable behavior; do not invent distant support or unlikely future cases.
+- Resolve an execution, deployment, recovery, or concurrency premise only when the current approved behavior materially depends on it. Do not grill the user about speculative operating models.
 
 ## Architecture boundary discussion
 
@@ -41,6 +42,7 @@ Make removability and ownership explicit before planning implementation:
 - forbidden shared packages or systems;
 - fixed API, event, schema, storage, and error contracts;
 - generated, migration, and lockfile policy;
+- material execution or deployment assumptions required by the current feature;
 - what requires renewed user approval.
 
 When the user requests an isolated experimental feature, translate that into path globs and narrow seam purposes that the Project Manager can check mechanically and Code Quality Reviewer can judge architecturally.
@@ -76,6 +78,7 @@ When a challenge depends on a measurable claim, Project Manager defines the fals
 The brief plan must state:
 
 - intended outcome, scope, and non-goals;
+- the smallest complete implementation approach and optional capabilities deliberately excluded;
 - architecture boundary and fixed contracts;
 - one- or multi-Developer delivery shape with evidence;
 - acceptance criteria and verification approach;
@@ -89,6 +92,7 @@ Explicit approval authorizes ordinary implementation immediately. Reapprove any 
 - Every Explorer lane passed the escalation gate.
 - Grilling resolved material uncertainty.
 - Boundary and parallelism decisions are explicit.
+- The plan is the smallest complete approach for the approved behavior and does not add unrequested capabilities.
 - Bug work includes root-cause and bug-class reasoning.
 - Every challenge is evidence-backed and currently relevant.
 - Open items are genuinely unresolved.

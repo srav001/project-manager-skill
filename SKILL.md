@@ -54,14 +54,24 @@ Before starting the workflow, verify that the current harness exposes configured
 8. Require both Reviewers to approve the same final SHA, then let Tester execute the prepared integrated verification. Apply the fresh-Code-Quality-review rule after every Tester-driven production change.
 9. After every feature gate passes, follow the separate transfer approval, uncommitted source inspection, commit-and-push approval, publication, and cleanup sequence.
 
+## Minimal-scope standard
+
+- Deliver the smallest complete and correct change that satisfies the approved request. "Smallest" bounds scope and design; it never excuses a demonstrated defect in behavior the approved usage can reach.
+- Treat a capability as in scope only when an approved acceptance criterion, a binding repository contract, or a demonstrated regression caused or exposed by the change requires it. Scaling, recovery, retries, concurrency hardening, extensibility, configuration, migration, compatibility, and extra-case behavior are otherwise out of scope until the user approves them.
+- Put the burden of proof on the role reporting a problem. Absence of disproof is not evidence, and a hypothesis never enters implementation as a requirement.
+- Classify every reported problem before acting: `blocking in-scope defect`, `unrelated existing defect`, `optional additional capability`, `unsupported hypothesis`, or `scope decision required`. Only a `blocking in-scope defect` enters a Developer correction package.
+- Ask the user about an unresolved premise only when it materially prevents correct planning or verification of the current approved request. Otherwise record it without expanding the feature.
+- Keep excluded findings visible with their disposition and reason. Reopen a settled exclusion only for materially new evidence or a newly approved requirement; resolve an active scope-mapping disagreement through the user.
+
 ## Project Manager boundaries
 
 - Perform only cheap coordination checks: assignment and report completeness, changed-path allowlist, lane ownership collision, revision identity, workspace confinement, required evidence presence, and gate status.
+- Treat finding intake as a quick surface-level scope screen. Check that required fields and evidence pointers exist and that the declared scope maps to the approved contract; do not reproduce the flow, inspect code to validate the finding, rerun evidence, or judge technical sufficiency.
 - Never decide code quality, architectural merit, behavioral correctness, failure-path safety, or test adequacy as an extra approval layer.
 - Never author a technical correction finding. Send a concern as a bounded question to the responsible Reviewer; it becomes a finding only if that Reviewer supports it with evidence.
 - After both Reviewers pass a SHA, reopen technical review only for Tester evidence, a user instruction, or a Reviewer's own retraction.
 - Treat any revision-identity anomaly as a hard stop. Verdicts tied to an unverified revision are void.
-- Stop the correction treadmill when the same finding class recurs across two correction rounds. Require the responsible Reviewer to provide a structural assessment, then bring the architecture decision to the user before more dependent correction work.
+- Stop the correction treadmill when the same demonstrated, authorized in-scope finding class recurs across two correction rounds. Require the responsible Reviewer to provide a structural assessment, then bring any boundary or architecture decision to the user before more dependent correction work.
 
 ## Non-negotiable invariants
 
@@ -73,6 +83,7 @@ Before starting the workflow, verify that the current harness exposes configured
 - Require a mandatory final full-diff pass from both Reviewers on the same SHA, even when incremental re-review was used.
 - Run verdict-bearing integrated testing only after same-SHA dual approval.
 - Keep transfer approval separate from commit-and-push approval.
+- Never implement a reported problem unless the shared scope-and-evidence filter classifies it as a `blocking in-scope defect`.
 - Do not claim completion without the Developer, both Reviewers, Tester, and publication evidence required by the approved plan.
 
 ## Recover after compaction

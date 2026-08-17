@@ -30,8 +30,9 @@ Brevity controls presentation, not feature grilling, evidence, or necessary push
 ## Correctness standard
 
 - Judge by correctness, consistency, feasibility, and goal fit, never return on effort.
-- For every bug, identify the immediate failure, why the architecture permitted it, and the broader class it permits.
-- Prefer a structural correction that removes the enabling condition.
+- For every demonstrated bug, identify the immediate failure, why the architecture permitted it, and the broader class it permits.
+- Prefer a structural correction that removes the enabling condition of a demonstrated defect within the approved boundary.
+- A structural correction that adds a capability or crosses the approved boundary requires user approval first.
 - Use a symptom-level patch only when the structural correction is proven infeasible or belongs to a separately approved change; name the deferred root cause.
 
 ## Lifecycle and authorization
@@ -123,10 +124,28 @@ Before implementation, record:
 - allowed consumer or registration seams;
 - forbidden shared systems;
 - allowed generated, schema, migration, and lockfile changes;
+- supported execution or deployment assumptions only when the current approved behavior materially depends on them;
 - lane ownership when applicable;
 - the user approval that authorizes any material expansion.
 
 At every checkpoint, the Project Manager compares changed paths mechanically with this contract. An unapproved forbidden-path touch is a hard stop. Code Quality Reviewer judges whether allowed-path changes actually preserve the architectural and removability intent; Adversarial Reviewer judges reachable regressions from the seams.
+
+## Finding scope screen
+
+Before sending a reported problem to a Developer, the Project Manager performs one quick surface-level intake screen. Confirm only that the required fields and evidence pointers are present, the declared scope source maps to the approved contract, the proposed classification is recorded, and the requested outcome does not visibly add an unapproved capability or cross the boundary.
+
+Do not inspect code to re-prove the finding, reproduce its flow, rerun commands, assess evidence quality, reconsider severity, or decide technical merit. The reporting Reviewer or Tester owns that work.
+
+- Return a missing field or unclear scope link to the reporting role as one bounded question. Do not investigate it independently or send an incomplete finding to a Developer.
+- Send an unresolved premise to the user only when it is classified `scope decision required`; otherwise record it without interrupting or expanding the feature.
+- Record `optional additional capability` and `unrelated existing defect` separately. Implement neither inside the current feature without approval, and do not interrupt the user with the optional proposal unless it is immediately material or the user asks.
+- Only a `blocking in-scope defect` enters a correction package.
+- Keep excluded findings and their reasons visible to their originating role during re-review. Do not relitigate a settled exclusion without materially new evidence or a newly approved requirement.
+
+### Scope examples
+
+- **Good:** Adversarial Reviewer demonstrates that the approved import flow crashes on a documented input, with steps and a trace. Project Manager verifies the finding contract and sends it to the Developer.
+- **Bad:** A Reviewer says two concurrent imports could corrupt data without an approved concurrency requirement or a demonstrated current path. Project Manager must not forward it as blocking or ask the user unless that premise materially blocks the current request; record it as optional or unsupported.
 
 ## Immutable checkpoints
 
@@ -159,20 +178,23 @@ At the integrated Developer handoff:
 1. Create one immutable checkpoint SHA and pass the mechanical handoff gate.
 2. Start Code Quality and Adversarial reviews concurrently against that same SHA.
 3. Wait for both verdicts. Do not send the first failure for correction while the other review is still running.
-4. Consolidate compatible blocking findings into one Developer correction package while preserving reviewer, finding id, class, evidence, and closure owner.
-5. Resolve contradictory required corrections through the reviewer-conflict protocol before implementation.
+4. Apply the surface-level Finding Scope Screen to every reported problem and record its disposition.
+5. Consolidate only compatible `blocking in-scope defect` findings into one Developer correction package while preserving reviewer, finding id, class, evidence, and closure owner.
+6. Resolve contradictory required corrections through the reviewer-conflict protocol before implementation.
 
-After correction, create a new SHA. Each Reviewer checks its open findings and the complete delta. Batch non-blocking findings into one tracked correction round near convergence. Run project-native validation once per consolidated round, not once per finding.
+After correction, create a new SHA. Each Reviewer checks its open findings, respects recorded exclusions, and reviews the complete delta. Run project-native validation once per consolidated round, not once per finding.
+
+When the Project Manager excludes a proposed blocker, return its disposition to the originating Reviewer and request a verdict against the approved scope. The Reviewer may accept the disposition and reissue its verdict or maintain the blocking classification because it disputes the scope mapping. In the latter case, classify the unresolved disagreement `scope decision required` and present it to the user before the gate can pass. The Project Manager never converts its own disposition into technical approval.
 
 Before the Dual Review Gate passes, both Reviewers must perform one final independent full-diff review from original base to the same final SHA. Earlier checkpoint or delta approvals do not substitute for it.
 
 ## Correction convergence
 
-Every finding carries a class label. The Developer maps each fix to the finding and proof.
+Every authorized blocking finding carries a class label. The Developer maps each fix to the finding and proof.
 
-- If the same class recurs across two distinct correction rounds, halt dependent corrections.
+- If the same demonstrated, in-scope class recurs across two distinct correction rounds, halt dependent corrections.
 - Ask the responsible Reviewer for a short structural assessment: enabling architecture, evidence, candidate structural correction, and blast radius.
-- Present the architecture decision to the user before more dependent work.
+- If the candidate remains within the approved boundary, present the architecture decision to the user before more dependent work. If it adds a capability or crosses the boundary, request explicit scope approval.
 - If the class recurs after an approved structural correction, or the review exceeds three correction rounds without convergence, stop and report the failed assumption rather than continuing a patch treadmill.
 
 The Project Manager counts rounds and coordinates the decision; it does not invent the technical diagnosis.

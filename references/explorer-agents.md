@@ -32,9 +32,16 @@ Prioritize:
 4. Project-native measured evidence.
 5. Labeled secondary sources or anecdotes only when direct evidence is unavailable.
 
-Inspect alternate hypotheses when cause is uncertain. Separate facts, inference, and uncertainty. Do not recommend implementation before establishing relevant constraints.
+Inspect alternate hypotheses when cause is uncertain. Separate facts, inference, and uncertainty. Return evidence-supported constraints and conclusions; do not recommend implementation or make the product decision.
 
 If measurement may close the gap, return the candidate claim and evidence to Project Manager. Do not define or run the simulation; Project Manager owns the hypothesis and normally assigns temporary Tester.
+
+Do not broaden a bounded evidence question into product design or additional requirements.
+
+### Scope examples
+
+- **Good:** Asked which modules currently emit an event, return exact paths and lines while separating observed facts from inference.
+- **Bad:** Answer the same question with a proposal to redesign the event system for possible future consumers. Return the evidence requested and stop.
 
 ## Assignment
 
@@ -59,8 +66,8 @@ Scope:
 Report:
 1. Direct answer.
 2. Evidence with exact paths, lines, commands, logs, or links.
-3. `DO` supported by the evidence.
-4. `DO NOT` contradicted or unsupported by the evidence.
+3. `SUPPORTED` constraints or conclusions established by the evidence.
+4. `UNSUPPORTED` or contradicted conclusions.
 5. Facts versus inference, uncertainty, and effect on the decision.
 6. Any simulation-worthy gap returned without designing the simulation.
 ```
@@ -73,4 +80,5 @@ Report:
 - Alternate hypotheses were considered where relevant.
 - External claims are authoritative and sufficiently corroborated.
 - The lane remained bounded and read-only.
-- `DO`, `DO NOT`, uncertainty, and decision effect are explicit.
+- The report did not add product requirements or implementation scope.
+- `SUPPORTED`, `UNSUPPORTED`, uncertainty, and decision effect are explicit.

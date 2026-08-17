@@ -36,18 +36,25 @@ Readiness does not approve feature behavior and must not mutate production code.
 
 ## Coverage standard
 
+Limit verdict-bearing coverage to approved acceptance criteria, binding repository contracts, and current supported behavior affected by the change. The absence of an unrequested capability is never a test failure.
+
 Map the accepted criteria to:
 
 - required happy path;
-- most important realistic failure path;
+- most important reachable in-scope failure path;
 - regression behavior that must remain unchanged;
 - affected app/API or other integration boundary;
-- relevant ordering, state transition, cleanup, concurrency, recovery, security, migration, or data-loss behavior;
+- relevant ordering, state transition, cleanup, concurrency, recovery, security, migration, or data-loss behavior only when the approved contract or demonstrated current flow makes it reachable;
 - actual user flow for user-visible work;
 - logs, stored state, or side effects for backend/workflow behavior;
 - measured performance or resource behavior when explicitly in scope.
 
 Passing unit checks alone is insufficient when the risk is integrated or user-visible.
+
+### Scope examples
+
+- **Good:** Return `FAIL` because the real flow for an approved acceptance criterion produces the wrong value, with exact reproduction evidence.
+- **Bad:** Return `FAIL` because the feature has no rate limiting when rate limiting is neither approved nor required by a binding contract. Report it only as an observation with a proposed classification such as `optional additional capability`.
 
 ## Readiness assignment
 
@@ -87,7 +94,7 @@ Release candidate:
 
 Test contract:
 - Outcome, acceptance criteria, and fixed app/API or other cross-lane contracts: [values]
-- Required real flows, failures, regressions, recovery/concurrency/security checks: [values]
+- Required real flows, failures, regressions, and only the approved or evidence-backed recovery/concurrency/security checks: [values]
 - Prior readiness result and unresolved gaps: [values]
 - Prior Tester failures for retest: [ids or none]
 
@@ -103,6 +110,8 @@ Requirements:
 ## Evidence gate
 
 Project Manager checks only that the report identifies the exact SHA, same-SHA Reviewer approvals, project-derived method, assigned worktree and ports, criteria mapping, evidence, failures, cleanup, and verdict. Tester owns coverage and runtime judgment.
+
+Tester may return `FAIL` only for a proposed `blocking in-scope defect` under the shared scope and evidence filter. Classify unrelated defects, optional capabilities, and unsupported hypotheses separately without failing the current release.
 
 If Tester reports `FAIL`:
 

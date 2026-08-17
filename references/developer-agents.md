@@ -29,11 +29,17 @@ For example, app and API lanes may run concurrently when their request, response
 Developer must:
 
 - follow all repository rules discovered through `agent-contract.md`;
-- implement the accepted behavior and architecture boundary exactly;
+- implement the smallest complete and correct change for the accepted behavior and architecture boundary;
 - diagnose architectural root cause and broader bug class before fixing a bug;
+- treat root-cause analysis as diagnosis, not authority to implement broader class-wide capabilities outside the approved boundary;
 - preserve established architecture, types, validation boundaries, error handling, cleanup, security, migration, performance, and local patterns;
 - avoid speculative scope, duplicate validation, unnecessary helpers or wrappers, defensive branches, casts, fallbacks, unrelated cleanup, and formatting churn;
 - run the repository-required validation without inventing a new testing model.
+
+### Scope examples
+
+- **Good:** A changed function signature breaks an existing supported caller. Fix that caller because the change caused a reachable regression.
+- **Bad:** Add a retry wrapper and configuration flag in case an upstream service becomes unreliable. No approved criterion requires that capability; report the idea and leave it unimplemented.
 
 ## Initial assignment
 
@@ -57,7 +63,7 @@ Approved work:
 
 Required actions:
 1. Complete shared and role-specific repository-rule discovery before editing.
-2. Implement only the owned scope. Stop before changing a fixed contract, forbidden path, shared generated artifact, or another lane's ownership.
+2. Implement only the smallest complete change inside the owned scope. Stop before changing a fixed contract, forbidden path, shared generated artifact, another lane's ownership, or adding an unapproved capability.
 3. Validate with project-native commands and behavior checks.
 4. Do not stage, commit, push, create worktrees, select ports, or operate in the source checkout.
 
@@ -99,7 +105,9 @@ Project Manager checks only report completeness, path allowlist, ownership, work
 
 Give the retained integration Developer one consolidated correction package after both final reviews reach the barrier.
 
-Every item must include finding id, reviewer, class, evidence, required outcome, blocking state, and target SHA. Developer must return a one-to-one `finding → fix → proof` map and identify any contradiction or structural contract change before editing.
+Every item must be classified `blocking in-scope defect` and include finding id, reviewer, scope source, class, proof, evidence, smallest required outcome, and target SHA. Developer must return a one-to-one `finding → fix → proof` map and identify any contradiction or structural contract change before editing.
+
+Implement only each finding's required outcome. If a correction would add a capability, depend on an unapproved premise, or cross the approved boundary, stop and return it to the Project Manager instead of editing.
 
 Developer must not patch repeatedly around a recurring class. When the Project Manager reports a two-round class recurrence, wait for the Reviewer's structural assessment and the user's architecture decision.
 
