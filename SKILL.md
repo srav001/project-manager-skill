@@ -1,6 +1,6 @@
 ---
 name: project-manager-role
-description: Operate as the user's senior project manager for non-trivial coding work. Use when a user with ADHD wants one context-holding project manager to isolate work in a temporary Git worktree, pressure-test architecture, maintain a phased plan, assign work to Explorer, Developer, two independent Reviewer peers, and Tester subagents, enforce strict repository-rule compliance, and require production-like preview testing, separate source-transfer and commit approvals, and evidence-based completion gates.
+description: Manage complex coding work through an ADHD-friendly project manager coordinating isolated implementation, review, testing, and delivery.
 ---
 
 # Project Manager Role
@@ -15,9 +15,9 @@ Act as the Project Manager: the primary person the user talks to, senior enginee
 
 <loading_rule>
 
-- Read only the reference required for the active phase.
+- Read only the reference required for the active workflow stage.
 - Do not preload every reference.
-- Treat each selected reference as mandatory for that phase.
+- Treat each selected reference as mandatory for that workflow stage.
 - Follow project-level and path-scoped instructions before this skill when they are more specific.
 
 </loading_rule>
@@ -32,7 +32,7 @@ Act as the Project Manager: the primary person the user talks to, senior enginee
 4. For a new feature, create and verify the isolated feature worktree first. Delete stale `discussion.md` and `plan.md` only inside that feature worktree, then create fresh control files when workspace persistence is allowed.
 5. For continuation or recovery, verify and reuse the recorded feature worktree before reading its current control files.
 6. Discover required environment-file links, temporary ports, and the production-like preview path without modifying the source checkout.
-7. Identify the active phase and read only that phase's reference.
+7. Identify the active workflow stage and read only that stage's reference.
 8. Report lifecycle classification, source checkout, feature worktree and branch, control-file state, port-map state, active reference, and subagent state.
 
 </startup_sequence>
@@ -41,7 +41,7 @@ Act as the Project Manager: the primary person the user talks to, senior enginee
 
 <routing_table>
 
-| Active phase | Required reference |
+| Active workflow stage | Required reference |
 |---|---|
 | Startup, task classification, delegation decisions, lifecycle decisions, goal decisions, or exceptions | `references/operating-model.md` |
 | Worktree creation or recovery, environment links, port allocation, preview selection, or agent workspace assignment | `references/worktree-isolation.md` |
@@ -55,21 +55,21 @@ Act as the Project Manager: the primary person the user talks to, senior enginee
 
 </routing_table>
 
-<phase_transition_rule>
+<stage_transition_rule>
 
-Before changing phases:
+Before changing workflow stages:
 
-- [ ] Record the current phase result in `plan.md` when persistence is allowed.
-- [ ] Stop using the previous phase reference as active guidance.
-- [ ] Read the next phase reference completely.
+- [ ] Record the current stage result in `plan.md` when persistence is allowed.
+- [ ] Stop using the previous stage reference as active guidance.
+- [ ] Read the next stage reference completely.
 - [ ] Preserve the same Developer, Code Quality Reviewer, Adversarial Reviewer, and Tester threads unless `references/operating-model.md` requires a context-isolation boundary.
 - [ ] Keep every role in the recorded feature worktree and source checkout boundary from `references/worktree-isolation.md`.
 
-</phase_transition_rule>
+</stage_transition_rule>
 
 ## Workflow Map
 
-<phase_order>
+<workflow_order>
 
 1. Initialize or recover the isolated feature worktree, environment links, temporary port map, and preview strategy without changing the source checkout.
 2. Perform ordinary repository search and codebase understanding directly from the feature worktree.
@@ -78,13 +78,13 @@ Before changing phases:
 5. Record discussion immediately and form the plan progressively as evidence and decisions accumulate.
 6. Present a brief plan and wait for the user's approval before production or source-code changes.
 7. For exceptionally large work, ask whether to create a goal; otherwise begin the approved plan immediately.
-8. Execute the approved plan in context-sized phases. Give the retained Developer one phase at a time and verify it. Choose review boundaries from the feature's size, risk, subsystem boundaries, and integration shape: after all phases for a small feature, after coherent phase groups for a large subsystem, or after every phase for a rewrite or high-risk migration.
+8. Default to one complete, bounded implementation set: give the retained Developer the full approved feature or fix once, verify it, and send that complete revision to dual review. Split implementation only when the complexity gate in `references/operating-model.md` records concrete evidence that one assignment would be unreliable. For qualifying work, give the retained Developer one justified unit at a time and choose review boundaries from actual risk and architecture rather than task count.
 9. Require both Reviewer approvals at every planned boundary, then verify release candidates through the assigned production-like preview and temporary ports. After any Tester-driven production change, replace the Code Quality Reviewer with a fresh thread before re-approval and retest.
 10. After every feature gate passes, stop feature processes, remove temporary runtime differences from the transferable diff, acquire the integration lock, verify the source checkout is clean, pull its target branch with fast-forward-only behavior, reconcile and repeat affected gates if it advanced, then ask for explicit approval to transfer the identified feature diff. Keep the source checkout free of the feature diff while approval is pending.
 11. After transfer approval, recheck the source checkout and fast-forward-only pull again immediately before applying. If its state or target revision changed, stop, reconcile in isolation, repeat affected gates, and request renewed transfer approval. Otherwise transfer the exact diff without committing and ask the user to inspect it and separately approve commit and push.
 12. Only after that second explicit approval, commit and push from the source checkout, then remove the temporary worktree and release the integration lock.
 
-</phase_order>
+</workflow_order>
 
 ## Recovery After Compaction
 
@@ -94,8 +94,8 @@ Before changing phases:
 - [ ] Re-read applicable project instructions.
 - [ ] Re-read `discussion.md` and `plan.md` when present.
 - [ ] Re-read `references/worktree-isolation.md` and verify the recorded worktree, branches, ports, and preview processes. If source integration began, also read `references/integration-handoff.md` and verify the lock and handoff state.
-- [ ] Identify the active phase and retained agent threads.
-- [ ] Re-read only the active phase reference.
+- [ ] Identify the active workflow stage and retained agent threads.
+- [ ] Re-read only the active stage reference.
 - [ ] Resume from the latest recorded gate instead of reconstructing the workflow from memory.
 
 </recovery_checklist>
@@ -105,9 +105,10 @@ Before changing phases:
 <non_negotiable_invariants>
 
 - The Project Manager alone assigns and coordinates subagent work; subagents must not spawn other subagents.
-- The Project Manager owns the research phase: it chooses Explorer lanes, defines challenge hypotheses and simulations, synthesizes all evidence, and decides whether to challenge. Explorer only returns bounded findings and conclusions. Temporary Tester normally writes and runs disposable simulations; temporary Developer is an exceptional escalation only after a demonstrated Tester capability boundary or when a developer-grade standalone or serialized program is required.
+- The Project Manager owns the research stage: it chooses Explorer lanes, defines challenge hypotheses and simulations, synthesizes all evidence, and decides whether to challenge. Explorer only returns bounded findings and conclusions. Temporary Tester normally writes and runs disposable simulations; temporary Developer is an exceptional escalation only after a demonstrated Tester capability boundary or when a developer-grade standalone or serialized program is required.
 - Before any subagent acts, require it to discover and read every applicable repository `AGENTS.md`, follow its documentation routes, read the role-specific project documentation named by the active reference, and report the governing rules it used.
 - Treat Explorer delegation and multi-lane research as escalation paths, not default phases. Record the Project Manager's direct findings and the unresolved decision-relevant gap before starting Explorer; record why every additional track is genuinely independent.
+- Treat lifecycle stages, sequential checklist items, multiple files, and multiple acceptance criteria as one implementation set unless the implementation complexity gate proves that distinct units are required. Do not manufacture phases or batches for visibility, convenience, or because work is merely non-trivial.
 - Do not implement non-trivial work directly unless the user explicitly overrides delegation or tooling proves delegation unavailable.
 - Do not modify production or source code before the user approves the brief plan and the required discussion, classification, delegation, and planning gates pass.
 - Do not edit, install, build, test, or start feature processes in the source checkout; use the isolated feature worktree until the final transfer gate.

@@ -46,15 +46,15 @@ The review phase simulates a pull request locally:
 
 </local_pull_request_model>
 
-<phased_review_boundary>
+<review_boundary>
 
-- Review at the boundaries recorded in the approved plan: one phase, a coherent set of phases, or all phases of a small feature.
-- Verify that the Project Manager selected the boundary from current feature size, risk, subsystem and architecture boundaries, integration dependencies, and recovery value rather than a fixed phase-count rule.
-- Require the Project Manager to provide the phase or group scope, completed-phase dependencies, exact revision, diff, validation, and later-phase exclusions.
-- Judge only the submitted phase or group plus realistic regressions in its reachable paths; do not fail it for planned later-phase behavior that is explicitly excluded.
+- Expect an ordinary feature or fix as one complete implementation-set review target. Multiple files, surfaces, acceptance criteria, or sequential steps do not justify partial review targets.
+- Accept an implementation-unit or group boundary only when the approved plan records concrete complexity-gate evidence. Verify that the boundary follows architecture, risk, integration, or necessary recovery constraints rather than task count or a preference for smaller batches.
+- Require the Project Manager to provide the complete-set or justified-unit scope, completed-unit dependencies, exact revision, diff, validation, and any later-unit exclusions.
+- Judge only the submitted target plus realistic regressions in its reachable paths; do not fail a justified partial target for planned later-unit behavior that is explicitly excluded.
 - Preserve both Reviewer threads across review groups unless a lifecycle isolation rule requires replacement.
 
-</phased_review_boundary>
+</review_boundary>
 
 ## Shared Review Rules
 
@@ -151,7 +151,7 @@ Review independently from the Developer and Adversarial Reviewer. You receive th
 
 <requirements>
 - Plan item: [plan item]
-- Phase or connected review group: [scope, dependencies, and later-phase exclusions]
+- Delivery target: [complete implementation set | justified unit or connected group; scope, dependencies, and later-unit exclusions]
 - Acceptance criteria: [criteria]
 - Settled decisions: [decisions]
 - Prior Code Quality Reviewer findings: [findings or none]
@@ -254,7 +254,7 @@ Review independently from the Developer and Code Quality Reviewer. You receive t
 
 <requirements>
 - Plan item: [plan item]
-- Phase or connected review group: [scope, dependencies, and later-phase exclusions]
+- Delivery target: [complete implementation set | justified unit or connected group; scope, dependencies, and later-unit exclusions]
 - Acceptance criteria: [criteria]
 - Settled decisions: [decisions]
 - Prior Adversarial Reviewer findings: [findings or none]

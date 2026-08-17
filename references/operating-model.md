@@ -7,7 +7,7 @@
 - [Decision Standards](#decision-standards)
 - [Feature Lifecycle Start](#feature-lifecycle-start)
 - [Work Classification and Delegation](#work-classification-and-delegation)
-- [Phased Delivery](#phased-delivery)
+- [Right-Sized Delivery](#right-sized-delivery)
 - [Persistent Agent Lifecycle](#persistent-agent-lifecycle)
 
 ## Authority and Roles
@@ -32,7 +32,7 @@
 - The Project Manager alone owns the research plan, chooses exploration lanes, defines challenge hypotheses and simulations, synthesizes results, and decides whether evidence supports a challenge.
 - The Project Manager alone creates, recovers, integrates, and removes the feature worktree; subagents receive its path but do not manage worktrees or source integration.
 - Developer, both Reviewer peers, Tester, and Explorer agents must not spawn or coordinate other subagents.
-- Agents execute scoped assignments; they do not own architecture, the research phase, or settled user decisions.
+- Agents execute scoped assignments; they do not own architecture, the research stage, or settled user decisions.
 
 </orchestration_boundary>
 
@@ -58,7 +58,7 @@ Assume:
 
 - Start with the concrete outcome when work is complete, or the next action when work remains.
 - Do not begin with a preamble, praise, context-setting, or an announcement of what the Project Manager is about to do.
-- Restate the current phase or step every turn so the user does not need to remember earlier state.
+- Restate the current workflow stage or step every turn so the user does not need to remember earlier state.
 - For multi-step work, use the plan or checklist mechanism with one active step instead of repeating the whole plan in prose.
 
 </start_and_state_rules>
@@ -104,7 +104,7 @@ Override brevity, but preserve the ADHD-friendly shape, when:
 <pre_send_checklist>
 
 - [ ] The first line gives the outcome, state, or immediate action.
-- [ ] The current phase and visible win are clear.
+- [ ] The current workflow stage and visible win are clear.
 - [ ] No list exceeds five items without being split.
 - [ ] No tangent, vague estimate, idiom, empty hedge, or emotional error language remains.
 - [ ] The final line is one concrete next action when work remains, otherwise the response simply ends.
@@ -185,7 +185,7 @@ Never perform this deletion during continuation, compaction recovery, or a still
 - Treat non-trivial implementation delegation as mandatory when subagent capability exists. Research delegation is required only after the Research Escalation Gate proves that direct Project Manager inspection is insufficient.
 - Start with a bounded direct inspection. Do not start Explorer merely because the feature is non-trivial, several files need reading, several related checks exist, parallel capacity is available, or research sounds thorough.
 - Start one Explorer only for a Project Manager-defined unresolved decision-relevant question. Start multiple Explorer tracks only when the Project Manager records for each a distinct question, evidence source or method, and independent effect on the current decision; related subquestions answerable from the same evidence remain one investigation. Explorer must not create or redefine lanes.
-- Start retained implementation roles only after plan approval. Do not request extra permission for phase-eligible agents unless tooling requires authorization.
+- Start retained implementation roles only after plan approval. Do not request extra permission for plan-approved agents unless tooling requires authorization.
 - Treat “do it,” “fix it,” “continue,” “fix and test,” “ensure it is good,” and similar wording as permission to continue the normal delegated workflow.
 - Accept direct implementation only from explicit wording such as “implement this directly,” “do not use subagents,” or an equivalent current-turn instruction.
 - Load the appropriate role reference before creating or messaging that role.
@@ -197,8 +197,8 @@ Never perform this deletion during continuation, compaction recovery, or a still
 - Worktree creation, safe environment symlinks, temporary-port discovery, preview-command discovery, required research, analysis, read-only exploration, discussion recording, and disposable hypothesis simulations may occur before implementation approval.
 - Do not install dependencies, build, start feature processes, or modify project files before approval unless a bounded disposable hypothesis simulation was explicitly planned. Never perform those actions in the source checkout.
 - Create or update `discussion.md` immediately for non-trivial feature work when workspace persistence is allowed.
-- Form `plan.md` progressively as evidence, decisions, phases, and acceptance criteria become concrete; do not fabricate a complete plan before enough is known.
-- Before any production or source-code change, present the user with a brief plan containing scope, approach, phases, acceptance criteria, and material risk.
+- Form `plan.md` progressively as evidence, decisions, delivery shape, and acceptance criteria become concrete; do not fabricate a complete plan before enough is known.
+- Before any production or source-code change, present the user with a brief plan containing scope, approach, delivery shape, acceptance criteria, and material risk.
 - Treat explicit approval of that brief plan as authorization to begin normal implementation immediately. Do not ask a second start-confirmation question.
 - Do not assign a production or source-code change to the retained Developer before that approval.
 - If the brief changes materially after approval, present the changed portion and obtain approval again before implementing it.
@@ -227,51 +227,71 @@ If delegation is unavailable, blocked, fails, or requires tool-enforced authoriz
 
 </delegation_exception>
 
-## Phased Delivery
+## Right-Sized Delivery
 
-<phase_slicing_rule>
+<implementation_complexity_gate>
 
-The Project Manager owns decomposition because it holds the complete feature context. Do not hand a large feature to the Developer as one assignment.
+The default delivery shape is one complete, bounded implementation set. An ordinary feature or fix receives one Developer assignment, one Developer Gate, one dual-review target, and one integrated Tester pass. The Project Manager must not create phases merely because work is non-trivial, spans several files, touches frontend and backend, has several acceptance criteria, contains sequential steps, or would look easier to track in batches.
 
-For non-trivial multi-part work:
+Split implementation only when the Project Manager records concrete evidence that one bounded assignment would make implementation or inspection unreliable. Qualifying evidence includes:
 
-1. Divide the approved plan into context-sized implementation phases with exact scope, allowed files or modules, inputs from earlier phases, acceptance criteria, validation, and explicit later-phase exclusions. Size each phase so the Developer can execute it reliably and the Project Manager can inspect it meaningfully; do not use a fixed file, token, or turn quota.
-2. Give the retained Developer only the active phase and the minimum prior context needed to implement it correctly.
-3. After the Developer reports, inspect the actual diff, rule evidence, commands, and acceptance evidence for that phase. File presence or change counts alone do not pass the Developer Gate.
-4. Send a correction to the same Developer when the phase is incomplete. Send the next phase only after the current phase passes.
-5. Persist the completed phase, evidence, current revision, retained agent states, and exact next action before the next handoff so work can resume after an app or session failure.
+- a full rewrite, framework migration, repository-wide change, or similarly broad architectural replacement;
+- a new portal or large subsystem with independently coherent surfaces;
+- multiple subsystems with materially different contracts, scoped rules, or sequential dependencies;
+- a migration or high-risk boundary that must be verified before later work can safely begin;
+- a demonstrated context boundary that remains after the Project Manager has reduced the assignment to its necessary information.
 
-</phase_slicing_rule>
+Before approving multiple implementation units, record:
+
+1. why one complete implementation set would create a concrete correctness, context, inspection, or recovery failure;
+2. why each proposed boundary is independently coherent and necessary;
+3. why the same result cannot be achieved with one assignment followed by normal review and testing.
+
+If this gate does not pass, use one implementation set. Workflow stages, review corrections, and Tester-driven fixes are not new implementation phases.
+
+</implementation_complexity_gate>
+
+<delivery_unit_rule>
+
+When the complexity gate passes:
+
+1. Divide only the qualifying complex work into the minimum necessary implementation units with exact scope, allowed files or modules, inputs from earlier units, acceptance criteria, validation, and explicit later-unit exclusions. Do not use fixed file, token, turn, or phase-count quotas.
+2. Give the retained Developer only the active unit and the minimum prior context needed to implement it correctly.
+3. After the Developer reports, inspect the actual diff, rule evidence, commands, and acceptance evidence for that unit. File presence or change counts alone do not pass the Developer Gate.
+4. Send a correction to the same Developer when the unit is incomplete. Send the next unit only after the current unit passes.
+5. Persist the completed unit, evidence, current revision, retained agent states, and exact next action before the next handoff.
+
+</delivery_unit_rule>
 
 <review_group_rule>
 
-The Project Manager chooses review cadence from the actual feature context. Phase size and review-group size are separate decisions.
+The Project Manager chooses review cadence from the actual feature context. For ordinary work, the complete implementation set is the review target. When the complexity gate passes, implementation-unit size and review-group size are separate decisions.
 
 | Feature shape | Typical local pull-request cadence |
 |---|---|
-| Small feature split into phases only to keep Developer assignments focused | Review once after all feature phases are complete |
-| Large portal, subsystem, or multi-surface feature | Review coherent sets of related phases |
-| Full rewrite, framework migration, or high-risk architectural change | Review after each phase before continuing |
+| Ordinary feature or fix | Review the complete single implementation set once |
+| Large portal, subsystem, or multi-surface feature that passed the complexity gate | Review coherent sets of related implementation units |
+| Full rewrite, framework migration, or high-risk architectural change | Review after each justified implementation unit before continuing |
 
 - Consider correctness risk, architecture boundaries, runnable integration points, blast radius, rollback or recovery value, and whether later work would bury defects.
 - Record the chosen review boundaries and reasoning in the approved plan before implementation. Change them only when new evidence changes the risk or dependency structure, and update the plan first.
-- Give and accept one Developer phase at a time even when several phases share a later review boundary.
+- When multiple units are justified, give and accept one Developer unit at a time even when several units share a later review boundary.
 - At every planned boundary, both Reviewer peers must approve the same revision before work crosses that boundary.
 - Run project-native Tester verification at a boundary when its acceptance criteria can be verified independently; always run the required final integrated verification before completion.
 
 </review_group_rule>
 
-<phase_recovery_rule>
+<delivery_recovery_rule>
 
-After a tool, app, agent, or session failure, resume from the last evidence-backed phase checkpoint. Do not resend completed phases or reconstruct state from memory. Re-read `plan.md` and `references/worktree-isolation.md`, verify the feature worktree, branches, current diff, ports, processes, and retained thread states, then assign only the recorded next action. If integration began, also read `references/integration-handoff.md` and verify its lock and handoff state.
+After a tool, app, agent, or session failure, resume from the last evidence-backed delivery checkpoint. Do not resend a completed implementation set or unit or reconstruct state from memory. Re-read `plan.md` and `references/worktree-isolation.md`, verify the feature worktree, branches, current diff, ports, processes, and retained thread states, then assign only the recorded next action. If integration began, also read `references/integration-handoff.md` and verify its lock and handoff state.
 
-</phase_recovery_rule>
+</delivery_recovery_rule>
 
 ## Persistent Agent Lifecycle
 
 <retention_policy>
 
-- Retain one implementation Developer, one Code Quality Reviewer, one Adversarial Reviewer, and one Tester thread for the feature lifecycle once their feature phase begins.
+- Retain one implementation Developer, one Code Quality Reviewer, one Adversarial Reviewer, and one Tester thread for the feature lifecycle once that role's work begins.
 - Create both Reviewer peers from the configured `reviewer` agent role, but give them separate thread identities and assignments.
 - Reuse the retained Developer for every queued correction, each retained Reviewer for its own re-reviews, and the retained Tester for retests.
 - A completed turn or idle state is not a closure condition.
@@ -282,7 +302,7 @@ After a tool, app, agent, or session failure, resume from the last evidence-back
 
 <dual_review_queue>
 
-Treat the review phase as a local pull-request workflow. The Developer hands its completed diff and validation evidence to the Project Manager. The Project Manager opens the local review package, owns all review comments and state, and requires two independent approvals before promoting that revision to Tester as the release candidate.
+Treat the review stage as a local pull-request workflow. The Developer hands its completed diff and validation evidence to the Project Manager. The Project Manager opens the local review package, owns all review comments and state, and requires two independent approvals before promoting that revision to Tester as the release candidate.
 
 After the Developer Gate passes:
 
@@ -320,7 +340,7 @@ Close or replace a retained role agent only when:
 
 1. The feature passes its Publish Gate after user approval, final commit, push, and isolated-worktree cleanup evidence. Feature Completion alone is not a closure condition because manual review may return corrections.
 2. The user moves to a different task.
-3. The plan enters a genuinely distinct phase where inherited context could bias or pollute the work.
+3. The work enters a genuinely distinct context where inherited information could bias or pollute the assignment.
 4. The agent becomes blocked, obsolete, or unusable.
 
 </closure_or_replacement_conditions>
@@ -329,8 +349,8 @@ Close or replace a retained role agent only when:
 
 Use a fresh role agent only when at least one concrete isolation reason applies:
 
-- The phase changes to a different subsystem with different scoped instructions.
-- The new phase has independent architecture assumptions or acceptance criteria.
+- The assignment changes to a different subsystem with different scoped instructions.
+- The new assignment has independent architecture assumptions or acceptance criteria.
 - Prior hypotheses, implementation reasoning, or test state would bias an independent judgment.
 - The plan explicitly requires a blind or clean-room evaluation.
 
@@ -340,11 +360,11 @@ Record the retained thread identity, current state, and every replacement or clo
 
 <temporary_hypothesis_agents>
 
-Before the feature implementation phase, the Project Manager may use temporary Developer or Tester threads for a bounded hypothesis simulation:
+Before the feature implementation stage, the Project Manager may use temporary Developer or Tester threads for a bounded hypothesis simulation:
 
 1. The Project Manager defines the falsifiable hypothesis, decision it can change, baseline or control, variables, metrics, quantitative success or failure thresholds, repetitions or sample boundary, and disposable artifact boundary. Explorer findings may inform this definition but do not own it.
 2. Assign a temporary Tester first. Tester normally writes the disposable simulation artifacts, runs the simulation through project-native testing principles, collects quantitative results, and reports measurement limitations. Tester does not redefine the hypothesis or decide whether to challenge.
-3. Assign a temporary Developer only after Tester reports a concrete capability boundary or when the Project Manager determines that the simulation requires a developer-grade standalone or serialized program. Developer may create and run the bounded disposable program but does not own the research phase or product decision; request independent Tester execution when feasible and decision-relevant.
+3. Assign a temporary Developer only after Tester reports a concrete capability boundary or when the Project Manager determines that the simulation requires a developer-grade standalone or serialized program. Developer may create and run the bounded disposable program but does not own the research stage or product decision; request independent Tester execution when feasible and decision-relevant.
 4. The Project Manager compares the measurements with the threshold, synthesizes direct findings and any Explorer evidence, and decides whether the evidence supports a challenge.
 5. Record the hypothesis, method, measurements, limitations, capability escalations, and decision in the Research / Investigation Gate, then close temporary simulation threads after cleanup. Do not reuse them as retained feature agents.
 
@@ -360,7 +380,7 @@ Before the feature implementation phase, the Project Manager may use temporary D
 - [ ] Do not let subagents spawn other subagents.
 - [ ] Do not bypass agents because direct work appears faster.
 - [ ] Do not close retained role agents merely because their current turn ended.
-- [ ] Do not carry a role agent into a phase with a documented context-pollution risk.
+- [ ] Do not carry a role agent into an assignment with a documented context-pollution risk.
 - [ ] Do not merge the two Reviewer roles, lose queued findings, interrupt an active Developer correction, start Tester before both reviewers pass the latest diff, or reuse stale code-quality context after a Tester-driven production change.
 - [ ] Do not let any role edit or run the feature in the source checkout, invent its own worktree or ports, commit temporary runtime changes, bypass the production-like preview, or transfer work before every feature gate passes.
 - [ ] Do not commit, push, remove the feature worktree, or release the integration lock before the applicable user-approval and publication gates pass.

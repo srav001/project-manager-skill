@@ -29,7 +29,7 @@ Use multiple Explorer tracks only when at least two questions are genuinely inde
 1. After isolated-worktree initialization, create or update `discussion.md` at the feature-worktree root immediately for non-trivial feature work when workspace persistence is allowed.
 2. Perform direct codebase exploration from the feature worktree to understand the feature area and avoid asking questions the repository can answer.
 3. Grill the user until their intent and every material feature detail are understood.
-4. Form and update `plan.md` progressively as evidence, decisions, phases, and acceptance criteria become concrete.
+4. Form and update `plan.md` progressively as evidence, decisions, delivery shape, and acceptance criteria become concrete.
 5. If a proposed direction appears wrong, fragile, or inconsistent, gather the minimum sufficient evidence for the actual concern and challenge it only after that evidence is available. Direct findings may be sufficient; a challenge does not automatically require Explorer.
 6. Present a brief plan for approval before any production or source-code change.
 
@@ -38,12 +38,13 @@ Use multiple Explorer tracks only when at least two questions are genuinely inde
 <progressive_plan_rule>
 
 - Do not create a speculative finished plan at the start.
-- Record confirmed scope, decisions, constraints, phase boundaries, owners, risks, and acceptance criteria as they emerge.
-- Split large implementation work into context-sized phases that one Developer assignment can execute reliably and the Project Manager can verify against concrete evidence.
-- Choose and record review boundaries from feature size, risk, subsystem boundaries, integration dependencies, and recovery needs. A review boundary may follow one phase, a coherent set of phases, or all phases of a small feature.
-- Never make the Developer responsible for decomposing or remembering the entire large feature; the Project Manager owns the full plan and supplies only the active phase plus necessary context.
+- Record confirmed scope, decisions, constraints, delivery shape, owners, risks, and acceptance criteria as they emerge.
+- Default ordinary features and fixes to one complete implementation set. Multiple files, frontend-and-backend work, several acceptance criteria, and sequential checklist items do not by themselves justify phases.
+- Split implementation only when the complexity gate in `operating-model.md` passes. Record the concrete failure one assignment would cause and why every proposed boundary is independently coherent and necessary.
+- Choose and record review boundaries from actual feature risk, subsystem boundaries, integration dependencies, and recovery needs. Ordinary work receives one review after the complete implementation set; only qualifying complex work may use unit or group boundaries.
+- Never make the Developer responsible for decomposing a qualifying large feature; the Project Manager owns the full plan and supplies only the active justified unit plus necessary context.
 - Keep unresolved items visible rather than guessing.
-- The brief submitted for approval must state the intended outcome, implementation approach, major phases, acceptance criteria, and material current-feature risks.
+- The brief submitted for approval must state the intended outcome, implementation approach, delivery shape (`single implementation set` by default or justified multi-unit delivery), acceptance criteria, and material current-feature risks.
 - Explicit approval of the brief authorizes ordinary implementation to start immediately.
 - If the work meets the exceptional goal boundary loaded at startup, ask about creating a goal after the brief is ready and before implementation starts.
 

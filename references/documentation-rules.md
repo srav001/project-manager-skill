@@ -15,7 +15,7 @@
 | Artifact | Purpose | Keep detailed |
 |---|---|---|
 | `discussion.md` | Durable product, architecture, constraint, risk, and exception decisions | Until decisions are resolved, then compress to durable conclusions |
-| `plan.md` | Progressively formed phases, owners, retained agent threads, gates, evidence, and next actions | For active and future work; compress completed steps into evidence-backed summaries |
+| `plan.md` | Progressively formed delivery shape, owners, retained agent threads, gates, evidence, and next actions | For active and future work; compress completed steps into evidence-backed summaries |
 
 </artifact_table>
 
@@ -122,7 +122,7 @@ Use only these statuses:
 | Status | Meaning |
 |---|---|
 | `Pending` | Required work has not completed |
-| `Pass` | Required evidence satisfies the gate, or the phase is proven not required |
+| `Pass` | Required evidence satisfies the gate, or the gate is proven not required |
 | `Fail` | Evidence shows required correction or rework |
 | `Blocked` | A demonstrated external, policy, authorization, or capability condition prevents progress |
 
@@ -137,7 +137,7 @@ Use only these statuses:
 | Research / Investigation | A research-dependent brief is approved |
 | Plan Approval | Production or source-code changes start |
 | Delegation | Non-trivial implementation starts |
-| Developer | The local pull-request review phase begins when implementation occurred |
+| Developer | The local pull-request review stage begins when implementation occurred |
 | Dual Review | The approved release candidate reaches Tester or signoff begins |
 | Testing | Feature Completion is claimed when verification is required |
 | Feature Completion | Source-checkout integration preparation begins |
@@ -175,14 +175,14 @@ Use only these statuses:
 - Source handoff: [not started | preparing transfer | awaiting transfer approval | transfer approved | transferred for review | commit approved | committed | pushed]
 </workspace_state>
 
-## Active Phase
+## Active Workflow Stage
 
-<phase_state>
-- Phase: [phase]
+<workflow_stage>
+- Stage: [stage]
 - Active reference: [reference]
 - Next action: [action]
 - Goal decision: `not applicable | awaiting user approval | approved | declined`
-</phase_state>
+</workflow_stage>
 
 ## Retained Agents
 
@@ -195,30 +195,37 @@ Use only these statuses:
 | Tester | [id or not started] | [state] | [decision] | [reason] |
 </agent_lifecycle>
 
-## Phases
+## Delivery Shape
 
-<execution_phases>
-1. [Context-sized phase, owner, scope, allowed files/modules, dependencies, acceptance criteria, validation, review-boundary id, status]
-2. [Context-sized phase, owner, scope, allowed files/modules, dependencies, acceptance criteria, validation, review-boundary id, status]
-</execution_phases>
+<delivery_shape>
+- Shape: `single implementation set | justified multi-unit delivery`
+- Single-set feasibility: [why one bounded Developer assignment is reliable, or the concrete failure it would cause]
+- Complexity-gate evidence: [rewrite, migration, large independent subsystem, materially different contracts, necessary risk checkpoint, demonstrated context boundary, or not applicable]
+- Artificial splits rejected: [multiple files, frontend and backend, several acceptance criteria, ordinary sequential steps, visibility or convenience, or none]
+</delivery_shape>
+
+<implementation_units>
+1. [Default complete implementation set, or justified unit with owner, scope, allowed files/modules, dependencies, acceptance criteria, validation, review-boundary id, and status]
+<!-- Add another unit only when the implementation complexity gate passes. -->
+</implementation_units>
 
 <review_cadence>
-- Feature shape and risk: [small feature | large subsystem or portal | rewrite or high-risk migration; evidence]
-- Planned review boundaries: [after all phases | coherent phase sets | every phase; exact grouping]
+- Feature shape and risk: [ordinary feature or fix | qualifying large subsystem or portal | rewrite or high-risk migration; evidence]
+- Planned review boundaries: [one review after the complete implementation set | coherent unit groups | every justified unit; exact grouping]
 - Boundary rationale: [architecture, integration, risk, and recovery evidence]
 - Cadence changes: [new evidence and updated boundary, or none]
 </review_cadence>
 
-## Phase Checkpoint
+## Delivery Checkpoint
 
-<phase_checkpoint>
-- Active phase and review boundary: [phase; boundary id and included phase set]
-- Developer assignment boundary: [included work and explicit later-phase exclusions]
+<delivery_checkpoint>
+- Active delivery unit and review boundary: [complete implementation set or justified unit; boundary id and included units]
+- Developer assignment boundary: [included work and explicit later-unit exclusions, or not applicable]
 - Actual diff and rule evidence: [revision, files, material rules]
 - Validation and acceptance evidence: [commands, results, criteria]
 - Retained agent states: [ids and states]
-- Recovery cursor: [last completed phase and exact next action]
-</phase_checkpoint>
+- Recovery cursor: [last completed implementation set or unit and exact next action]
+</delivery_checkpoint>
 
 ## Gate Ledger
 
@@ -249,7 +256,7 @@ Use only these statuses:
 <plan_approval_gate>
 - Status: `Pending | Pass | Fail | Blocked`
 - Brief outcome and scope: [summary]
-- Implementation approach and major phases: [summary]
+- Implementation approach and delivery shape: [single implementation set by default, or justified multi-unit summary]
 - Acceptance criteria: [criteria]
 - Material current-feature risks: [risks]
 - User approval: [exact approval or pending]
@@ -289,7 +296,7 @@ Use only these statuses:
 
 <developer_gate>
 - Status, requirement, and Developer: [status; required or not required; retained id]
-- Active bounded phase and review group: [phase; independent or connected group id]
+- Active bounded delivery unit and review group: [complete implementation set or justified unit; independent or connected group id]
 - Project instructions and engineering practices: [files and rules]
 - Changed files and acceptance evidence: [files and evidence]
 - Project-native validation, deviations, and unresolved risk: [commands, results, details]
@@ -397,13 +404,13 @@ When a gate fails:
 
 <maintenance_checklist>
 
-- [ ] Update the active phase, next action, and retained agent states after every handoff.
+- [ ] Update the active workflow stage, next action, and retained agent states after every handoff.
 - [ ] Confirm `discussion.md` and `plan.md` carry the same current-feature identity; never merge state from different features.
 - [ ] Keep source checkout, feature worktree, branches, base revisions, environment-link paths, port map, preview sessions, integration lock, and handoff state current.
 - [ ] Record exact findings and evidence instead of “done” or “looks good.”
-- [ ] Compress completed phase detail without deleting decisions, failures, or risk.
+- [ ] Compress completed stage and delivery-unit detail without deleting decisions, failures, or risk.
 - [ ] Remove transcript-like commentary that no longer controls execution.
-- [ ] After compaction, re-read the thin `SKILL.md`, `references/worktree-isolation.md`, both control documents, and only the active phase reference; verify every recorded path, branch, port, and process. If integration began, also read `references/integration-handoff.md` and verify its lock and handoff state.
+- [ ] After compaction, re-read the thin `SKILL.md`, `references/worktree-isolation.md`, both control documents, and only the active workflow-stage reference; verify every recorded path, branch, port, and process. If integration began, also read `references/integration-handoff.md` and verify its lock and handoff state.
 
 </maintenance_checklist>
 

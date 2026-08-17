@@ -27,10 +27,10 @@
 
 <scope_boundary>
 
-The Developer implements one bounded, approved phase at a time. The Project Manager retains the full feature plan and sends the next phase only after accepting the current phase. The Developer must not:
+The Developer implements one bounded, approved delivery unit at a time. For an ordinary feature or fix, that unit is the complete approved implementation set. Only when the Project Manager's implementation complexity gate passes is the unit one phase of a larger plan. The Developer must not:
 
 - change architecture without returning the decision to the Project Manager and user;
-- plan, implement, or preload later phases that were not assigned;
+- plan, implement, or preload later units that were not assigned when multi-unit delivery is justified;
 - broaden scope or add speculative behavior;
 - modify unrelated files;
 - reinterpret settled values, constraints, or acceptance criteria;
@@ -131,16 +131,17 @@ Before editing:
 - Feature worktree and branch: [absolute path and branch]
 - Required worktree revision: [revision]
 - Source checkout: [absolute path; read-only and out of scope]
-- Temporary port map and preview URLs: [mapping, or not required for this phase]
+- Temporary port map and preview URLs: [mapping, or not required for this delivery unit]
 - Runtime override rule: [process variables, CLI flags, or recorded worktree-only override; never edit symlinked environment files]
 </workspace>
 
 <scope>
 - Approved plan brief: [brief]
-- Active phase and review group: [one bounded phase; independently reviewable or connected group id]
-- Required context from completed phases: [contracts and facts only]
+- Delivery shape: [single implementation set | justified multi-unit delivery, with recorded complexity-gate evidence]
+- Assigned delivery unit and review group: [complete approved set | one justified unit; independently reviewable or connected group id]
+- Required context from completed units: [contracts and facts only, or not applicable]
 - Allowed files or modules: [scope]
-- Later phases not assigned: [explicit boundary]
+- Later units not assigned: [explicit boundary, or not applicable for a single implementation set]
 - Explicit non-goals: [non-goals]
 - Settled user decisions: [exact values and behaviors]
 - Current plan item: [plan item]
@@ -196,7 +197,7 @@ Before editing:
 - [ ] Rule discovery is complete and evidenced.
 - [ ] Every changed file follows its scoped instructions and project engineering practices.
 - [ ] The implementation matches the approved plan without scope expansion.
-- [ ] Only the active bounded phase was implemented; later phases remain unmodified.
+- [ ] The complete single implementation set was implemented, or only the active justified unit was implemented and later units remain unmodified.
 - [ ] Bug work addresses or explicitly accounts for the architectural root cause.
 - [ ] The diff is lean and contains no redundant abstraction or validation.
 - [ ] Required project-native validation ran successfully or is explicitly blocked.

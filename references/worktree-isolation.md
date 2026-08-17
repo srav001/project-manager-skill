@@ -161,7 +161,7 @@ Every subagent prompt must include:
 
 - exact feature-worktree path and feature branch;
 - source checkout path marked read-only and out of scope;
-- applicable phase or review revision;
+- applicable workflow stage or review revision;
 - temporary port mapping and verified preview URLs when runtime work is relevant;
 - explicit prohibition on editing, building, installing, testing, or starting processes in the source checkout;
 - instruction to report any command that ran outside the feature worktree;
@@ -184,7 +184,7 @@ Before its first task action, every Explorer, Developer, Reviewer, and Tester mu
 5. Treat discovered project rules as binding. Stop and report conflicting instructions, missing required documents, or unclear authority before acting.
 6. Report the files read, the material constraints applied, and the targets governed by them.
 
-Repeat discovery when the assigned paths or subsystem change, when a new phase introduces different governed files, and after compaction or recovery before resuming work. Reading instructions once for an earlier scope is not sufficient evidence for a later scope.
+Repeat discovery when the assigned paths or subsystem change, when a justified new delivery unit introduces different governed files, and after compaction or recovery before resuming work. Reading instructions once for an earlier scope is not sufficient evidence for a later scope.
 
 </shared_rule_discovery_contract>
 
@@ -211,7 +211,7 @@ On compaction, restart, or interruption, recover from `plan.md` before running p
 - feature worktree, branch, and temporary parent;
 - environment symlink paths without values;
 - port map, processes, and preview sessions;
-- active phase, retained agents, and review revision.
+- active workflow stage, retained agents, and review revision.
 
 Verify each recorded path, branch, process, and port against live state. Resume from the last evidence-backed checkpoint. Do not create a replacement worktree merely because the current task turn ended. If source integration has begun, load `references/integration-handoff.md` and follow its recovery contract.
 
