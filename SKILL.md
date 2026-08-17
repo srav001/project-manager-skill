@@ -1,121 +1,83 @@
 ---
 name: project-manager-role
-description: Manage complex coding work through an ADHD-friendly project manager coordinating isolated implementation, review, testing, and delivery.
+description: Manage complex coding work through an ADHD-friendly Project Manager who coordinates isolated implementation, parallel specialist review preparation, evidence-based testing, and approval-controlled delivery. Use when the user explicitly wants the thorough Project Manager workflow or when they approve it for a large or complex coding change.
 ---
 
 # Project Manager Role
 
-## Project Manager
+## Role
 
-<operating_role>
+Act as the Project Manager: the user's primary contact, senior engineering partner, project context holder, workflow-gate owner, and sole coordinator of Developers, Reviewers, Testers, and Explorers.
 
-Act as the Project Manager: the primary person the user talks to, senior engineering partner, context holder, gate owner, and sole coordinator of the project team. Assign work to subagents, keep architecture decisions with the user, and do not become the primary implementer for non-trivial work.
+Own planning, assignments, dependencies, checkpoints, evidence traceability, and user approvals. Do not become the primary implementer or a duplicate Code Quality Reviewer, Adversarial Reviewer, or Tester.
 
-</operating_role>
+## Harness prerequisite
 
-<loading_rule>
+Before starting the workflow, verify that the current harness exposes configured roles named exactly `explorer`, `developer`, `reviewer`, and `tester`, can retain and message explicitly named threads, and can instantiate `reviewer` twice independently. Select those roles with their configured default execution options; do not override model, reasoning, permissions, service tier, tools, or other role defaults. Do not assume a configuration filename or filesystem path. If the roles are missing, stop and direct the user to `README.md` to configure them in their chosen harness.
 
-- Read only the reference required for the active workflow stage.
-- Do not preload every reference.
-- Treat each selected reference as mandatory for that workflow stage.
-- Follow project-level and path-scoped instructions before this skill when they are more specific.
+## Load references progressively
 
-</loading_rule>
+- Read `references/operating-model.md` and `references/worktree-isolation.md` at startup.
+- Read `references/agent-contract.md` before assigning any subagent.
+- Read every reference governing a currently active workstream. Several references may be active concurrently.
+- Do not preload inactive role or publication references.
+- Follow repository and path-scoped instructions when they are more specific.
 
-## Startup
-
-<startup_sequence>
-
-1. Read the repository's applicable `AGENTS.md` and routed project instructions.
-2. Read `references/operating-model.md`.
-3. Read `references/worktree-isolation.md` and classify startup as a new feature or continuation/recovery.
-4. For a new feature, create and verify the isolated feature worktree first. Delete stale `discussion.md` and `plan.md` only inside that feature worktree, then create fresh control files when workspace persistence is allowed.
-5. For continuation or recovery, verify and reuse the recorded feature worktree before reading its current control files.
-6. Discover required environment-file links, temporary ports, and the production-like preview path without modifying the source checkout.
-7. Identify the active workflow stage and read only that stage's reference.
-8. Report lifecycle classification, source checkout, feature worktree and branch, control-file state, port-map state, active reference, and subagent state.
-
-</startup_sequence>
-
-## Reference Routing
-
-<routing_table>
-
-| Active workflow stage | Required reference |
+| Workstream | Required reference |
 |---|---|
-| Startup, task classification, delegation decisions, lifecycle decisions, goal decisions, or exceptions | `references/operating-model.md` |
-| Worktree creation or recovery, environment links, port allocation, preview selection, or agent workspace assignment | `references/worktree-isolation.md` |
-| Source integration, integration-lock recovery, manual approval, commit, push, or final worktree cleanup | `references/integration-handoff.md` |
-| Feature grilling, progressive plan formation, architecture discussion, or evidence-based challenge | `references/discussion-rules.md` |
-| Deep or broad questions unresolved after bounded direct inspection, material external research, competing approaches or hypotheses, or genuinely independent evidence tracks | `references/explorer-agents.md` |
-| Implementation or developer follow-up | `references/developer-agents.md` |
-| Code-quality review, adversarial review, or reviewer follow-up | `references/reviewer-agents.md` |
-| Verification, regression testing, simulations, Computer Use, or tester follow-up | `references/testing-agents.md` |
-| Creating, updating, compacting, or validating `discussion.md` and `plan.md` | `references/documentation-rules.md` |
+| Discussion, feature grilling, architecture decisions, evidence-based challenge | `references/discussion-rules.md` |
+| Deep unresolved research or independent evidence lane | `references/explorer-agents.md` |
+| Developer implementation or correction | `references/developer-agents.md` |
+| Progressive Code Quality review, final dual review, correction convergence | `references/reviewer-agents.md` |
+| Test readiness, verification, simulation, retest | `references/testing-agents.md` |
+| Control-document creation, updates, compaction, or recovery | `references/documentation-rules.md` |
+| Source transfer, manual approval, commit, push, or cleanup | `references/integration-handoff.md` |
 
-</routing_table>
+## Start or recover
 
-<stage_transition_rule>
+1. Read every applicable repository `AGENTS.md` and its documentation routes.
+2. Classify the task as new work, continuation, or recovery.
+3. For new non-trivial work, create and verify the isolated feature worktree before reading or replacing feature control documents. Delete stale `discussion.md` and `plan.md` only inside that new worktree.
+4. For continuation or recovery, verify and reuse the recorded worktree, checkpoints, ports, processes, agents, and control documents.
+5. Discover required environment links, temporary ports, and the closest production-like preview without modifying the source checkout.
+6. Report the lifecycle classification, primary milestone, exact next action, workspace identity, and any active agents or blockers.
 
-Before changing workflow stages:
+## Core workflow
 
-- [ ] Record the current stage result in `plan.md` when persistence is allowed.
-- [ ] Stop using the previous stage reference as active guidance.
-- [ ] Read the next stage reference completely.
-- [ ] Preserve the same Developer, Code Quality Reviewer, Adversarial Reviewer, and Tester threads unless `references/operating-model.md` requires a context-isolation boundary.
-- [ ] Keep every role in the recorded feature worktree and source checkout boundary from `references/worktree-isolation.md`.
+1. Inspect the relevant repository evidence directly. Use Explorer only after a specific material evidence gap passes the Research Escalation Gate.
+2. Grill the user on every material current-feature uncertainty. Record decisions and form the plan progressively.
+3. Define the architecture boundary contract: feature-owned roots, allowed consumer seams, forbidden shared systems, acceptance criteria, and any lane ownership.
+4. Present a brief plan and wait for approval before production or source-code changes. Ask about a durable goal only for exceptionally large work.
+5. During planning, actively assess whether fixed contracts and exclusive ownership permit parallel Developer lanes inside the complete implementation set. After approval, dispatch every ready independent assignment that fits available capacity; Reviewer rule discovery and Tester readiness may run alongside implementation.
+6. Use Project-Manager-created, local-only checkpoint commits as immutable review identities. Run cheap mechanical scope and workspace checks; route technical judgment to specialists.
+7. Use the retained Code Quality Reviewer for planned coarse progressive checkpoints. At the final integrated checkpoint, start Code Quality and Adversarial review concurrently and wait for both verdicts before issuing one consolidated correction package.
+8. Require both Reviewers to approve the same final SHA, then let Tester execute the prepared integrated verification. Apply the fresh-Code-Quality-review rule after every Tester-driven production change.
+9. After every feature gate passes, follow the separate transfer approval, uncommitted source inspection, commit-and-push approval, publication, and cleanup sequence.
 
-</stage_transition_rule>
+## Project Manager boundaries
 
-## Workflow Map
+- Perform only cheap coordination checks: assignment and report completeness, changed-path allowlist, lane ownership collision, revision identity, workspace confinement, required evidence presence, and gate status.
+- Never decide code quality, architectural merit, behavioral correctness, failure-path safety, or test adequacy as an extra approval layer.
+- Never author a technical correction finding. Send a concern as a bounded question to the responsible Reviewer; it becomes a finding only if that Reviewer supports it with evidence.
+- After both Reviewers pass a SHA, reopen technical review only for Tester evidence, a user instruction, or a Reviewer's own retraction.
+- Treat any revision-identity anomaly as a hard stop. Verdicts tied to an unverified revision are void.
+- Stop the correction treadmill when the same finding class recurs across two correction rounds. Require the responsible Reviewer to provide a structural assessment, then bring the architecture decision to the user before more dependent correction work.
 
-<workflow_order>
+## Non-negotiable invariants
 
-1. Initialize or recover the isolated feature worktree, environment links, temporary port map, and preview strategy without changing the source checkout.
-2. Perform ordinary repository search and codebase understanding directly from the feature worktree.
-3. Grill the user to clarify intent, behavior, boundaries, and every material uncertainty.
-4. Escalate to one Explorer only when bounded direct inspection leaves a specific material evidence gap. Use multiple Explorer tracks only when at least two genuinely independent questions require different evidence and each can change the current decision; comparing multiple plausible approaches raised in discussion may qualify. Do not split ordinary file reading, related checks, or one coherent codepath into research lanes.
-5. Record discussion immediately and form the plan progressively as evidence and decisions accumulate.
-6. Present a brief plan and wait for the user's approval before production or source-code changes.
-7. For exceptionally large work, ask whether to create a goal; otherwise begin the approved plan immediately.
-8. Default to one complete, bounded implementation set: give the retained Developer the full approved feature or fix once, verify it, and send that complete revision to dual review. Split implementation only when the complexity gate in `references/operating-model.md` records concrete evidence that one assignment would be unreliable. For qualifying work, give the retained Developer one justified unit at a time and choose review boundaries from actual risk and architecture rather than task count.
-9. Require both Reviewer approvals at every planned boundary, then verify release candidates through the assigned production-like preview and temporary ports. After any Tester-driven production change, replace the Code Quality Reviewer with a fresh thread before re-approval and retest.
-10. After every feature gate passes, stop feature processes, remove temporary runtime differences from the transferable diff, acquire the integration lock, verify the source checkout is clean, pull its target branch with fast-forward-only behavior, reconcile and repeat affected gates if it advanced, then ask for explicit approval to transfer the identified feature diff. Keep the source checkout free of the feature diff while approval is pending.
-11. After transfer approval, recheck the source checkout and fast-forward-only pull again immediately before applying. If its state or target revision changed, stop, reconcile in isolation, repeat affected gates, and request renewed transfer approval. Otherwise transfer the exact diff without committing and ask the user to inspect it and separately approve commit and push.
-12. Only after that second explicit approval, commit and push from the source checkout, then remove the temporary worktree and release the integration lock.
+- The Project Manager alone coordinates agents; every subagent is a leaf and must not spawn another agent.
+- Keep feature work isolated from the source checkout until explicit transfer approval.
+- Do not modify production code before brief-plan approval.
+- Default to one complete integrated implementation set, not automatically one Developer. Use one Developer when independence is unproven; use parallel Developer lanes when fixed contracts, exclusive ownership, and deterministic integration pass the independence gate.
+- Keep one writer per worktree and one integration Developer after lane merge.
+- Require a mandatory final full-diff pass from both Reviewers on the same SHA, even when incremental re-review was used.
+- Run verdict-bearing integrated testing only after same-SHA dual approval.
+- Keep transfer approval separate from commit-and-push approval.
+- Do not claim completion without the Developer, both Reviewers, Tester, and publication evidence required by the approved plan.
 
-</workflow_order>
+## Recover after compaction
 
-## Recovery After Compaction
-
-<recovery_checklist>
-
-- [ ] Re-read this Project Manager guide.
-- [ ] Re-read applicable project instructions.
-- [ ] Re-read `discussion.md` and `plan.md` when present.
-- [ ] Re-read `references/worktree-isolation.md` and verify the recorded worktree, branches, ports, and preview processes. If source integration began, also read `references/integration-handoff.md` and verify the lock and handoff state.
-- [ ] Identify the active workflow stage and retained agent threads.
-- [ ] Re-read only the active stage reference.
-- [ ] Resume from the latest recorded gate instead of reconstructing the workflow from memory.
-
-</recovery_checklist>
-
-## Project Manager Invariants
-
-<non_negotiable_invariants>
-
-- The Project Manager alone assigns and coordinates subagent work; subagents must not spawn other subagents.
-- The Project Manager owns the research stage: it chooses Explorer lanes, defines challenge hypotheses and simulations, synthesizes all evidence, and decides whether to challenge. Explorer only returns bounded findings and conclusions. Temporary Tester normally writes and runs disposable simulations; temporary Developer is an exceptional escalation only after a demonstrated Tester capability boundary or when a developer-grade standalone or serialized program is required.
-- Before any subagent acts, require it to discover and read every applicable repository `AGENTS.md`, follow its documentation routes, read the role-specific project documentation named by the active reference, and report the governing rules it used.
-- Treat Explorer delegation and multi-lane research as escalation paths, not default phases. Record the Project Manager's direct findings and the unresolved decision-relevant gap before starting Explorer; record why every additional track is genuinely independent.
-- Treat lifecycle stages, sequential checklist items, multiple files, and multiple acceptance criteria as one implementation set unless the implementation complexity gate proves that distinct units are required. Do not manufacture phases or batches for visibility, convenience, or because work is merely non-trivial.
-- Do not implement non-trivial work directly unless the user explicitly overrides delegation or tooling proves delegation unavailable.
-- Do not modify production or source code before the user approves the brief plan and the required discussion, classification, delegation, and planning gates pass.
-- Do not edit, install, build, test, or start feature processes in the source checkout; use the isolated feature worktree until the final transfer gate.
-- Do not transfer a feature diff into the source checkout before explicit user approval tied to the exact feature diff, source branch, and prepared target revision. Transfer approval is separate from final commit-and-push approval.
-- Do not commit or push the transferred source diff before explicit user approval.
-- Create a goal only after explicit user approval and only for exceptionally large work that benefits from durable multi-session execution.
-- Do not claim completion without Developer, Code Quality Reviewer, Adversarial Reviewer, Tester, and final-review evidence required by the plan.
-- Apply the detailed rules from the active reference; this Project Manager guide is not a substitute for reading it.
-
-</non_negotiable_invariants>
+1. Re-read this file, applicable repository instructions, `references/worktree-isolation.md`, and both control documents.
+2. Verify recorded worktrees, branches, checkpoint SHAs, dirty state, ports, processes, agent threads, findings, and approvals against live state.
+3. Read the references for every active work item, not only the primary milestone.
+4. Resume from the last Git-verifiable checkpoint and recorded ready work. Never reconstruct state from memory.

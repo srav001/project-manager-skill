@@ -1,432 +1,190 @@
 # Control Documents
 
-## Contents
+The Project Manager is the sole writer of `discussion.md` and `plan.md`. Agents report evidence; the Project Manager records it. Keep both files outside checkpoint commits.
 
-- [Artifact Responsibilities](#artifact-responsibilities)
-- [`discussion.md` Contract](#discussionmd-contract)
-- [`plan.md` Contract](#planmd-contract)
-- [Maintenance and Recovery](#maintenance-and-recovery)
-- [User-Facing Reporting](#user-facing-reporting)
+## Lifecycle
 
-## Artifact Responsibilities
+- For new non-trivial work, create the isolated feature worktree first, then delete stale control files only at that worktree root and create fresh files.
+- Never delete or modify source-checkout control files during startup.
+- Preserve feature-worktree control files during continuation, recovery, compaction, and agent follow-up.
+- Give both documents the same feature, worktree, branch, base, and lifecycle identity.
+- Treat documents as current control state, not transcripts.
 
-<artifact_table>
+## `discussion.md`
 
-| Artifact | Purpose | Keep detailed |
-|---|---|---|
-| `discussion.md` | Durable product, architecture, constraint, risk, and exception decisions | Until decisions are resolved, then compress to durable conclusions |
-| `plan.md` | Progressively formed delivery shape, owners, retained agent threads, gates, evidence, and next actions | For active and future work; compress completed steps into evidence-backed summaries |
+Keep durable product and architecture context:
 
-</artifact_table>
+- exact user goal and constraints;
+- relevant repository evidence;
+- numbered accepted decisions;
+- rejected alternatives and evidence-based reason;
+- architecture boundary contract and approved expansions;
+- root cause and broader bug class for bug work;
+- genuinely unresolved questions and accepted residual risk.
 
-<persistence_boundary>
-
-- At a new-feature lifecycle boundary, create the isolated feature worktree first, then delete stale `discussion.md` and `plan.md` only at that worktree root; never change source-checkout control files or carry state from an earlier feature.
-- Preserve both files during continuation and recovery, including compaction, app restart, tool failure, and retained-agent follow-up.
-- Create a fresh `discussion.md` at the feature-worktree root immediately for non-trivial feature work when workspace persistence is allowed.
-- Create `plan.md` when evidence and decisions begin to form a real implementation approach; expand it progressively instead of inventing a complete plan upfront.
-- Require both artifacts before non-trivial implementation when workspace persistence is allowed.
-- Treat them as control state, not transcript storage.
-- Preserve exact user decisions, failed-gate evidence, accepted exceptions, and residual risk.
-
-</persistence_boundary>
-
-## `discussion.md` Contract
-
-<required_content>
-
-- [ ] User goal and exact constraints
-- [ ] Repository evidence that shaped the discussion
-- [ ] Architecture decisions and rejected alternatives
-- [ ] Exact user-decided values and behaviors
-- [ ] Work classification and affected systems
-- [ ] Required agent roles and delegation state
-- [ ] Architectural root cause for bug work
-- [ ] Direct-work override or delegation exception, when applicable
-- [ ] Unresolved questions, risks, and accepted residual risk
-- [ ] Source checkout, feature worktree, branch, environment-link, port, preview, integration, and publication constraints
-
-</required_content>
-
-<discussion_template>
+Use an append-only numbered decision log. When an open item is resolved, remove it from `Open Items` and link it to the decision. Do not leave resolved questions marked open or repeat the same decision in several sections.
 
 ```md
 # Discussion
 
-## Feature Identity
+## Identity
+- Feature: [objective]
+- Lifecycle: [new | continuation | recovery; marker]
+- Source: [checkout, branch, base SHA]
+- Feature workspace: [integration worktree and branch]
 
-<feature_identity>
-- Feature: [current user objective]
-- Lifecycle started: [timestamp or task marker]
-- Lifecycle classification: `new feature`
-- Feature worktree and branch: [absolute path and branch]
-- Source checkout and branch: [absolute path and read-only base branch]
-</feature_identity>
-
-## Goal
-
-<user_goal>
-[Goal and exact constraints]
-</user_goal>
+## Goal and Constraints
+[Exact user intent and non-goals]
 
 ## Evidence
-
-<repository_findings>
-- [Finding with path, behavior, log, or source]
-</repository_findings>
+- E1 — [fact, source path/log/link]
 
 ## Decisions
+1. [decision, evidence ids, approval]
 
-<accepted_decisions>
-1. [Decision]
-</accepted_decisions>
+## Rejected Alternatives
+- [alternative] — [correctness or feasibility reason]
 
-<rejected_alternatives>
-- [Alternative]: [reason grounded in correctness or feasibility]
-</rejected_alternatives>
-
-## Classification
-
-<work_classification>
-- Classification: `trivial | non-trivial`
-- Work type: `research | implementation | review | testing | mixed`
-- Affected systems: [systems]
-- Root-cause analysis required: `yes | no`
-</work_classification>
-
-## Delegation
-
-<delegation_state>
-- Required roles: [roles]
-- Subagents available: `yes | no | blocked | authorization required`
-- Generic execution wording received: [exact text or none]
-- Direct-work override: [exact text or none]
-- Exception and substitute controls: [details or none]
-</delegation_state>
+## Architecture Boundary
+- Feature-owned roots: [globs]
+- Allowed consumer seams: [globs and purpose]
+- Forbidden shared systems: [globs/systems]
+- Generated/schema/migration/lockfile policy: [rule]
+- Material expansion authority: [approval or pending]
 
 ## Open Items
-
-<risks_and_questions>
-- [Open question or residual risk]
-</risks_and_questions>
+- [only unresolved question or risk]
 ```
 
-</discussion_template>
+## `plan.md`
 
-## `plan.md` Contract
+Keep state in compact tables. Update status cells in place. Preserve failures through the findings and event tables rather than copying narrative correction packages.
 
-<gate_statuses>
-
-Use only these statuses:
+### Statuses
 
 | Status | Meaning |
 |---|---|
-| `Pending` | Required work has not completed |
-| `Pass` | Required evidence satisfies the gate, or the gate is proven not required |
-| `Fail` | Evidence shows required correction or rework |
-| `Blocked` | A demonstrated external, policy, authorization, or capability condition prevents progress |
+| `Ready` | Dependencies satisfied; may dispatch |
+| `Active` | Assigned work is running |
+| `Blocked` | A demonstrated condition prevents progress |
+| `Done` | Work item completed with evidence |
+| `Pending` | Gate has not been evaluated |
+| `Pass` | Gate evidence is complete |
+| `Fail` | Gate requires correction |
 
-</gate_statuses>
-
-<gate_order>
-
-| Gate | Must pass before |
-|---|---|
-| Workspace Isolation | Feature project files change, dependencies install, runtime processes start, or subagents receive repository work |
-| Work Classification | A non-trivial plan is finalized |
-| Research / Investigation | A research-dependent brief is approved |
-| Plan Approval | Production or source-code changes start |
-| Delegation | Non-trivial implementation starts |
-| Developer | The local pull-request review stage begins when implementation occurred |
-| Dual Review | The approved release candidate reaches Tester or signoff begins |
-| Testing | Feature Completion is claimed when verification is required |
-| Feature Completion | Source-checkout integration preparation begins |
-| Integration Readiness | The user is asked to approve transferring the exact feature diff into the clean source checkout |
-| Transfer Approval | The feature diff is applied to the source checkout |
-| Integration Handoff | The user is asked to inspect the transferred diff and approve commit and push |
-| Manual Approval | Final commit or push begins |
-| Publish | Feature worktree and integration-lock cleanup begins |
-
-</gate_order>
-
-<plan_template>
+### Required state
 
 ```md
 # Plan
 
-## Feature Identity
+## Identity and Workspace
+| Field | Value |
+|---|---|
+| Feature and lifecycle | [objective; new/continuation/recovery] |
+| Source checkout | [path, branch, upstream, original base, status] |
+| Integration worktree | [path, branch, current HEAD, expected dirty state] |
+| Lane/review worktrees | [paths, branches or detached SHAs, owners] |
+| Environment links | [paths and ignored/untracked proof; never values] |
+| Ports and preview | [services, temporary ports, URLs, processes, readiness] |
+| Integration lock/handoff | [state] |
 
-<feature_identity>
-- Feature: [same current user objective as discussion.md]
-- Lifecycle started: [same timestamp or task marker]
-- Lifecycle classification: `new feature | continuation | recovery`
-</feature_identity>
+## Approved Contract
+| Item | Approved value |
+|---|---|
+| Outcome and non-goals | [value] |
+| Acceptance criteria | [value] |
+| Feature-owned roots | [globs] |
+| Allowed consumer seams | [globs and purpose] |
+| Forbidden shared systems | [globs/systems] |
+| Delivery shape | [single implementation set or justified lanes] |
+| Parallelism decision | [lane gate passed with evidence, or exact failed independence condition] |
+| Lane ownership/order | [owner, paths, dependencies, order, or N/A] |
+| User plan approval | [exact approval and revision] |
 
-## Isolated Workspace
+## Primary Milestone
+- Milestone: [current user-facing outcome]
+- Visible progress: [latest win]
+- Next critical action: [one action]
+- Estimate and variance alarm: [estimate, elapsed, state]
 
-<workspace_state>
-- Source checkout, branch, upstream, and original base: [absolute path, branch, upstream, SHA]
-- Source checkout initial status: [clean, or exact unresolved state and decision]
-- Feature worktree, branch, temporary parent, and current base: [absolute paths, branch, SHAs]
-- Environment links: [relative paths and verified ignored state; never values]
-- Temporary port map: [service, normal port, temporary port, override mechanism, URL, owner]
-- Preview topology: [qualifying command, component coverage, process sessions, health evidence, parity gap]
-- Integration lock: [path, owner, state, acquired time]
-- Source handoff: [not started | preparing transfer | awaiting transfer approval | transfer approved | transferred for review | commit approved | committed | pushed]
-</workspace_state>
-
-## Active Workflow Stage
-
-<workflow_stage>
-- Stage: [stage]
-- Active reference: [reference]
-- Next action: [action]
-- Goal decision: `not applicable | awaiting user approval | approved | declined`
-</workflow_stage>
-
-## Retained Agents
-
-<agent_lifecycle>
-| Role | Thread identity | State | Reuse, replace, or close decision | Reason |
+## Work Queue
+| Item | Owner | State | Depends on | Evidence/checkpoint |
 |---|---|---|---|---|
-| Developer | [id or not started] | [state] | [decision] | [reason] |
-| Code Quality Reviewer | [id or not started] | [state] | [decision] | [reason] |
-| Adversarial Reviewer | [id or not started] | [state] | [decision] | [reason] |
-| Tester | [id or not started] | [state] | [decision] | [reason] |
-</agent_lifecycle>
+| W1 | [role/thread] | Ready | [ids or none] | [ref] |
 
-## Delivery Shape
+## Agent and Lane State
+| Role/lane | Thread | Worktree/revision | State | Retain/replace reason |
+|---|---|---|---|---|
+| Developer | [id] | [path/SHA] | [state] | [reason] |
+| Code Quality Reviewer | [id] | [path/SHA] | [state] | [reason] |
+| Adversarial Reviewer | [id] | [path/SHA] | [state] | [reason] |
+| Tester | [id] | [path/SHA] | [state] | [reason] |
 
-<delivery_shape>
-- Shape: `single implementation set | justified multi-unit delivery`
-- Single-set feasibility: [why one bounded Developer assignment is reliable, or the concrete failure it would cause]
-- Complexity-gate evidence: [rewrite, migration, large independent subsystem, materially different contracts, necessary risk checkpoint, demonstrated context boundary, or not applicable]
-- Artificial splits rejected: [multiple files, frontend and backend, several acceptance criteria, ordinary sequential steps, visibility or convenience, or none]
-</delivery_shape>
+## Checkpoints and Gates
+| Gate/checkpoint | SHA or identity | Status | Evidence | Next condition |
+|---|---|---|---|---|
+| Workspace Isolation | [identity] | [status] | [ref] | [condition] |
+| Plan Approval | [plan revision] | [status] | [ref] | [condition] |
+| Developer Handoff | [SHA] | [status] | [ref] | [condition] |
+| Dual Review | [SHA] | [status] | [both verdict refs] | [condition] |
+| Testing | [SHA] | [status] | [ref] | [condition] |
+| Feature Completion | [SHA] | [status] | [ref] | [condition] |
+| Integration Readiness | [diff/source target] | [status] | [ref] | [condition] |
+| Transfer Approval | [diff/source target] | [status] | [approval] | [condition] |
+| Integration Handoff | [source diff] | [status] | [ref] | [condition] |
+| Commit/Push Approval | [source diff] | [status] | [approval] | [condition] |
+| Publish | [commit] | [status] | [ref] | [condition] |
 
-<implementation_units>
-1. [Default complete implementation set, or justified unit with owner, scope, allowed files/modules, dependencies, acceptance criteria, validation, review-boundary id, and status]
-<!-- Add another unit only when the implementation complexity gate passes. -->
-</implementation_units>
+## Findings
+| ID | Source | Class | Severity/blocking | Target SHA | State | Correction/proof SHA |
+|---|---|---|---|---|---|---|
+| CQ-1 | Code Quality | [class] | [value] | [SHA] | Open | [pending] |
 
-<review_cadence>
-- Feature shape and risk: [ordinary feature or fix | qualifying large subsystem or portal | rewrite or high-risk migration; evidence]
-- Planned review boundaries: [one review after the complete implementation set | coherent unit groups | every justified unit; exact grouping]
-- Boundary rationale: [architecture, integration, risk, and recovery evidence]
-- Cadence changes: [new evidence and updated boundary, or none]
-</review_cadence>
-
-## Delivery Checkpoint
-
-<delivery_checkpoint>
-- Active delivery unit and review boundary: [complete implementation set or justified unit; boundary id and included units]
-- Developer assignment boundary: [included work and explicit later-unit exclusions, or not applicable]
-- Actual diff and rule evidence: [revision, files, material rules]
-- Validation and acceptance evidence: [commands, results, criteria]
-- Retained agent states: [ids and states]
-- Recovery cursor: [last completed implementation set or unit and exact next action]
-</delivery_checkpoint>
-
-## Gate Ledger
-
-### Workspace Isolation Gate
-
-<workspace_gate>
-- Status: `Pending | Pass | Fail | Blocked`
-- Source checkout and committed base: [path, branch, upstream, SHA, status]
-- Feature worktree: [path, branch, temporary parent, Git verification]
-- Environment links: [paths, target validation, ignored proof, source untouched]
-- Port and preview discovery: [required listeners, temporary map, qualifying preview or fallback]
-- Agent workspace contract ready: [yes/no and evidence]
-</workspace_gate>
-
-### Work Classification Gate
-
-<classification_gate>
-- Status: `Pending | Pass | Fail | Blocked`
-- Classification and work type: [value]
-- Affected systems: [systems]
-- Required project references read: [references]
-- Architecture and root-cause analysis required: [yes/no and evidence]
-- Evidence: [evidence]
-</classification_gate>
-
-### Plan Approval Gate
-
-<plan_approval_gate>
-- Status: `Pending | Pass | Fail | Blocked`
-- Brief outcome and scope: [summary]
-- Implementation approach and delivery shape: [single implementation set by default, or justified multi-unit summary]
-- Acceptance criteria: [criteria]
-- Material current-feature risks: [risks]
-- User approval: [exact approval or pending]
-- Material changes since approval: [changes and renewed approval, or none]
-- Exceptional goal decision: [not applicable, exact approval, declined, or pending]
-</plan_approval_gate>
-
-### Delegation Gate
-
-<delegation_gate>
-- Status: `Pending | Pass | Fail | Blocked`
-- Required roles: [roles]
-- Availability or authorization state: [state]
-- Agents started or queued: [identities]
-- Direct-work override or exception: [exact text and controls, or none]
-- Prompt acceptance criteria complete: [yes/no]
-- Role-specific repository-rule startup contract included: [applicable AGENTS.md discovery, routed and independently discovered docs, binding constraints, evidence, and rediscovery triggers]
-- Evidence: [evidence]
-</delegation_gate>
-
-### Research / Investigation Gate
-
-<research_gate>
-- Status and requirement: `Pending | Pass | Fail | Blocked`; [required or not required]
-- Direct Project Manager inspection: [files, docs, configuration, logs, codepaths, findings]
-- Escalation decision: [no Explorer required | one Explorer required | multiple independent tracks required]
-- Unresolved decision-relevant gap: [exact question and why another bounded direct read is insufficient, or none]
-- Track independence: [for each additional track, distinct question, evidence or method, and independent decision effect; or not applicable]
-- Agents: [Explorer tracks and identities; temporary simulation agents and closure state]
-- Questions and track synthesis: [questions, `DO`, and `DO NOT`]
-- Challenge hypotheses: [claim, baseline or control, variables, metrics, predeclared thresholds, repetitions or sample boundary, or not applicable]
-- Quantitative simulation evidence: [temporary Tester's disposable artifacts and raw measurements; exceptional Developer escalation, demonstrated capability boundary or program requirement, and independent Tester execution when applicable; threshold comparison, uncertainty, limitations, and cleanup; or not applicable]
-- Project Manager synthesis and remaining uncertainty: [direct findings, Explorer conclusions, Tester measurements, decision, uncertainty]
-</research_gate>
-
-### Developer Gate
-
-<developer_gate>
-- Status, requirement, and Developer: [status; required or not required; retained id]
-- Active bounded delivery unit and review group: [complete implementation set or justified unit; independent or connected group id]
-- Project instructions and engineering practices: [files and rules]
-- Changed files and acceptance evidence: [files and evidence]
-- Project-native validation, deviations, and unresolved risk: [commands, results, details]
-- Worktree confinement: [working directories, port-only state, environment-link exclusion, source-checkout proof]
-</developer_gate>
-
-### Dual Review Gate
-
-<review_gate>
-- Status and local pull-request revision: [status; revision]
-- Code Quality Reviewer: [retained id, rule discovery, review comments, queued or resolved state, approval, residual risk]
-- Adversarial Reviewer: [retained id, evidence, review comments, queued or resolved state, approval, residual risk]
-- Correction queue: [ordered packages, active Developer package, completed packages]
-- Same-revision proof: [evidence that both reviewers approved the same latest diff before Tester received the release candidate]
-- Post-testing change review: [Tester failure and prior revision; exact correction files; fresh Code Quality Reviewer id and clean-context evidence; Adversarial re-review; same-revision approvals before retest]
-</review_gate>
-
-### Testing Gate
-
-<testing_gate>
-- Status, requirement, and Tester: [status; required or not required; retained id]
-- Project testing model, production-like preview, ports, and process ownership: [model, commands, mapping, URLs, PIDs, cwd, health evidence, parity gap]
-- Checks, simulations, user flows, and resolved failures: [evidence]
-- Artifact hygiene, verdict, and residual risk: [git evidence, verdict, risk]
-</testing_gate>
-
-### Feature Completion Gate
-
-<completion_gate>
-- Status: `Pending | Pass | Fail | Blocked`
-- Final diff, required gates, and project-rule evidence: [evidence]
-- Hygiene and retained-agent readiness: [temporary or unrelated changes absent; fresh Code Quality Reviewer replacements after Tester-driven changes; retained for possible manual-review correction]
-- Documentation state and remaining risk: [state and risk]
-</completion_gate>
-
-### Integration Readiness Gate
-
-<integration_readiness_gate>
-- Status: `Pending | Pass | Fail | Blocked`
-- Feature-worktree readiness: [final revision, diff identity, all gates, stopped processes, reverted port-only state]
-- Integration lock: [owner and state]
-- Source target: [path, branch, clean proof, fast-forward pull result]
-- Updated-base reconciliation: [not required, or isolated reconciliation plus repeated review/testing evidence]
-- Proposed transfer: [exact feature-diff identity, prepared target revision, apply-check evidence, and artifact exclusions]
-- Transfer request: [exact request shown to user; source remains clean and feature diff unapplied]
-</integration_readiness_gate>
-
-### Transfer Approval Gate
-
-<transfer_approval_gate>
-- Status: `Pending | Pass | Fail | Blocked`
-- Exact proposed transfer: [feature-diff identity, source checkout, source branch, and prepared target revision]
-- Explicit user transfer approval: [exact approval or pending]
-- Approval freshness: [still applies to every identified input, or invalidated and renewed]
-</transfer_approval_gate>
-
-### Integration Handoff Gate
-
-<integration_gate>
-- Status: `Pending | Pass | Fail | Blocked`
-- Pre-transfer freshness: [clean proof and second fast-forward-only pull immediately before application]
-- Concurrent-work protection: [integration-lock verification and proof no other transferred or user-edited source diff exists]
-- Updated-target handling: [unchanged, or transfer stopped for reconciliation, repeated gates, and renewed approval]
-- Uncommitted transfer: [approved diff identity, resulting source diff identity, artifact and secret exclusions]
-- User review state: [ready for manual code inspection and separate commit-and-push approval; not committed or pushed]
-</integration_gate>
-
-### Manual Approval Gate
-
-<manual_approval_gate>
-- Status: `Pending | Pass | Fail | Blocked`
-- Transferred diff shown to user: [revision and evidence]
-- User-requested corrections: [none, or correction/re-review/retest/transfer evidence]
-- Prior transfer approval: [exact approval proving placement only; not publication authority]
-- Explicit commit-and-push approval: [exact approval or pending]
-- Pre-commit branch, diff, validation, lock, and remote checks: [evidence]
-</manual_approval_gate>
-
-### Publish Gate
-
-<publish_gate>
-- Status: `Pending | Pass | Fail | Blocked`
-- Final source commit and push: [commit, branch, remote, result]
-- Source checkout state: [clean proof]
-- Feature process and runtime cleanup: [processes, overrides, environment links]
-- Worktree, feature branch, temporary parent, and integration-lock cleanup: [evidence]
-- Retained-agent closure: [ids and closure reasons]
-</publish_gate>
+## Event Log
+- [timestamp/marker] — [one-line state change with evidence id]
 ```
 
-</plan_template>
+Add rows rather than new narrative sections. Add a specialized gate row only when the plan actually needs it, such as Research, progressive Code Quality, lane integration, post-Tester re-review, or recovery.
 
-<failed_gate_rule>
+## Gate rules
 
-When a gate fails:
+- Workspace Isolation passes before project files change, dependencies install, runtime starts, or agents receive repository work.
+- Plan Approval passes before production or source-code changes.
+- Developer Handoff proves package completeness, approved-path scope, workspace confinement, and checkpoint identity—not technical approval.
+- Dual Review passes only after both Reviewers complete a final full-diff pass and approve the same SHA.
+- Testing passes only on that approved SHA or on a later SHA that completed the required fresh-review loop.
+- Feature Completion passes before source integration preparation.
+- Transfer Approval binds to the exact feature diff, source checkout, branch, and prepared target revision.
+- Commit/Push Approval is separate and occurs only after the user inspects the transferred uncommitted source diff.
+- Publish passes only after remote verification and cleanup.
 
-1. Preserve the failure and its evidence.
-2. Return review corrections through the ordered queue to the retained Developer; return other failures to the retained role agent.
-3. Re-run the failed gate.
-4. Add passing evidence without deleting the earlier failure history.
+Any identity mismatch is a hard stop. Mark dependent gates invalid until Git-verifiable identity is restored.
 
-</failed_gate_rule>
+## Findings and correction rounds
 
-## Maintenance and Recovery
+- Record one row per finding. Do not duplicate it in a correction-package narrative.
+- Preserve author, class, evidence, severity, blocking state, target SHA, and closure proof.
+- Mark correction-round boundaries in the event log and checkpoint table.
+- When a class recurs across two rounds, mark the dependent queue blocked and record the Reviewer's structural assessment plus user decision.
+- Batch non-blocking findings without allowing them to disappear.
+- After dual PASS, record the authority that reopened review when it occurs.
 
-<maintenance_checklist>
+## Maintenance and recovery
 
-- [ ] Update the active workflow stage, next action, and retained agent states after every handoff.
-- [ ] Confirm `discussion.md` and `plan.md` carry the same current-feature identity; never merge state from different features.
-- [ ] Keep source checkout, feature worktree, branches, base revisions, environment-link paths, port map, preview sessions, integration lock, and handoff state current.
-- [ ] Record exact findings and evidence instead of “done” or “looks good.”
-- [ ] Compress completed stage and delivery-unit detail without deleting decisions, failures, or risk.
-- [ ] Remove transcript-like commentary that no longer controls execution.
-- [ ] After compaction, re-read the thin `SKILL.md`, `references/worktree-isolation.md`, both control documents, and only the active workflow-stage reference; verify every recorded path, branch, port, and process. If integration began, also read `references/integration-handoff.md` and verify its lock and handoff state.
+- Update the primary milestone, work queue, agent table, checkpoint table, and findings table after every handoff.
+- Keep only genuinely open items in `discussion.md`.
+- Keep one current row for each gate; update it in place and preserve prior failures through evidence references and one-line events.
+- Remove transcript-like commentary and repeated prompt text.
+- Anchor review, correction, test, and transfer state to Git-verifiable SHAs.
+- After compaction, verify every recorded path, branch, SHA, dirty-state expectation, process, port, agent, gate, and approval before resuming.
 
-</maintenance_checklist>
+## User-facing status
 
-## User-Facing Reporting
+Report only:
 
-<reporting_contract>
+- current milestone or result;
+- what passed or changed;
+- what is active or blocked;
+- one next user action when required.
 
-Apply the mandatory ADHD User Communication rules in `references/operating-model.md`. This clause defines report content only.
-
-Report:
-
-- what changed;
-- what was verified;
-- what remains;
-- what risk remains.
-
-Do not print the internal gate ledger or compliance checklist unless the user asks.
-
-</reporting_contract>
+Do not print the internal tables unless the user asks.

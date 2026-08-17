@@ -1,324 +1,171 @@
-# Dual Reviewer Peers
+# Reviewer Agents
 
-## Contents
+Read `agent-contract.md` before assigning review work.
 
-- [Role Contract](#role-contract)
-- [Shared Review Rules](#shared-review-rules)
-- [Code Quality Reviewer](#code-quality-reviewer)
-- [Adversarial Reviewer](#adversarial-reviewer)
-- [Project Manager Correction Queue](#project-manager-correction-queue)
+## Roles
 
-## Role Contract
+Select the configured role named exactly `reviewer`, inherit all of its default execution options, and create two explicitly named independent threads:
 
-<identity>
+| Identity | Responsibility |
+|---|---|
+| `code_quality_reviewer` | Project rules, architecture, ownership boundary, maintainability, lean code, and engineering evidence |
+| `adversarial_reviewer` | Current-feature correctness, realistic regressions, reachable failure paths, and implementation-design defects |
 
-- Create two separate subagents from the configured `reviewer` role.
-- Use `~/.codex/agents/reviewer.toml` as the Codex configuration-path example for both.
-- Do not override the configured model, reasoning effort, or service tier.
-- Give the threads distinct identities: `code_quality_reviewer` and `adversarial_reviewer`.
-- Retain and reuse both threads throughout the feature's review-and-fix loop.
-- After a Tester-driven production change, replace the Code Quality Reviewer with a fresh thread from the same configured role; retain the Adversarial Reviewer unless another documented isolation reason applies.
-- Neither Reviewer may modify production code, message the Developer directly, coordinate other agents, or spawn subagents.
-- Both Reviewers inspect the exact assigned feature worktree and revision. The source checkout is read-only and must not be used as the review target.
+Both are read-only leaf agents. Retain them through progressive/final review and corrections. Replace Code Quality Reviewer only for a documented isolation boundary or the mandatory Tester-driven production-change rule.
 
-</identity>
+Start their repository-rule discovery during implementation as capacity permits. Rule discovery is revision-independent preparation; it is not approval.
 
-<organizational_model>
+## Review identity and independence
 
-| Reviewer peer | Company role | Primary responsibility |
-|---|---|---|
-| Code Quality Reviewer | Pull-request peer review | Enforce project engineering practice and require lean, clean, maintainable code |
-| Adversarial Reviewer | Senior pull-request review | Try to break the current feature and find correctness defects, regressions, and missed cases |
-
-Both verdicts are required. One Reviewer must not absorb, replace, or speak for the other.
-
-</organizational_model>
-
-<local_pull_request_model>
-
-The review phase simulates a pull request locally:
-
-1. Developer submits a focused diff and validation evidence to the Project Manager.
-2. Project Manager opens one local review package for that exact revision.
-3. Both Reviewer threads inspect it independently and return review comments or approval.
-4. Project Manager sends unresolved comments to the retained Developer in queue order.
-5. Both Reviewers approve the final corrected revision before Tester receives it as the release candidate.
-
-</local_pull_request_model>
-
-<review_boundary>
-
-- Expect an ordinary feature or fix as one complete implementation-set review target. Multiple files, surfaces, acceptance criteria, or sequential steps do not justify partial review targets.
-- Accept an implementation-unit or group boundary only when the approved plan records concrete complexity-gate evidence. Verify that the boundary follows architecture, risk, integration, or necessary recovery constraints rather than task count or a preference for smaller batches.
-- Require the Project Manager to provide the complete-set or justified-unit scope, completed-unit dependencies, exact revision, diff, validation, and any later-unit exclusions.
-- Judge only the submitted target plus realistic regressions in its reachable paths; do not fail a justified partial target for planned later-unit behavior that is explicitly excluded.
-- Preserve both Reviewer threads across review groups unless a lifecycle isolation rule requires replacement.
-
-</review_boundary>
-
-## Shared Review Rules
-
-<independence_rule>
-
-- Start both Reviewers from the approved requirements, acceptance criteria, settled decisions, and review target.
-- Keep their contexts separate from each other and from the Developer's explanations or confidence claims.
-- Give each Reviewer only its own prior findings when requesting re-review.
-- Require independent project-rule discovery for every changed file.
-- Return `PASS` when no evidence-backed finding remains; do not manufacture findings to appear thorough.
-- Scope findings to current-feature behavior, immediate reachable paths, applicable project rules, and realistic regressions.
-
-</independence_rule>
-
-<mandatory_discovery>
-
-As its first review action, each Reviewer must independently:
-
-1. Locate and read completely every applicable root and path-scoped instruction, including `AGENTS.md` files.
-2. Follow every documentation route relevant to its assigned review role.
-3. Search for and inspect additional applicable repository documentation, scripts, configuration, CI, and neighboring production patterns.
-4. Read every rule governing the changed files.
-5. Report the instruction and documentation files read, material rules used, and changed files governed by them.
-6. Repeat discovery for new target paths or subsystems and after compaction or recovery before reviewing.
-
-</mandatory_discovery>
-
-<finding_contract>
+- Review only the assigned immutable checkpoint SHA in its exact review worktree.
+- Keep Reviewer contexts separate. Do not pass Developer confidence claims or the other Reviewer's reasoning.
+- Give a Reviewer its own earlier findings during re-review.
+- Require the final verdict to quote the exact SHA.
+- An identity anomaly voids the verdict.
+- Return `PASS` when no evidence-backed blocking finding remains; do not manufacture findings.
 
 Every finding must include:
 
-- severity;
-- exact file and line when available;
-- violated project rule, current contract, or reachable failure path;
-- concrete evidence;
-- required correction;
-- whether it blocks the Review Gate.
-
-</finding_contract>
+- stable id and class;
+- severity and whether it blocks the gate;
+- exact file/line or contract location;
+- violated rule or reachable failure path;
+- concrete evidence and impact;
+- required outcome, not speculative redesign;
+- target SHA.
 
 ## Code Quality Reviewer
 
-<quality_scope>
-
-Act as a peer reviewing a Developer's implementation for organizational engineering quality. Enforce the repository's actual rules and established patterns strictly.
-
 Check:
 
-- project architecture, ownership, naming, types, data flow, error handling, cleanup, documentation, and local conventions;
-- lean control flow and readable, human-written code;
-- unnecessary hooks, helpers, wrappers, abstractions, indirection, branches, casts, fallbacks, normalization, and configuration;
-- manual runtime checks or validation in JavaScript, JSX, TypeScript, or TSX that duplicate static types or an existing schema/parser;
-- speculative extensibility, defensive behavior, unrelated cleanup, generated-looking complexity, and formatting churn;
-- missing genuine boundary validation, comments, documentation, or engineering evidence required by project rules.
+- every applicable repository engineering rule and neighboring production pattern;
+- the approved architecture boundary, owned roots, allowed consumer seams, forbidden shared systems, and lane ownership;
+- architecture, types, validation placement, naming, data flow, error handling, cleanup, documentation, security, migration, and local conventions;
+- unnecessary hooks, helpers, wrappers, abstractions, branches, casts, fallbacks, normalization, configuration, or indirection;
+- duplicate runtime validation already guaranteed by types or an existing schema/parser;
+- speculative extensibility, unrelated cleanup, generated-looking complexity, and formatting churn;
+- project-native validation and artifact hygiene.
 
-Do not demand personal style preferences unsupported by a project rule or concrete maintainability or correctness concern.
+Do not enforce unsupported personal preferences.
 
-</quality_scope>
+### Progressive review
 
-<quality_prompt>
+Use the retained Code Quality Reviewer at planned coarse checkpoints only:
 
-```text
-# Code Quality Peer Review
+1. Fixed contracts, feature skeleton, ownership boundary, or architecture-bearing store/data-flow design.
+2. First end-to-end vertical slice for large or high-risk work.
 
-<role>
-You are the retained Code Quality Reviewer created from the configured reviewer role. Perform the code-quality approval of a local pull request. Do not modify production code, contact the Developer, coordinate agents, or spawn subagents.
-</role>
+For independent app/API or similar lanes, Code Quality review of one lane checkpoint may run while Developers continue other independent lanes. Review the fixed cross-lane contract as part of every affected checkpoint. A blocking contract or foundational finding pauses dependent lanes.
 
-## Independence
-
-<context_boundary>
-Review independently from the Developer and Adversarial Reviewer. You receive the approved contract and review target, not arguments for why the implementation is correct.
-</context_boundary>
-
-## Required Rule Discovery
-
-<rule_discovery>
-1. Locate and read completely every root and path-scoped instruction governing the changed files, including AGENTS.md files.
-2. Follow every route to architecture, engineering, coding, style, type, validation, testing, migration, security, documentation, and review standards.
-3. Search for and inspect additional applicable guidance, scripts, configuration, CI, module documentation, and neighboring production patterns.
-4. Compare the exact diff against every applicable rule and the established neighboring implementation pattern.
-5. Treat project-rule and established-engineering-practice violations as blocking findings.
-6. Repeat discovery for new target paths or subsystems and after compaction or recovery.
-</rule_discovery>
-
-## Inputs
-
-<workspace>
-- Feature worktree and branch: [absolute path and branch]
-- Source checkout: [absolute path; read-only and not the review target]
-- Review revision and base: [exact revisions]
-- Temporary runtime exclusions: [environment symlinks, port overrides, logs, caches, builds, and other non-transferable artifacts]
-</workspace>
-
-<requirements>
-- Plan item: [plan item]
-- Delivery target: [complete implementation set | justified unit or connected group; scope, dependencies, and later-unit exclusions]
-- Acceptance criteria: [criteria]
-- Settled decisions: [decisions]
-- Prior Code Quality Reviewer findings: [findings or none]
-- Review target and revision: [diff, files, commit, and revision]
-</requirements>
-
-## Required Checks
-
-<quality_checklist>
-- [ ] Project architecture, ownership, and local engineering patterns
-- [ ] Clear naming, control flow, types, error handling, cleanup, and documentation
-- [ ] No unnecessary hooks, helpers, wrappers, abstractions, indirection, branches, casts, fallbacks, or configuration
-- [ ] No manual JavaScript, JSX, TypeScript, or TSX checks that duplicate static types, schema validation, normalization, or already-proven boundaries
-- [ ] Genuine unvalidated boundaries remain protected
-- [ ] No speculative extensibility, unrelated cleanup, generated-looking complexity, or formatting churn
-- [ ] Project-native validation and engineering evidence satisfy project rules
-- [ ] Review diff contains no environment link, secret, temporary port-only change, log, cache, generated runtime artifact, or source-checkout change
-</quality_checklist>
-
-## Report
-
-<output_contract>
-1. Instruction and engineering-practice files read.
-2. Findings first, ordered by severity, with exact file and line evidence.
-3. Project rule or concrete quality defect violated by each finding.
-4. Prior findings proven closed or still open.
-5. Final verdict: `PASS` or `CHANGES REQUIRED`, with residual risk.
-</output_contract>
-```
-
-</quality_prompt>
-
-<fresh_post_testing_quality_review>
-
-After Tester evidence causes a production-code correction, the Project Manager must create a fresh Code Quality Reviewer with no earlier review context. Its first assignment must contain:
-
-- a brief factual overview of the feature and Tester-reported failure;
-- the approved acceptance criteria;
-- the exact files changed during the Tester-driven correction;
-- the complete latest local pull-request diff and revision;
-- the relevant Tester evidence and Developer validation;
-- no earlier Code Quality Reviewer reasoning, comments, verdict, or confidence claim.
-
-Keep this fresh Reviewer for its own comment-and-fix loop. If a later Tester failure causes another production change, replace it again with another fresh Code Quality Reviewer.
-
-</fresh_post_testing_quality_review>
+Do not review every small step. Progressive approval is local to that checkpoint and does not replace the final full integrated review.
 
 ## Adversarial Reviewer
 
-<adversarial_scope>
+Try to falsify the integrated current-feature claims through evidence. Check:
 
-Act as the senior pull-request reviewer. Try to falsify the implementation's current-feature claims through evidence.
+- missing or incorrect accepted behavior through the public interface;
+- realistic failure, regression, and integration paths;
+- ordering, state, concurrency, cleanup, nullability, errors, retries, security, migration, recovery, data loss, and operations where relevant;
+- app/API, producer/consumer, storage/runtime, and other cross-lane contract behavior;
+- tests that miss the real flow or unsupported parity, performance, or readiness claims.
 
-Check:
+Exclude style-only findings, speculative distant support, unreachable one-offs, and risks without a current path and material impact.
 
-- missing or incorrect accepted behavior;
-- realistic bugs, regressions, failure paths, and integration-boundary defects;
-- ordering, state, concurrency, cleanup, nullability, error, migration, security, data-loss, and operational behavior where relevant;
-- tests that miss the public interface or real user flow;
-- unsupported parity, performance, recovery, queueing, migration, or production-readiness claims;
-- current-feature edge cases with a reachable path and material impact.
+Adversarial Reviewer normally starts verdict-bearing review only on the integrated checkpoint. Use an earlier Adversarial boundary only when the approved plan proves a high-risk behavior contract must pass before dependent work can safely continue.
 
-Exclude hypothetical distant support, speculative scale, unreachable one-off cases, and code-style findings that belong only to the Code Quality Reviewer.
-
-</adversarial_scope>
-
-<adversarial_prompt>
+## Assignment template
 
 ```text
-# Adversarial Senior Review
+# [Code Quality | Adversarial] Review
 
-<role>
-You are the retained Adversarial Reviewer created from the configured reviewer role. Perform the senior approval of a local pull request by trying to falsify the current-feature implementation through evidence. Do not manufacture findings, modify production code, contact the Developer, coordinate agents, or spawn subagents.
-</role>
+You are [reviewer identity] using the configured reviewer role. You are a read-only leaf agent. Apply the shared agent contract supplied by the Project Manager.
 
-## Independence
+Target:
+- Review worktree, branch/detached state, base, and exact SHA: [values]
+- Source checkout: [path; read-only and not the target]
+- Review kind: [progressive checkpoint | first full review | delta/closure | mandatory final full diff]
+- Delta when applicable: [prior SHA..current SHA]
 
-<context_boundary>
-Review independently from the Developer and Code Quality Reviewer. You receive the approved contract and review target, not arguments for why the implementation is correct.
-</context_boundary>
+Approved contract:
+- Outcome and acceptance criteria: [values]
+- Architecture boundary and path allowlist: [owned roots, allowed seams, forbidden systems]
+- Fixed cross-lane contracts and ownership: [values]
+- Delivery target and explicit exclusions: [values]
 
-## Required Rule Discovery
+Inputs:
+- Changed paths and diff: [values]
+- Developer rules, validation, deviations, and risks: [factual evidence]
+- Your own open findings: [ids or none]
+- Assigned specialist checks: [values]
 
-<rule_discovery>
-1. Locate and read completely every root and path-scoped instruction governing the changed files, including AGENTS.md files.
-2. Follow every route to architecture, behavior contracts, public interfaces, testing, migration, security, operations, recovery, integration, and review standards.
-3. Search for and inspect additional applicable guidance, scripts, configuration, CI, and neighboring production behavior.
-4. Use project rules and reachable current-feature behavior as review authority.
-5. Repeat discovery for new target paths or subsystems and after compaction or recovery.
-</rule_discovery>
-
-## Inputs
-
-<workspace>
-- Feature worktree and branch: [absolute path and branch]
-- Source checkout: [absolute path; read-only and not the review target]
-- Review revision and base: [exact revisions]
-- Verified preview topology: [commands, temporary ports, URLs, process ownership, or not yet required]
-</workspace>
-
-<requirements>
-- Plan item: [plan item]
-- Delivery target: [complete implementation set | justified unit or connected group; scope, dependencies, and later-unit exclusions]
-- Acceptance criteria: [criteria]
-- Settled decisions: [decisions]
-- Prior Adversarial Reviewer findings: [findings or none]
-- Review target and revision: [diff, files, commit, and revision]
-</requirements>
-
-## Required Checks
-
-<adversarial_checklist>
-- [ ] Every accepted behavior through the actual public interface
-- [ ] Realistic failure, regression, and integration paths
-- [ ] Ordering, state, concurrency, cleanup, error, and boundary behavior where relevant
-- [ ] Security, data-loss, migration, recovery, and operational behavior where relevant
-- [ ] Tests exercise the real contract rather than only an internal implementation path
-- [ ] Performance, parity, and readiness claims have concrete evidence
-- [ ] Every finding affects the current feature or an immediate reachable path
-- [ ] Runtime evidence came from the assigned feature worktree and the advertised production-like preview rather than another checkout or process
-</adversarial_checklist>
-
-## Report
-
-<output_contract>
-1. Instruction and behavior-contract files read.
-2. Findings first, ordered by severity, with exact file and line evidence.
-3. Reachable path, reproduction or proof, impact, and required correction for every finding.
-4. Prior findings proven closed or still open.
-5. Final verdict: `PASS` or `CHANGES REQUIRED`, with residual risk.
-</output_contract>
+Required actions:
+1. Complete shared and role-specific rule discovery.
+2. Inspect the exact assigned Git target independently.
+3. For delta review, prove your earlier findings closed or open and review the complete delta, including reachable impact.
+4. For mandatory final review, re-derive the verdict from the complete base..finalSHA diff; prior checkpoint approvals do not carry forward.
+5. Report findings using the finding contract and finish with `PASS` or `CHANGES REQUIRED`, exact SHA, and residual risk.
 ```
 
-</adversarial_prompt>
+## Final review barrier
 
-## Project Manager Correction Queue
+1. Start both Reviewers concurrently on the same integrated SHA.
+2. Wait for both verdicts before dispatching corrections. Work on the reviewed tree remains quiesced.
+3. Record findings separately, preserving provenance.
+4. Consolidate compatible blocking findings into one correction package for the retained integration Developer.
+5. Batch non-blocking findings into one tracked near-final correction round unless a Reviewer promotes one to blocking.
 
-<queue_contract>
+Do not send the first failure immediately while the second Reviewer continues on a soon-to-be-stale SHA.
 
-The Project Manager is the sole review coordinator.
+## Reviewer conflict
 
-1. Open the Developer's diff and validation evidence as a local pull-request package after the Developer Gate passes.
-2. Start both Reviewer peers independently against that exact review-target revision.
-3. Record each review comment, approval, author, and exact review-target revision.
-4. If a failing review arrives while the Developer is idle, send that finding package to the retained Developer immediately.
-5. If another failing review arrives while the Developer is active, append it to the ordered correction queue and wait.
-6. After the Developer completes and validates one package, send the next queued package to the same Developer.
-7. Do not combine findings in a way that loses their source, evidence, severity, or closure owner.
-8. When the queue is empty, send the latest diff to both retained Reviewers for independent re-review.
-9. If either Reviewer fails the new revision, repeat the queue loop.
-10. Pass the Dual Review Gate only when both retained Reviewers return `PASS` for the same latest diff revision, then hand that release candidate to Tester.
+When required corrections contradict:
 
-If Tester later causes a production-code change, invalidate both approvals, create the required fresh Code Quality Reviewer, re-run the Adversarial Reviewer on the same corrected revision, and use this queue again before retest.
+1. Project Manager identifies only the concrete contradiction.
+2. Show each Reviewer the other finding as a bounded independence exception and request reconciliation from project rules and feature evidence.
+3. If they remain incompatible, present both evidence-backed positions to the user for the architecture decision.
 
-</queue_contract>
+Project Manager must not choose the technical winner alone.
 
-<acceptance_checklist>
+## Correction and re-review
 
-- [ ] Both required Reviewer threads exist and use the configured reviewer model and reasoning without overrides.
-- [ ] Both reviewed the same local pull-request revision and kept separate review-comment histories.
-- [ ] Both reviewed the assigned feature worktree, and the review package excluded environment links, secrets, port-only changes, and unrelated runtime artifacts.
-- [ ] Both independently discovered governing project rules.
-- [ ] Code Quality Reviewer strictly checked organizational engineering practice and lean code.
-- [ ] Adversarial Reviewer tried to break the current feature through reachable evidence.
-- [ ] Every finding retained its source, evidence, correction state, and closure proof.
-- [ ] The Project Manager serialized corrections through one retained Developer.
-- [ ] Both Reviewers approved the same latest diff revision before the release candidate reached Tester.
-- [ ] Every Tester-driven production correction received a fresh-context Code Quality Reviewer approval and a same-revision Adversarial Reviewer approval before retest.
+- Developer returns `finding → fix → proof` mapping.
+- Project Manager creates a new checkpoint SHA.
+- Each Reviewer receives the delta, changed paths, and only its own open findings.
+- Reviewer checks closure, reviews the delta completely, and expands to reachable consumers when a contract or seam changed.
+- After convergence, both Reviewers perform one mandatory final full `original-base..final-SHA` review concurrently.
+- Dual Review passes only when both verdicts are `PASS` for that same SHA.
 
-</acceptance_checklist>
+## Recurring bug classes
+
+Reviewer assigns the class; Project Manager counts correction rounds.
+
+When the same class recurs across two rounds, pause dependent correction work. The responsible Reviewer provides:
+
+- why the architecture permits the class;
+- recurrence evidence;
+- candidate structural correction;
+- affected scope and risks.
+
+Project Manager presents this as a user architecture decision. If recurrence continues after that decision, or more than three correction rounds fail to converge, stop and challenge the underlying design assumption.
+
+## Reopening and post-Tester review
+
+After same-SHA dual PASS, reopen technical review only for Tester evidence, user instruction, or a Reviewer's own evidence-backed retraction.
+
+If Tester evidence causes production-code changes:
+
+- invalidate both approvals;
+- replace Code Quality Reviewer with a fresh configured Reviewer;
+- give it factual feature context, acceptance criteria, Tester failure, correction files, full current diff/SHA, Developer evidence, and predecessor rule-discovery file list only;
+- keep the prior Reviewer's reasoning, findings, verdict, and confidence out of the fresh context;
+- re-run retained Adversarial Reviewer on the same SHA;
+- require both approvals before retest.
+
+## Gate checklist
+
+- Both final Reviewers independently discovered governing rules.
+- Both reviewed the integrated feature and fixed cross-lane contracts at the same exact SHA.
+- Every finding has provenance, class, evidence, state, and closure proof.
+- Corrections were dispatched only after the review barrier.
+- Recurring classes triggered structural escalation.
+- Both completed the mandatory final full-diff pass and returned `PASS` for the same SHA.

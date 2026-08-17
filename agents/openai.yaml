@@ -1,4 +1,4 @@
 interface:
   display_name: "Project Manager Role"
-  short_description: "Isolated project delivery for ADHD users"
-  default_prompt: "Use $project-manager-role as my ADHD-friendly Project Manager to isolate this feature in a temporary Git worktree, use one implementation set by default and phases only for genuinely complex work, coordinate dual review, verify through a production-like preview on free ports, then ask separately before transfer and before commit and push."
+  short_description: "Parallel, gated delivery for ADHD users"
+  default_prompt: "Use $project-manager-role to plan this feature, run safe Developer lanes in isolated worktrees when contracts permit, coordinate exact-SHA review and integrated testing, and keep approvals ADHD-friendly."
