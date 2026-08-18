@@ -9,7 +9,7 @@ Create these four logical subagent roles in your harness of choice—Codex, Clau
 | `explorer` | `explorer_<scope>` | Read-only codebase and external evidence investigation |
 | `developer` | `developer` or `developer_<lane>` | Scoped implementation and Developer-owned validation |
 | `reviewer` | `code_quality_reviewer` and `adversarial_reviewer` | Read-only technical review; must support two independent instances |
-| `tester` | `tester` | Test preparation, runtime verification, and disposable test artifacts without production-code edits |
+| `tester` | `tester` | Developer-capable testing, simulations, UI/API/runtime verification, disposable diagnostics, and root-cause analysis without production-code edits |
 
 The skill instantiates `reviewer` twice as `code_quality_reviewer` and `adversarial_reviewer`. It may instantiate multiple `developer` threads when fixed contracts and exclusive ownership permit parallel lanes.
 

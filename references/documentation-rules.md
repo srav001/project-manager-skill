@@ -79,7 +79,8 @@ Keep state in compact tables. Update status cells in place. Preserve failures th
 | State | Meaning |
 |---|---|
 | `Proposed` | A role reported the problem; Project Manager disposition is pending |
-| `Authorized` | The surface-level Finding Scope Screen accepted the role's `blocking in-scope defect` classification for correction intake |
+| `Authorized` | The documents-only Finding Scope-and-Stage Screen admitted the role's blocker to the active correction queue |
+| `Deferred-Final` | A focused-stage observation fell outside that gate; return it only to its originating Reviewer at final review as unproven |
 | `Excluded` | It is recorded with a non-implementation classification and reason |
 | `Corrected` | Developer supplied correction proof; Reviewer closure is pending |
 | `Closed` | Originating role verified closure on the recorded revision |
@@ -140,8 +141,10 @@ Keep state in compact tables. Update status cells in place. Preserve failures th
 | Workspace Isolation | [identity] | [status] | [ref] | [condition] |
 | Plan Approval | [plan revision] | [status] | [ref] | [condition] |
 | Developer Handoff | [SHA] | [status] | [ref] | [condition] |
-| Dual Review | [SHA] | [status] | [both verdict refs] | [condition] |
-| Testing | [SHA] | [status] | [ref] | [condition] |
+| Focused Dual Review (Test Readiness) | [test-candidate SHA] | [status] | [both TEST READY refs] | [condition] |
+| Integrated Testing | [test-candidate SHA] | [status] | [Tester evidence and stage correction count] | [condition] |
+| Final Dual Review (Release Readiness) | [final SHA] | [status] | [both RELEASE PASS refs] | [condition] |
+| Regression Confirmation | [final SHA] | [status or N/A] | [Tester evidence or no-production-change reason] | [condition] |
 | Feature Completion | [SHA] | [status] | [ref] | [condition] |
 | Integration Readiness | [diff/source target] | [status] | [ref] | [condition] |
 | Transfer Approval | [diff/source target] | [status] | [approval] | [condition] |
@@ -150,23 +153,25 @@ Keep state in compact tables. Update status cells in place. Preserve failures th
 | Publish | [commit] | [status] | [ref] | [condition] |
 
 ## Findings
-| ID | Source | Defect class | Scope source and proof | Classification | Target SHA | State/disposition | Correction/proof SHA |
-|---|---|---|---|---|---|---|---|
-| CQ-1 | Code Quality | [class] | [criterion/contract/flow and evidence] | [classification] | [SHA] | [state and reason] | [pending or N/A] |
+| ID | Source/review kind | Defect class | Scope source, proof, and failure analysis | Classification | Blocks | Target SHA | State/disposition | Correction/proof SHA |
+|---|---|---|---|---|---|---|---|---|
+| CQ-1 | Code Quality / focused | [class] | [criterion/contract/flow and evidence] | [classification] | [test readiness/release/N/A] | [SHA] | [state and reason] | [pending or N/A] |
 
 ## Event Log
 - [timestamp/marker] — [one-line state change with evidence id]
 ```
 
-Add rows rather than new narrative sections. Add a specialized gate row only when the plan actually needs it, such as Research, progressive Code Quality, lane integration, post-Tester re-review, or recovery.
+Add rows rather than new narrative sections. Add a specialized gate row only when the plan actually needs it, such as Research, progressive Code Quality, lane integration, post-release regression re-review, or recovery.
 
 ## Gate rules
 
 - Workspace Isolation passes before project files change, dependencies install, runtime starts, or agents receive repository work.
 - Plan Approval passes before production or source-code changes.
 - Developer Handoff proves package completeness, approved-path scope, workspace confinement, and checkpoint identity—not technical approval.
-- Dual Review passes only after both Reviewers complete a final full-diff pass and approve the same SHA.
-- Testing passes only on that approved SHA or on a later SHA that completed the required fresh-review loop.
+- Focused Dual Review passes only when both focused Reviewers return `TEST READY` for the same test-candidate SHA.
+- Integrated Testing starts on that SHA and passes only on a later SHA that completed the required focused correction-delta review and retest loop.
+- Final Dual Review begins only after integrated behavior stabilizes. It passes when both Reviewers complete one final full-diff pass and return same-SHA `RELEASE PASS`; later final corrections receive delta-and-closure review and reissued verdicts without restarting the full-diff pass.
+- Regression Confirmation is `N/A` when final review caused no production change. Otherwise it passes only after the retained Tester verifies the final-review correction on the dual-`RELEASE PASS` SHA.
 - Feature Completion passes before source integration preparation.
 - Transfer Approval binds to the exact feature diff, source checkout, branch, and prepared target revision.
 - Commit/Push Approval is separate and occurs only after the user inspects the transferred uncommitted source diff.
@@ -174,20 +179,26 @@ Add rows rather than new narrative sections. Add a specialized gate row only whe
 
 Any identity mismatch is a hard stop. Mark dependent gates invalid until Git-verifiable identity is restored.
 
+Encode the same dependency order in the Work Queue. Final full review remains `Pending`, never `Ready` or `Active`, until Integrated Testing passes. When focused dual review passes and Tester is ready, dispatch integrated testing immediately instead of opening broader review work.
+
 ## Findings and correction rounds
 
 - Record one row per finding. Do not duplicate it in a correction-package narrative.
-- Preserve author, defect class, scope source, proof, evidence, classification, disposition reason, target SHA, and closure proof when implemented.
-- Send only `blocking in-scope defect` findings to a Developer. Record `unrelated existing defect`, `optional additional capability`, and `unsupported hypothesis` without implementing them.
+- Preserve author, review kind, defect class, scope source, proof, evidence, Tester failure analysis when applicable, classification, blocked gate, disposition reason, target SHA, and closure proof when implemented.
+- A Tester `FAIL` is incomplete until it records the failing action/time/order, expected and observed result, correlated runtime evidence, relevant source path, immediate cause, root cause or bounded uncertainty, reproduction, and smallest required outcome. Return incomplete analysis to Tester; Project Manager does not reconstruct it.
+- Send only `blocking in-scope defect` findings for the active gate to a Developer. Record `unrelated existing defect`, `optional additional capability`, and `unsupported hypothesis` without implementing them.
+- Mark a focused-stage finding `Deferred-Final` when it falls outside only that review kind or stage's immediate reachability. It cannot block testing and returns only to its originating Reviewer at final review as an unproven observation.
 - Use `scope decision required` only when the unresolved premise materially prevents correct planning or verification of the approved request.
 - Keep excluded findings visible to their originating role during re-review. Reopen a settled exclusion only for materially new evidence or newly approved scope; record an active scope-mapping dispute as `scope decision required`.
-- Mark correction-round boundaries in the event log and checkpoint table.
-- When a demonstrated authorized class recurs across two rounds, mark the dependent queue blocked and record the Reviewer's structural assessment plus user decision.
-- After dual PASS, record the authority that reopened review when it occurs.
+- Mark correction-round boundaries and stage in the event log and checkpoint table. Count recurrence separately for focused review, integrated testing, and final review.
+- When a demonstrated authorized class recurs across two rounds in one stage, mark the dependent queue blocked and record the Reviewer's structural assessment plus user decision. A focused deferral confirmed at final review is not recurrence.
+- After `TEST READY` or `RELEASE PASS`, record the authority that reopened that stage's review.
 
 ## Maintenance and recovery
 
 - Update the primary milestone, work queue, agent table, checkpoint table, and findings table after every handoff.
+- After Focused Dual Review passes and while Integrated Testing is pending or active, make real integrated evidence the primary milestone and next critical action. Do not point the milestone back at broad review closure.
+- Never label a checkpoint `final candidate`, `release candidate`, or `mandatory final review` before Integrated Testing has run. Use `test candidate` until final review begins.
 - Keep only genuinely open items in `discussion.md`.
 - Keep one current row for each gate; update it in place and preserve prior failures through evidence references and one-line events.
 - Remove transcript-like commentary and repeated prompt text.

@@ -67,7 +67,7 @@ Delegate non-trivial production changes when agents are available. Direct implem
 
 ### Ordinary work
 
-Use one complete integrated implementation set, one integrated final review target, and one integrated Tester pass. During planning, actively test whether that set can use parallel Developer lanes. Use one Developer when independence is unproven; use multiple Developers when the independence gate passes.
+Use one complete integrated implementation set, one integrated test flow, and one final review target. During planning, actively test whether that set can use parallel Developer lanes. Use one Developer when independence is unproven; use multiple Developers when the independence gate passes.
 
 Multiple files or surfaces do not prove independence by themselves. Fixed app/API contracts plus exclusive app/API ownership, for example, can prove it.
 
@@ -114,7 +114,9 @@ Example with a fixed app/API contract:
 2. Tester prepares the integrated real-flow environment as capacity permits.
 3. When one lane reaches an architecture checkpoint, Code Quality review may run while the other lane continues independent work.
 4. Project Manager merges completed lane checkpoints into one integration SHA.
-5. Code Quality and Adversarial final reviews run concurrently on that SHA; one integrated Tester pass follows their same-SHA approval.
+5. Focused Code Quality and Adversarial reviews run concurrently on that SHA; same-SHA `TEST READY` starts integrated testing.
+6. Tester evidence drives correction, focused delta review, and retest until integrated behavior stabilizes.
+7. Both Reviewers run the final full-diff review concurrently; same-SHA `RELEASE PASS` gates release.
 
 ## Boundary contract
 
@@ -130,22 +132,31 @@ Before implementation, record:
 
 At every checkpoint, the Project Manager compares changed paths mechanically with this contract. An unapproved forbidden-path touch is a hard stop. Code Quality Reviewer judges whether allowed-path changes actually preserve the architectural and removability intent; Adversarial Reviewer judges reachable regressions from the seams.
 
-## Finding scope screen
+## Finding scope-and-stage screen
 
-Before sending a reported problem to a Developer, the Project Manager performs one quick surface-level intake screen. Confirm only that the required fields and evidence pointers are present, the declared scope source maps to the approved contract, the proposed classification is recorded, and the requested outcome does not visibly add an unapproved capability or cross the boundary.
+Before sending a reported problem to a Developer, the Project Manager performs one quick documents-only intake screen using the finding report, approved plan, acceptance criteria, boundary contract, and assigned review kind. Admit it to the active gate's correction queue only when all five hold:
 
-Do not inspect code to re-prove the finding, reproduce its flow, rerun commands, assess evidence quality, reconsider severity, or decide technical merit. The reporting Reviewer or Tester owns that work.
+1. Its scope source maps to approved scope or a binding contract.
+2. It lies inside the assigned review kind's stated inspection boundary.
+3. Its behavioral path is immediate and realistically reachable at this stage, or its code-quality violation is inside the directly changed local surface assigned for review.
+4. The report demonstrates why it blocks the named gate.
+5. Its requested outcome is the smallest required.
 
-- Return a missing field or unclear scope link to the reporting role as one bounded question. Do not investigate it independently or send an incomplete finding to a Developer.
+Do not inspect implementation code to re-prove the finding, reproduce its flow, rerun commands, assess evidence quality, reconsider severity, decide technical merit, launch research or an advisor, or ask the Developer to resolve intake uncertainty. The reporting Reviewer or Tester owns technical truth; the Project Manager owns assignment fit and queue admission.
+
+- Return a missing field or unclear scope link to the reporting role as at most one bounded clarification question per finding per gate. Do not investigate it independently or send an incomplete finding to a Developer.
+- If a focused-review finding fails only the review-kind or stage-immediacy check, record it as `Deferred-Final`. It does not block testing. Return it only to its originating Reviewer during final review as an unproven observation, never as a presumed defect.
 - Send an unresolved premise to the user only when it is classified `scope decision required`; otherwise record it without interrupting or expanding the feature.
 - Record `optional additional capability` and `unrelated existing defect` separately. Implement neither inside the current feature without approval, and do not interrupt the user with the optional proposal unless it is immediately material or the user asks.
-- Only a `blocking in-scope defect` enters a correction package.
+- Every proposed blocker must name `Blocks: test readiness | release`. Only a `blocking in-scope defect` for the active gate enters a correction package.
 - Keep excluded findings and their reasons visible to their originating role during re-review. Do not relitigate a settled exclusion without materially new evidence or a newly approved requirement.
 
 ### Scope examples
 
 - **Good:** Adversarial Reviewer demonstrates that the approved import flow crashes on a documented input, with steps and a trace. Project Manager verifies the finding contract and sends it to the Developer.
+- **Good:** A focused Reviewer reports a restart-only lifecycle concern outside its assignment. Project Manager marks it `Deferred-Final` from the report and proceeds toward testing without opening implementation code.
 - **Bad:** A Reviewer says two concurrent imports could corrupt data without an approved concurrency requirement or a demonstrated current path. Project Manager must not forward it as blocking or ask the user unless that premise materially blocks the current request; record it as optional or unsupported.
+- **Bad:** Project Manager reads the runtime implementation or consults an advisor to decide whether a broader focused-stage concern is technically true. The intake decision needs only assignment fit; technical truth belongs to final review.
 
 ## Immutable checkpoints
 
@@ -167,61 +178,76 @@ Use the retained Code Quality Reviewer progressively only at planned, coarse, ar
 - contracts, feature skeleton, ownership boundary, or core store/data-flow design;
 - the first end-to-end vertical slice of a large or high-risk feature.
 
-Do not review every small implementation step. Adversarial Reviewer remains fresh to the final integrated diff and does not run progressive review.
+Do not review every small implementation step. Adversarial Reviewer does not run progressive review; its first verdict-bearing assignment is the focused pre-test review.
 
-After a checkpoint is created and assigned through an immutable review worktree, Developer may continue only on items proven independent of that checkpoint. A blocking foundational finding stops dependent work. Progressive approval does not carry into the mandatory final full-diff Code Quality pass.
+After a checkpoint is created and assigned through an immutable review worktree, Developer may continue only on items proven independent of that checkpoint. A blocking foundational finding stops dependent work. Progressive approval does not carry into focused or final Code Quality review.
 
-## Final dual-review barrier
+## Focused dual review: test readiness
 
 At the integrated Developer handoff:
 
-1. Create one immutable checkpoint SHA and pass the mechanical handoff gate.
-2. Start Code Quality and Adversarial reviews concurrently against that same SHA.
-3. Wait for both verdicts. Do not send the first failure for correction while the other review is still running.
-4. Apply the surface-level Finding Scope Screen to every reported problem and record its disposition.
-5. Consolidate only compatible `blocking in-scope defect` findings into one Developer correction package while preserving reviewer, finding id, class, evidence, and closure owner.
-6. Resolve contradictory required corrections through the reviewer-conflict protocol before implementation.
+1. Create one immutable test-candidate SHA and pass the mechanical handoff gate.
+2. Start focused Code Quality and focused Adversarial reviews concurrently against that same SHA.
+3. Wait for both `TEST READY` or `NOT TEST READY` verdicts. Do not dispatch the first correction while the other review is still running.
+4. Apply the Finding Scope-and-Stage Screen and record each disposition.
+5. Consolidate only compatible `blocking in-scope defect` findings with `Blocks: test readiness` into one Developer correction package.
+6. Resolve contradictory required corrections through the reviewer-conflict protocol.
 
-After correction, create a new SHA. Each Reviewer checks its open findings, respects recorded exclusions, and reviews the complete delta. Run project-native validation once per consolidated round, not once per finding.
+Focused Code Quality inspects the newly written files and directly changed call sites for binding local rules, leanness, readability, unnecessary machinery, obvious boundary violations, and nearby established patterns. A demonstrated violation inside that boundary may block test readiness even when it would not invalidate runtime evidence. It does not perform whole-feature architecture or system-interaction analysis.
 
-When the Project Manager excludes a proposed blocker, return its disposition to the originating Reviewer and request a verdict against the approved scope. The Reviewer may accept the disposition and reissue its verdict or maintain the blocking classification because it disputes the scope mapping. In the latter case, classify the unresolved disagreement `scope decision required` and present it to the user before the gate can pass. The Project Manager never converts its own disposition into technical approval.
+Focused Adversarial inspects the immediate execution paths of approved acceptance criteria for obvious correctness failures, direct regressions in supported callers, and concrete defects that would make the first integrated test unsafe, impossible, destructive, or misleading. It does not explore distant races, speculative recovery, unrequested operating models, broad lifecycle redesign, or system-wide architecture.
 
-Before the Dual Review Gate passes, both Reviewers must perform one final independent full-diff review from original base to the same final SHA. Earlier checkpoint or delta approvals do not substitute for it.
+After correction, create a new test-candidate SHA. Both retained Reviewers check closure and the complete correction delta, then reissue their focused verdict. Broader concerns are `Deferred-Final`; they do not block the first integrated test.
 
 ## Correction convergence
 
 Every authorized blocking finding carries a class label. The Developer maps each fix to the finding and proof.
 
-- If the same demonstrated, in-scope class recurs across two distinct correction rounds, halt dependent corrections.
+- Count rounds separately within focused review, integrated testing, and final review. If the same demonstrated, in-scope class recurs across two distinct correction rounds in one stage, halt dependent corrections.
 - Ask the responsible Reviewer for a short structural assessment: enabling architecture, evidence, candidate structural correction, and blast radius.
 - If the candidate remains within the approved boundary, present the architecture decision to the user before more dependent work. If it adds a capability or crosses the boundary, request explicit scope approval.
-- If the class recurs after an approved structural correction, or the review exceeds three correction rounds without convergence, stop and report the failed assumption rather than continuing a patch treadmill.
+- A finding deferred during focused review and confirmed at final review is not recurrence. If a class recurs after an approved structural correction, or one stage exceeds three correction rounds without convergence, stop and report the failed assumption rather than continuing a patch treadmill.
 
 The Project Manager counts rounds and coordinates the decision; it does not invent the technical diagnosis.
 
 ## Review authority after approval
 
-After both Reviewers pass a SHA, only Tester evidence, a user instruction, or a Reviewer's own evidence-backed retraction may reopen technical review. A Project Manager concern goes to the responsible Reviewer as a question and cannot itself become a correction package.
+After both focused Reviewers return `TEST READY`, only Tester evidence, a user instruction, or a Reviewer's own evidence-backed retraction may reopen focused review. After both return `RELEASE PASS`, the same rule applies to final review. A Project Manager concern goes to the responsible Reviewer as a question and cannot itself become a correction package.
 
-## Testing and post-test changes
+## Integrated testing loop
 
-Tester readiness runs during implementation, but verdict-bearing integrated execution starts only after same-SHA dual approval. If a readiness blocker such as preview startup, authentication, missing fixtures, or unusable ports appears, surface it immediately rather than waiting for the release candidate.
+Tester readiness runs during implementation, and verdict-bearing integrated execution starts after same-SHA dual `TEST READY`. If a readiness blocker such as preview startup, authentication, missing fixtures, or unusable ports appears, surface it immediately rather than waiting for the test candidate.
 
-When Tester evidence causes a production-code change:
+When Tester evidence causes a production-code change before final review:
 
-1. Return the failure to the retained integration Developer.
-2. Retire the prior Code Quality Reviewer.
-3. Create a fresh Code Quality Reviewer with factual feature context, acceptance criteria, Tester evidence, correction files, current full diff, and predecessor rule-discovery file list only—not prior reasoning or confidence.
-4. Reuse the retained Adversarial Reviewer on the same corrected SHA.
-5. Require both approvals before the retained Tester retests.
+1. Require Tester to finish the bounded failure diagnosis while its runtime evidence is available. Project Manager checks report completeness only and returns an incomplete report to Tester instead of diagnosing it.
+2. Send the developer-ready failure analysis to the retained integration Developer without re-investigating it.
+3. Create a new test-candidate SHA after correction.
+4. Give both retained Reviewers the Tester finding, changed paths, and correction delta.
+5. Require same-SHA `TEST READY` from both before the retained Tester retests.
 
-Repeat the fresh Code Quality replacement after every later Tester-driven production change.
+Do not replace a Reviewer or restart a full-diff review during this loop. Continue until integrated behavior stabilizes.
+
+## Final dual review: release readiness
+
+After integrated testing stabilizes:
+
+1. Create one immutable final-review SHA.
+2. Start both retained Reviewers concurrently on one mandatory independent `original-base..final-SHA` review.
+3. Give each Reviewer only its own `Deferred-Final` observations, explicitly labeled unproven; never cross-feed the other Reviewer's reasoning.
+4. Require same-SHA `RELEASE PASS` from both before release.
+
+The final review covers the complete feature, architecture and boundary integrity, cross-component contracts, and realistic lifecycle, recovery, concurrency, cleanup, security, migration, and regression behavior when approved scope or supported current behavior makes them reachable.
+
+If final review causes production changes, both retained Reviewers review the complete delta, verify closure, expand to reachable consumers when a contract or seam changed, and reissue their final verdict on the new SHA. The mandatory full-diff pass runs once per Reviewer; correction rounds do not restart it.
+
+Run regression confirmation after final-review production changes. If Tester evidence after `RELEASE PASS` causes another production change, invalidate both verdicts, replace Code Quality Reviewer with a fresh configured Reviewer, reuse the retained Adversarial Reviewer, require same-SHA final approval, then retest. This is the only mandatory Tester-driven fresh-Code-Quality replacement.
 
 ## Retention and replacement
 
 Retain the Developer or lane Developers, Code Quality Reviewer, Adversarial Reviewer, and Tester across their correction, re-review, and retest loops. An idle or completed turn does not close a thread.
 
-Replace a role only for a required clean-context boundary, a different subsystem with incompatible scoped instructions, a demonstrated bias risk, unusability, a user task change, or the mandatory post-Tester Code Quality replacement. Close feature roles after successful publication and cleanup.
+Replace a role only for a required clean-context boundary, a different subsystem with incompatible scoped instructions, a demonstrated bias risk, unusability, a user task change, or the mandatory post-`RELEASE PASS` Tester-driven Code Quality replacement. Close feature roles after successful publication and cleanup.
 
 ## Progress alarm
 

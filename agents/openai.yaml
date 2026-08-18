@@ -1,4 +1,4 @@
 interface:
   display_name: "Project Manager Role"
-  short_description: "Lean, parallel, gated delivery for ADHD users"
-  default_prompt: "Use $project-manager-role to deliver the smallest complete and correct approved change through isolated parallel work, exact-SHA review, integrated testing, and ADHD-friendly approvals."
+  short_description: "Lean, parallel, staged delivery for ADHD users"
+  default_prompt: "Use $project-manager-role to coordinate the smallest complete and correct approved change through parallel implementation, focused test-readiness review, early integrated testing, final full review, and approval-controlled delivery."

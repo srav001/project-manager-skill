@@ -45,7 +45,7 @@ Repeat discovery when assigned paths or subsystems change and after compaction o
 | Developer | Architecture, engineering, coding, types, validation, security, migration, documentation, build, testing, and CI |
 | Code Quality Reviewer | Governing engineering rules and neighboring production patterns for every changed path |
 | Adversarial Reviewer | Behavior contracts, public interfaces, security, migration, operations, recovery, integration, and testing rules |
-| Tester | Testing and QA guidance, CI, fixtures, runbooks, simulations, Computer Use, preview, build, start, and serve configuration |
+| Tester | Testing and QA guidance, CI, fixtures, runbooks, simulations, Computer Use, preview/build/start configuration, local SDKs/CLIs, browser/network diagnostics, server/application logs, traces, workers/queues, analytics/event telemetry, persisted test data, and connected source paths |
 
 ## Evidence standard
 
@@ -63,6 +63,9 @@ Every problem report from any role must state:
 3. **Evidence and impact:** paths, lines, commands, outputs, traces, or other directly inspected evidence showing the current effect.
 4. **Smallest required outcome:** the condition that must become true, not a redesign or implementation prescription.
 5. **Classification:** `blocking in-scope defect` | `unrelated existing defect` | `optional additional capability` | `unsupported hypothesis` | `scope decision required`.
+6. **Blocked gate:** every proposed `blocking in-scope defect` must state `Blocks: test readiness | release` and prove why it blocks that gate.
+
+Use `test readiness` only for focused-review defects that must be corrected before the first meaningful integrated test. Use `release` for Tester failures and final-review defects that must be corrected before delivery.
 
 The reporting role carries the proof burden. Absence of disproof is not proof. A report missing a scope source, required proof, or concrete evidence is an `unsupported hypothesis`; record it, but never implement it. It may be upgraded only through materially new evidence gathered through the Project Manager or a requirement the user newly approves.
 
@@ -70,7 +73,7 @@ Use `scope decision required` only when an unresolved premise materially prevent
 
 A binding repository contract is an explicit invariant in applicable instructions, documentation, schemas, types, tracked tests, or established public interfaces. Code or package structure does not by itself prove a deployment model, and silence does not authorize either a permissive or hostile assumption.
 
-Only the Project Manager may disposition a report into a Developer correction package. No subagent may expand the approved product scope.
+Only the Project Manager may disposition a report into the active gate's Developer correction package. A broader focused-stage observation may be marked `Deferred-Final`, but it is not a presumed defect and cannot block testing. No subagent may expand the approved product scope.
 
 ### Shared boundary example
 

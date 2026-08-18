@@ -2,7 +2,7 @@
 
 ## Readiness
 
-Begin only after the final integrated checkpoint SHA passes Developer Handoff, mandatory same-SHA dual review, Tester verification, and Feature Completion.
+Begin only after the exact feature SHA passes Developer Handoff, focused same-SHA dual `TEST READY`, integrated Tester verification, final same-SHA dual `RELEASE PASS`, Regression Confirmation when required, and Feature Completion.
 
 Before touching the source checkout:
 

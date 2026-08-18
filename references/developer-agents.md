@@ -103,13 +103,13 @@ Project Manager checks only report completeness, path allowlist, ownership, work
 
 ## Correction assignment
 
-Give the retained integration Developer one consolidated correction package after both final reviews reach the barrier.
+Give the retained integration Developer one consolidated correction package after both Reviewers complete the active focused or final review barrier, or after Tester returns a production-code failure.
 
-Every item must be classified `blocking in-scope defect` and include finding id, reviewer, scope source, class, proof, evidence, smallest required outcome, and target SHA. Developer must return a one-to-one `finding → fix → proof` map and identify any contradiction or structural contract change before editing.
+Every item must be classified `blocking in-scope defect` for the active gate and include `Blocks: test readiness | release`, finding id, source role, scope source, class, proof, evidence, smallest required outcome, and target SHA. A Tester finding must also include its failing action/time/order, expected and observed result, correlated runtime evidence, relevant source path, immediate cause, root cause or bounded uncertainty, and reproduction. Developer must return a one-to-one `finding → fix → proof` map and identify any contradiction or structural contract change before editing.
 
 Implement only each finding's required outcome. If a correction would add a capability, depend on an unapproved premise, or cross the approved boundary, stop and return it to the Project Manager instead of editing.
 
-Developer must not patch repeatedly around a recurring class. When the Project Manager reports a two-round class recurrence, wait for the Reviewer's structural assessment and the user's architecture decision.
+Developer must not patch repeatedly around a recurring class. When the Project Manager reports a two-round recurrence within the current stage, wait for the Reviewer's structural assessment and the user's architecture decision.
 
 ## Handoff gate
 
