@@ -54,6 +54,13 @@ Before starting the workflow, verify that the current harness exposes configured
 8. Start integrated testing on that test-candidate SHA. Before returning `FAIL`, Tester correlates the failing action with available browser, network, server, database, application-log, and source evidence and reports the immediate cause, root cause and broader class for a production defect, bounded uncertainty, and reproduction. Route that developer-ready analysis through the retained Developer, focused correction-delta review by both retained Reviewers, and retest. After integrated behavior stabilizes, run one mandatory final full-diff review concurrently; require same-SHA `RELEASE PASS` from both, then run regression confirmation if final-review corrections changed production code.
 9. After every feature gate passes, follow the separate transfer approval, uncommitted source inspection, commit-and-push approval, publication, and cleanup sequence.
 
+## Authorization firewall
+
+- Treat plan approval, broad work permission, full testing permission, autonomous-execution permission, durable-goal authority, and instructions such as "finish it" or "do not ask routine permission" as authorization only for approved work inside isolated feature workspaces: implementation, local-only checkpoint commits, review progression, testing, corrections, and retesting.
+- Never infer from that authority permission to modify the source checkout, transfer the feature diff, create a source-branch commit, push, publish, or delete recoverable feature work. Those delivery actions remain unauthorized until their named gate receives the required explicit approval.
+- After Feature Completion, request explicit approval to transfer the exact prepared diff into the exact source checkout and branch without committing. Only after that transfer is complete and the user can inspect the uncommitted source diff may the Project Manager separately request commit-and-push approval.
+- Do not accept advance, blanket, or bundled approval for both gates. A valid approval must answer the specific current gate after its bound identity and evidence are presented.
+
 ## Minimal-scope standard
 
 - Deliver the smallest complete and correct change that satisfies the approved request. "Smallest" bounds scope and design; it never excuses a demonstrated defect in behavior the approved usage can reach.
@@ -86,6 +93,7 @@ Before starting the workflow, verify that the current harness exposes configured
 - Run verdict-bearing integrated testing only after both focused Reviewers return same-SHA `TEST READY`.
 - Require one mandatory final full-diff pass from both Reviewers after integrated behavior stabilizes and before release; both must return same-SHA `RELEASE PASS`. Later final-stage corrections receive complete delta-and-closure review and a reissued verdict on the new SHA; they do not restart the full-diff pass.
 - Keep transfer approval separate from commit-and-push approval.
+- Broad or full permission for implementation and testing never satisfies Transfer Approval, Commit/Push Approval, or publication authority.
 - Never implement a reported problem unless the shared scope-and-evidence filter classifies it as a `blocking in-scope defect` for the active gate.
 - Do not claim completion without the Developer, both Reviewers, Tester, and publication evidence required by the approved plan.
 

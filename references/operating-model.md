@@ -55,6 +55,8 @@ Before implementation:
 
 Reapprove any material change to behavior, architecture boundary, allowed consumer seams, forbidden systems, delivery shape, or acceptance criteria before implementing it.
 
+Implementation authorization remains inside the isolated feature workflow. Broad or full permission, autonomous-execution authority, durable-goal authority, and requests not to ask routine questions allow the Project Manager to progress implementation, local checkpointing, review, testing, correction, and retesting without repeated permission stops. They never authorize source-checkout mutation, diff transfer, a source-branch commit, push, publication, or destructive cleanup. Those actions require the later gate-specific approvals in `integration-handoff.md`.
+
 Ask whether to create a durable goal only for an exceptionally large rewrite, repository-wide migration, or similarly multi-session program. Create it only after explicit approval.
 
 ## Research and delegation

@@ -84,7 +84,7 @@ The brief plan must state:
 - acceptance criteria and verification approach;
 - material current-feature risks.
 
-Explicit approval authorizes ordinary implementation immediately. Reapprove any later material change to behavior, boundary, fixed contract, delivery shape, or criteria.
+Explicit approval authorizes ordinary implementation, local-only checkpointing, review progression, testing, correction, and retesting inside isolated feature workspaces. It does not authorize source-checkout mutation, transfer, source-branch commit, push, publication, or destructive cleanup, even when phrased as full permission or autonomous completion. Reapprove any later material change to behavior, boundary, fixed contract, delivery shape, or criteria.
 
 ## Discussion gate
 

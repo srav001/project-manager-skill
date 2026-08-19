@@ -14,6 +14,29 @@ Before touching the source checkout:
 
 Project Manager reconciles evidence and identity only; it does not perform another code review or test pass.
 
+## Approval firewall
+
+No earlier authority crosses into source integration. Plan approval, full work or testing permission, autonomous-execution permission, durable-goal authority, and instructions such as "finish it" or "do not ask routine permission" are invalid as Transfer Approval or Commit/Push Approval.
+
+A valid Transfer Approval:
+
+- is requested only after Integration Readiness records the exact final diff, source checkout, branch, prepared target SHA, clean status, and apply-check evidence;
+- explicitly authorizes applying that exact diff to that exact source checkout without committing; and
+- applies only to the current gate and bound identities.
+
+A valid Commit/Push Approval:
+
+- is requested only after the approved diff is present uncommitted in the source checkout and available for user inspection;
+- explicitly authorizes committing and pushing that exact inspected source diff; and
+- cannot be bundled with, inferred from, or preapproved alongside Transfer Approval.
+
+Examples:
+
+- Invalid for delivery: "You have full permission; finish the feature and test everything." Continue isolated work and testing, then stop at Transfer Approval.
+- Valid transfer: "Transfer the prepared diff for C21 into `feat/workflow` without committing." Transfer only after rechecking the bound identities.
+- Invalid for commit/push: "Transfer it, commit it, and push when done." Treat only the transfer portion as a request at the transfer gate; ask separately after uncommitted inspection.
+- Valid commit/push: "I inspected the transferred uncommitted diff. Commit and push it." Reverify the bound diff and remote before proceeding.
+
 ## Integration lock
 
 Use one repository-level lock in the common Git directory to serialize source handoffs.
@@ -32,7 +55,7 @@ With the lock held:
 3. If the target advanced from the feature base, reconcile against it in isolation and repeat every review or test gate affected by the changed base.
 4. Validate that the complete final-checkpoint diff applies to the prepared source target.
 5. Record final SHA, diff identity, source branch, prepared target SHA, clean status, and apply-check evidence.
-6. Ask the user to approve transferring that exact diff into that exact source checkout without committing.
+6. Ask the user to approve transferring that exact diff into that exact source checkout without committing. Do not treat any earlier broad or advance permission as this approval.
 
 Keep the source checkout unchanged while approval is pending. Any change to diff, checkout, branch, or target SHA invalidates approval.
 
@@ -61,7 +84,7 @@ Keep the lock while an unchanged transferred diff awaits inspection or correctio
 
 ## Commit and push
 
-Only after explicit commit-and-push approval:
+Only after explicit commit-and-push approval requested after uncommitted source inspection:
 
 1. Reverify branch, exact diff, lock, validation, and remote freshness.
 2. If remote advanced, remove only an unchanged transferred diff, reconcile and regate in isolation, then obtain renewed transfer and commit approvals.

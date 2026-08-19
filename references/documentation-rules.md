@@ -115,6 +115,7 @@ Keep state in compact tables. Update status cells in place. Preserve failures th
 | Parallelism decision | [lane gate passed with evidence, or exact failed independence condition] |
 | Lane ownership/order | [owner, paths, dependencies, order, or N/A] |
 | User plan approval | [exact approval and revision] |
+| Work authorization boundary | [implementation/review/testing authority; explicitly excludes source transfer, commit, push, and publication] |
 
 ## Primary Milestone
 - Milestone: [current user-facing outcome]
@@ -175,6 +176,7 @@ Add rows rather than new narrative sections. Add a specialized gate row only whe
 - Feature Completion passes before source integration preparation.
 - Transfer Approval binds to the exact feature diff, source checkout, branch, and prepared target revision.
 - Commit/Push Approval is separate and occurs only after the user inspects the transferred uncommitted source diff.
+- Broad/full work or testing permission, autonomous-completion instructions, durable-goal authority, and plan approval cannot satisfy either delivery gate. Record only the gate-specific approval requested after its bound evidence exists.
 - Publish passes only after remote verification and cleanup.
 
 Any identity mismatch is a hard stop. Mark dependent gates invalid until Git-verifiable identity is restored.
