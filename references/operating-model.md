@@ -47,11 +47,12 @@ Classify before using existing control-file content:
 
 Before implementation:
 
-1. Inspect the repository directly and grill the feature.
-2. Form `discussion.md` and `plan.md` progressively.
-3. Define the boundary contract and acceptance criteria.
-4. Present a brief plan with scope, approach, delivery shape, risks, and verification.
-5. Wait for explicit approval. That approval starts ordinary implementation without another confirmation.
+1. Offer the user a one-time choice among available read-only advisor skills for material discussion or investigation, then use only approved advisors.
+2. Inspect the repository directly and grill the feature.
+3. Form `discussion.md` and `plan.md` progressively.
+4. Define the boundary contract and acceptance criteria.
+5. Present a brief plan with scope, approach, delivery shape, risks, and verification.
+6. Wait for explicit approval. That approval starts ordinary implementation without another confirmation.
 
 Reapprove any material change to behavior, architecture boundary, allowed consumer seams, forbidden systems, delivery shape, or acceptance criteria before implementing it.
 

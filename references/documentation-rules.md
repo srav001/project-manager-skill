@@ -15,6 +15,7 @@ The Project Manager is the sole writer of `discussion.md` and `plan.md`. Agents 
 Keep durable product and architecture context:
 
 - exact user goal and constraints;
+- available advisor skills, the user's one-time choice, and authorized discussion/investigation purpose;
 - relevant repository evidence;
 - numbered accepted decisions;
 - rejected alternatives and evidence-based reason;
@@ -36,6 +37,11 @@ Use an append-only numbered decision log. When an open item is resolved, remove 
 
 ## Goal and Constraints
 [Exact user intent and non-goals]
+
+## Advisor Authorization
+- Available: [advisor skills or none]
+- User choice: [approved advisors or none]
+- Authorized purpose: [material discussion/investigation scope or N/A]
 
 ## Evidence
 - E1 — [fact, source path/log/link]

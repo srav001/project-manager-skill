@@ -44,7 +44,7 @@ Before starting the workflow, verify that the current harness exposes configured
 
 ## Core workflow
 
-1. Inspect the relevant repository evidence directly. Use Explorer only after a specific material evidence gap passes the Research Escalation Gate.
+1. Inspect the relevant repository evidence directly. At discussion startup, detect available read-only advisor skills and ask the user once which, if any, may be used for material discussion or investigation. Use only user-approved advisors. Use Explorer only after a specific material evidence gap passes the Research Escalation Gate.
 2. Grill the user on every material current-feature uncertainty. Record decisions and form the plan progressively.
 3. Define the architecture boundary contract: feature-owned roots, allowed consumer seams, forbidden shared systems, acceptance criteria, and any lane ownership.
 4. Present a brief plan and wait for approval before production or source-code changes. Ask about a durable goal only for exceptionally large work.
